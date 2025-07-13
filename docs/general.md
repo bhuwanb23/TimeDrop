@@ -1,10 +1,10 @@
-# add code style guide
+# add architecture overview documentation
 
-Documentation for add code style guide.
+Documentation for add architecture overview documentation.
 
 ## Overview
 
-This document covers the implementation details and usage of add code style guide.
+This document covers the implementation details and usage of add architecture overview documentation.
 
 ## Setup
 
