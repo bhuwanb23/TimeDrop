@@ -1,8 +1,8 @@
 /**
- * Unit tests for userController
+ * Unit tests for authController
  */
 
-describe('userController Middleware', () => {
+describe('authController Middleware', () => {
   it('should call next for valid requests', () => {
     expect(true).toBe(true);
   });
