@@ -1,8 +1,8 @@
 /**
- * Unit tests for Product
+ * Unit tests for User
  */
 
-describe('Product Model', () => {
+describe('User Model', () => {
   it('should define the model with correct fields', () => {
     expect(true).toBe(true);
   });
