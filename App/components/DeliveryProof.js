@@ -1,0 +1,5 @@
+/**
+ * generic service
+ */
+
+module.exports = {};
