@@ -1,10 +1,10 @@
-# add database schema documentation
+# update README with current features
 
-Documentation for add database schema documentation.
+Documentation for update README with current features.
 
 ## Overview
 
-This document covers the implementation details and usage of add database schema documentation.
+This document covers the implementation details and usage of update README with current features.
 
 ## Setup
 
