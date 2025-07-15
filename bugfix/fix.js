@@ -1,4 +1,4 @@
-// Bug fix: fix: correct date formatting in order timestamps
-// Applied: 2026-07-13T09:26:31.839Z
+// Bug fix: fix: handle missing product image gracefully
+// Applied: 2026-07-13T09:26:33.268Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:26:31.839Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:26:33.268Z' };
