@@ -1,10 +1,10 @@
-# add environment variables documentation
+# add contribution guidelines
 
-Documentation for add environment variables documentation.
+Documentation for add contribution guidelines.
 
 ## Overview
 
-This document covers the implementation details and usage of add environment variables documentation.
+This document covers the implementation details and usage of add contribution guidelines.
 
 ## Setup
 
