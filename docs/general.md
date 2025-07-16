@@ -1,10 +1,10 @@
-# add code style guide
+# add environment variables documentation
 
-Documentation for add code style guide.
+Documentation for add environment variables documentation.
 
 ## Overview
 
-This document covers the implementation details and usage of add code style guide.
+This document covers the implementation details and usage of add environment variables documentation.
 
 ## Setup
 
