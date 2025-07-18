@@ -1,10 +1,10 @@
-# add code style guide
+# update README with current features
 
-Documentation for add code style guide.
+Documentation for update README with current features.
 
 ## Overview
 
-This document covers the implementation details and usage of add code style guide.
+This document covers the implementation details and usage of update README with current features.
 
 ## Setup
 
