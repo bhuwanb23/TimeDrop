@@ -1,10 +1,10 @@
-# add performance optimization notes
+# add database schema documentation
 
-Documentation for add performance optimization notes.
+Documentation for add database schema documentation.
 
 ## Overview
 
-This document covers the implementation details and usage of add performance optimization notes.
+This document covers the implementation details and usage of add database schema documentation.
 
 ## Setup
 
