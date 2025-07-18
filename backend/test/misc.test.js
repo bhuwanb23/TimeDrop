@@ -1,8 +1,8 @@
 /**
- * Unit tests for wishlistController
+ * Unit tests for deliveryController
  */
 
-describe('wishlistController Middleware', () => {
+describe('deliveryController Middleware', () => {
   it('should call next for valid requests', () => {
     expect(true).toBe(true);
   });
