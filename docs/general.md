@@ -1,10 +1,10 @@
-# add environment variables documentation
+# add deployment guide
 
-Documentation for add environment variables documentation.
+Documentation for add deployment guide.
 
 ## Overview
 
-This document covers the implementation details and usage of add environment variables documentation.
+This document covers the implementation details and usage of add deployment guide.
 
 ## Setup
 
