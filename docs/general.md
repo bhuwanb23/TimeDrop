@@ -1,10 +1,10 @@
-# add architecture overview documentation
+# add contribution guidelines
 
-Documentation for add architecture overview documentation.
+Documentation for add contribution guidelines.
 
 ## Overview
 
-This document covers the implementation details and usage of add architecture overview documentation.
+This document covers the implementation details and usage of add contribution guidelines.
 
 ## Setup
 
