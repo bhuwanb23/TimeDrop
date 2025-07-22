@@ -1,10 +1,10 @@
-# add setup and installation guide
+# add security best practices
 
-Documentation for add setup and installation guide.
+Documentation for add security best practices.
 
 ## Overview
 
-This document covers the implementation details and usage of add setup and installation guide.
+This document covers the implementation details and usage of add security best practices.
 
 ## Setup
 
