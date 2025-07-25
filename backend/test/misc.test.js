@@ -1,8 +1,8 @@
 /**
- * Unit tests for wishlistController
+ * Unit tests for adminController
  */
 
-describe('wishlistController Middleware', () => {
+describe('adminController Middleware', () => {
   it('should call next for valid requests', () => {
     expect(true).toBe(true);
   });
