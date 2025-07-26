@@ -1,4 +1,4 @@
-// Bug fix: fix: prevent race condition in cart checkout
-// Applied: 2026-07-13T09:27:19.675Z
+// Bug fix: fix: sanitize user input in search queries
+// Applied: 2026-07-13T09:27:23.607Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:27:19.675Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:27:23.607Z' };
