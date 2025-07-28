@@ -1,10 +1,10 @@
-# add setup and installation guide
+# add deployment guide
 
-Documentation for add setup and installation guide.
+Documentation for add deployment guide.
 
 ## Overview
 
-This document covers the implementation details and usage of add setup and installation guide.
+This document covers the implementation details and usage of add deployment guide.
 
 ## Setup
 
