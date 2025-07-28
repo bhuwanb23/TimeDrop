@@ -1,10 +1,10 @@
-# add database schema documentation
+# add testing guide
 
-Documentation for add database schema documentation.
+Documentation for add testing guide.
 
 ## Overview
 
-This document covers the implementation details and usage of add database schema documentation.
+This document covers the implementation details and usage of add testing guide.
 
 ## Setup
 
