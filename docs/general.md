@@ -1,10 +1,10 @@
-# add deployment guide
+# add security best practices
 
-Documentation for add deployment guide.
+Documentation for add security best practices.
 
 ## Overview
 
-This document covers the implementation details and usage of add deployment guide.
+This document covers the implementation details and usage of add security best practices.
 
 ## Setup
 
