@@ -1,4 +1,4 @@
-// Bug fix: fix: add missing export default to WishlistScreen
-// Applied: 2026-07-13T09:27:31.434Z
+// Bug fix: fix: add missing useNavigation import to WishlistScreen
+// Applied: 2026-07-13T09:27:39.125Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:27:31.434Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:27:39.125Z' };
