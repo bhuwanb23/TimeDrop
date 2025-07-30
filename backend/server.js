@@ -1,4 +1,5 @@
-// Bug fix: fix: add port recursion guard in server.js
-// Applied: 2026-07-13T09:27:38.561Z
+/**
+ * generic middleware
+ */
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:27:38.561Z' };
+module.exports = (req, res, next) => next();
