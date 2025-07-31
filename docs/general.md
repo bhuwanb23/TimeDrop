@@ -1,10 +1,10 @@
-# add contribution guidelines
+# add security best practices
 
-Documentation for add contribution guidelines.
+Documentation for add security best practices.
 
 ## Overview
 
-This document covers the implementation details and usage of add contribution guidelines.
+This document covers the implementation details and usage of add security best practices.
 
 ## Setup
 
