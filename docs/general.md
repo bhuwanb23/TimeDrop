@@ -1,10 +1,10 @@
-# add performance optimization notes
+# add environment variables documentation
 
-Documentation for add performance optimization notes.
+Documentation for add environment variables documentation.
 
 ## Overview
 
-This document covers the implementation details and usage of add performance optimization notes.
+This document covers the implementation details and usage of add environment variables documentation.
 
 ## Setup
 
