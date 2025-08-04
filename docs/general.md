@@ -1,10 +1,10 @@
-# add code style guide
+# add contribution guidelines
 
-Documentation for add code style guide.
+Documentation for add contribution guidelines.
 
 ## Overview
 
-This document covers the implementation details and usage of add code style guide.
+This document covers the implementation details and usage of add contribution guidelines.
 
 ## Setup
 
