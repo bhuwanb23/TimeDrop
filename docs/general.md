@@ -1,10 +1,10 @@
-# add security best practices
+# update README with current features
 
-Documentation for add security best practices.
+Documentation for update README with current features.
 
 ## Overview
 
-This document covers the implementation details and usage of add security best practices.
+This document covers the implementation details and usage of update README with current features.
 
 ## Setup
 
