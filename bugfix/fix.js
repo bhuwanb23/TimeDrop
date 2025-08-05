@@ -1,4 +1,4 @@
-// Bug fix: fix: correct date formatting in order timestamps
-// Applied: 2026-07-13T09:28:08.610Z
+// Bug fix: fix: prevent race condition in cart checkout
+// Applied: 2026-07-13T09:28:11.052Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:28:08.610Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:28:11.052Z' };
