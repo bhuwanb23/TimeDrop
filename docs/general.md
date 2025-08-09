@@ -1,10 +1,10 @@
-# add deployment guide
+# add testing guide
 
-Documentation for add deployment guide.
+Documentation for add testing guide.
 
 ## Overview
 
-This document covers the implementation details and usage of add deployment guide.
+This document covers the implementation details and usage of add testing guide.
 
 ## Setup
 
