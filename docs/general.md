@@ -1,10 +1,10 @@
-# update README with current features
+# add setup and installation guide
 
-Documentation for update README with current features.
+Documentation for add setup and installation guide.
 
 ## Overview
 
-This document covers the implementation details and usage of update README with current features.
+This document covers the implementation details and usage of add setup and installation guide.
 
 ## Setup
 
