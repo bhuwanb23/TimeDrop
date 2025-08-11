@@ -1,10 +1,10 @@
-# add performance optimization notes
+# update README with current features
 
-Documentation for add performance optimization notes.
+Documentation for update README with current features.
 
 ## Overview
 
-This document covers the implementation details and usage of add performance optimization notes.
+This document covers the implementation details and usage of update README with current features.
 
 ## Setup
 
