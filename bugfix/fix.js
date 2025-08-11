@@ -1,4 +1,4 @@
-// Bug fix: fix: correct pagination offset in product listing
-// Applied: 2026-07-13T09:28:34.294Z
+// Bug fix: fix: prevent race condition in cart checkout
+// Applied: 2026-07-13T09:28:35.071Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:28:34.294Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:28:35.071Z' };
