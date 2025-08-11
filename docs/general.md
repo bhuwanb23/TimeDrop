@@ -1,10 +1,10 @@
-# add setup and installation guide
+# add testing guide
 
-Documentation for add setup and installation guide.
+Documentation for add testing guide.
 
 ## Overview
 
-This document covers the implementation details and usage of add setup and installation guide.
+This document covers the implementation details and usage of add testing guide.
 
 ## Setup
 
