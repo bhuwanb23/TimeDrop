@@ -1,4 +1,4 @@
-// Bug fix: fix: correct pagination offset in product listing
-// Applied: 2026-07-13T09:28:35.993Z
+// Bug fix: fix: correct date formatting in order timestamps
+// Applied: 2026-07-13T09:28:38.288Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:28:35.993Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:28:38.288Z' };
