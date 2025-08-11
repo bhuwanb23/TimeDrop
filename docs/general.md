@@ -1,10 +1,10 @@
-# add setup and installation guide
+# add performance optimization notes
 
-Documentation for add setup and installation guide.
+Documentation for add performance optimization notes.
 
 ## Overview
 
-This document covers the implementation details and usage of add setup and installation guide.
+This document covers the implementation details and usage of add performance optimization notes.
 
 ## Setup
 
