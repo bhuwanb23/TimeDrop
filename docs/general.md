@@ -1,10 +1,10 @@
-# add testing guide
+# add contribution guidelines
 
-Documentation for add testing guide.
+Documentation for add contribution guidelines.
 
 ## Overview
 
-This document covers the implementation details and usage of add testing guide.
+This document covers the implementation details and usage of add contribution guidelines.
 
 ## Setup
 
