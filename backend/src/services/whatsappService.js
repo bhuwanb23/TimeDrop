@@ -1,5 +1,5 @@
 /**
- * generic service
+ * generic middleware
  */
 
-module.exports = {};
+module.exports = (req, res, next) => next();
