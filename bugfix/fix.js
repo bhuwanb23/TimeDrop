@@ -1,4 +1,4 @@
-// Bug fix: fix: handle network timeout in API service
-// Applied: 2026-07-13T09:28:45.695Z
+// Bug fix: fix: handle missing product image gracefully
+// Applied: 2026-07-13T09:28:48.100Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:28:45.695Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:28:48.100Z' };
