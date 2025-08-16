@@ -1,8 +1,8 @@
 /**
- * Unit tests for categoryController
+ * Unit tests for adminController
  */
 
-describe('categoryController Middleware', () => {
+describe('adminController Middleware', () => {
   it('should call next for valid requests', () => {
     expect(true).toBe(true);
   });
