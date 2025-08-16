@@ -1,10 +1,10 @@
-# add database schema documentation
+# add contribution guidelines
 
-Documentation for add database schema documentation.
+Documentation for add contribution guidelines.
 
 ## Overview
 
-This document covers the implementation details and usage of add database schema documentation.
+This document covers the implementation details and usage of add contribution guidelines.
 
 ## Setup
 
