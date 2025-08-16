@@ -1,4 +1,4 @@
-// Bug fix: fix: sanitize user input in search queries
-// Applied: 2026-07-13T09:28:58.309Z
+// Bug fix: fix: correct date formatting in order timestamps
+// Applied: 2026-07-13T09:28:59.785Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:28:58.309Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:28:59.785Z' };
