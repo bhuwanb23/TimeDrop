@@ -1,10 +1,10 @@
-# add deployment guide
+# update README with current features
 
-Documentation for add deployment guide.
+Documentation for update README with current features.
 
 ## Overview
 
-This document covers the implementation details and usage of add deployment guide.
+This document covers the implementation details and usage of update README with current features.
 
 ## Setup
 
