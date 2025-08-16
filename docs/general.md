@@ -1,10 +1,10 @@
-# add database schema documentation
+# add security best practices
 
-Documentation for add database schema documentation.
+Documentation for add security best practices.
 
 ## Overview
 
-This document covers the implementation details and usage of add database schema documentation.
+This document covers the implementation details and usage of add security best practices.
 
 ## Setup
 
