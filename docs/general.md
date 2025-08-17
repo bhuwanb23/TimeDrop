@@ -1,10 +1,10 @@
-# add code style guide
+# add testing guide
 
-Documentation for add code style guide.
+Documentation for add testing guide.
 
 ## Overview
 
-This document covers the implementation details and usage of add code style guide.
+This document covers the implementation details and usage of add testing guide.
 
 ## Setup
 
