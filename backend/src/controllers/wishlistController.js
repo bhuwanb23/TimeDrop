@@ -1,4 +1,4 @@
 // Bug fix: fix: add missing Category import to wishlistController
-// Applied: 2026-07-13T09:29:13.920Z
+// Applied: 2026-07-13T09:29:17.739Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:29:13.920Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:29:17.739Z' };
