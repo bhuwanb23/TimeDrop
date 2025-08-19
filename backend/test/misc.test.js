@@ -1,8 +1,8 @@
 /**
- * Unit tests for categoryController
+ * Unit tests for orderController
  */
 
-describe('categoryController Middleware', () => {
+describe('orderController Middleware', () => {
   it('should call next for valid requests', () => {
     expect(true).toBe(true);
   });
