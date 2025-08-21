@@ -1,10 +1,10 @@
-# add architecture overview documentation
+# add deployment guide
 
-Documentation for add architecture overview documentation.
+Documentation for add deployment guide.
 
 ## Overview
 
-This document covers the implementation details and usage of add architecture overview documentation.
+This document covers the implementation details and usage of add deployment guide.
 
 ## Setup
 
