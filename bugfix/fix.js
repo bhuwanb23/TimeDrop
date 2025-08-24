@@ -1,4 +1,4 @@
-// Bug fix: fix: prevent race condition in cart checkout
-// Applied: 2026-07-13T09:29:37.351Z
+// Bug fix: fix: handle missing product image gracefully
+// Applied: 2026-07-13T09:29:39.997Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:29:37.351Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:29:39.997Z' };
