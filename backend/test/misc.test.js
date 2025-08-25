@@ -1,8 +1,8 @@
 /**
- * Unit tests for authController
+ * Unit tests for adminController
  */
 
-describe('authController Middleware', () => {
+describe('adminController Middleware', () => {
   it('should call next for valid requests', () => {
     expect(true).toBe(true);
   });
