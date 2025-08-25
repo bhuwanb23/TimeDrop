@@ -1,10 +1,10 @@
-# add architecture overview documentation
+# add database schema documentation
 
-Documentation for add architecture overview documentation.
+Documentation for add database schema documentation.
 
 ## Overview
 
-This document covers the implementation details and usage of add architecture overview documentation.
+This document covers the implementation details and usage of add database schema documentation.
 
 ## Setup
 
