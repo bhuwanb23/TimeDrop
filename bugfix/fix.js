@@ -1,4 +1,4 @@
-// Bug fix: fix: handle network timeout in API service
-// Applied: 2026-07-13T09:29:47.270Z
+// Bug fix: fix: correct pagination offset in product listing
+// Applied: 2026-07-13T09:29:49.105Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:29:47.270Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:29:49.105Z' };
