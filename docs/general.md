@@ -1,10 +1,10 @@
-# add architecture overview documentation
+# update README with current features
 
-Documentation for add architecture overview documentation.
+Documentation for update README with current features.
 
 ## Overview
 
-This document covers the implementation details and usage of add architecture overview documentation.
+This document covers the implementation details and usage of update README with current features.
 
 ## Setup
 
