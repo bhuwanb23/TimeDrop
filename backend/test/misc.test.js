@@ -1,8 +1,8 @@
 /**
- * Unit tests for cartController
+ * Unit tests for authController
  */
 
-describe('cartController Middleware', () => {
+describe('authController Middleware', () => {
   it('should call next for valid requests', () => {
     expect(true).toBe(true);
   });
