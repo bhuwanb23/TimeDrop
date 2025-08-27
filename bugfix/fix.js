@@ -1,4 +1,4 @@
-// Bug fix: fix: correct pagination offset in product listing
-// Applied: 2026-07-13T09:29:53.005Z
+// Bug fix: fix: sanitize user input in search queries
+// Applied: 2026-07-13T09:29:55.578Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:29:53.005Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:29:55.578Z' };
