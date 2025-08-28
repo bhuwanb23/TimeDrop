@@ -1,10 +1,10 @@
-# add deployment guide
+# add performance optimization notes
 
-Documentation for add deployment guide.
+Documentation for add performance optimization notes.
 
 ## Overview
 
-This document covers the implementation details and usage of add deployment guide.
+This document covers the implementation details and usage of add performance optimization notes.
 
 ## Setup
 
