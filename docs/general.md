@@ -1,10 +1,10 @@
-# add contribution guidelines
+# add deployment guide
 
-Documentation for add contribution guidelines.
+Documentation for add deployment guide.
 
 ## Overview
 
-This document covers the implementation details and usage of add contribution guidelines.
+This document covers the implementation details and usage of add deployment guide.
 
 ## Setup
 
