@@ -1,10 +1,10 @@
-# add performance optimization notes
+# add contribution guidelines
 
-Documentation for add performance optimization notes.
+Documentation for add contribution guidelines.
 
 ## Overview
 
-This document covers the implementation details and usage of add performance optimization notes.
+This document covers the implementation details and usage of add contribution guidelines.
 
 ## Setup
 
