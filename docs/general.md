@@ -1,10 +1,10 @@
-# add performance optimization notes
+# add security best practices
 
-Documentation for add performance optimization notes.
+Documentation for add security best practices.
 
 ## Overview
 
-This document covers the implementation details and usage of add performance optimization notes.
+This document covers the implementation details and usage of add security best practices.
 
 ## Setup
 
