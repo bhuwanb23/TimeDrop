@@ -1,4 +1,4 @@
-// Bug fix: fix: prevent race condition in cart checkout
-// Applied: 2026-07-13T09:30:12.531Z
+// Bug fix: fix: handle network timeout in API service
+// Applied: 2026-07-13T09:30:12.844Z
 
-module.exports = { fixed: true, timestamp: '2026-07-13T09:30:12.531Z' };
+module.exports = { fixed: true, timestamp: '2026-07-13T09:30:12.844Z' };
