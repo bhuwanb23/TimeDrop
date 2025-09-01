@@ -1,10 +1,10 @@
-# add testing guide
+# update README with current features
 
-Documentation for add testing guide.
+Documentation for update README with current features.
 
 ## Overview
 
-This document covers the implementation details and usage of add testing guide.
+This document covers the implementation details and usage of update README with current features.
 
 ## Setup
 
