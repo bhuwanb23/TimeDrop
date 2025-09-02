@@ -1,10 +1,10 @@
-# add contribution guidelines
+# update README with current features
 
-Documentation for add contribution guidelines.
+Documentation for update README with current features.
 
 ## Overview
 
-This document covers the implementation details and usage of add contribution guidelines.
+This document covers the implementation details and usage of update README with current features.
 
 ## Setup
 
