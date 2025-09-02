@@ -1,10 +1,10 @@
-# add security best practices
+# add environment variables documentation
 
-Documentation for add security best practices.
+Documentation for add environment variables documentation.
 
 ## Overview
 
-This document covers the implementation details and usage of add security best practices.
+This document covers the implementation details and usage of add environment variables documentation.
 
 ## Setup
 
