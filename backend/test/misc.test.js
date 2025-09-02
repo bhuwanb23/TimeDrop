@@ -1,8 +1,8 @@
 /**
- * Unit tests for userController
+ * Unit tests for productController
  */
 
-describe('userController Middleware', () => {
+describe('productController Middleware', () => {
   it('should call next for valid requests', () => {
     expect(true).toBe(true);
   });
