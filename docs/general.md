@@ -1,10 +1,10 @@
-# add database schema documentation
+# add deployment guide
 
-Documentation for add database schema documentation.
+Documentation for add deployment guide.
 
 ## Overview
 
-This document covers the implementation details and usage of add database schema documentation.
+This document covers the implementation details and usage of add deployment guide.
 
 ## Setup
 
