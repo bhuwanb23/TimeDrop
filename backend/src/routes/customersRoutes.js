@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { getCustomerOrdersByPhone } = require('../controllers/customersController');
+const { customerLogin, getCustomerOrdersByPhone } = require('../controllers/customersController');
+const { validateCustomerLogin, validateCustomerOrdersRequest } = require('../middleware/validationMiddleware');
+
+// POST /api/customers/login - Customer login
+router.post('/login', validateCustomerLogin, customerLogin);
 
 // GET /api/customers/orders?phone= - Get customer orders by phone
-router.get('/orders', getCustomerOrdersByPhone);
+router.get('/orders', validateCustomerOrdersRequest, getCustomerOrdersByPhone);
 
 module.exports = router;

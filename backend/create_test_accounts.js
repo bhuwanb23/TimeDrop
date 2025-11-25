@@ -12,82 +12,66 @@ const db = new sqlite3.Database(dbPath, (err) => {
   console.log('Connected to the SQLite database.');
 });
 
-// Function to insert test data
-async function insertTestData() {
+// Function to update test data with passwords
+async function updateTestData() {
   try {
     // Hash passwords
     const driverPassword = await bcrypt.hash('driver123', 10);
-    const customerPassword = 'customer123'; // Customers don't have passwords in this schema
+    const customerPassword = await bcrypt.hash('customer123', 10);
     
-    // Insert test drivers
-    const drivers = [
-      {
-        name: 'John Driver',
-        phone: '9876543210',
-        password_hash: driverPassword,
-        current_lat: 17.3850,
-        current_lng: 78.4867
-      },
-      {
-        name: 'Jane Driver',
-        phone: '9876543211',
-        password_hash: driverPassword,
-        current_lat: 17.3851,
-        current_lng: 78.4868
+    // Update existing drivers with passwords
+    db.run(`UPDATE drivers SET password_hash = ? WHERE phone = '9876543210'`, 
+           [driverPassword], 
+           function(err) {
+      if (err) {
+        console.error('Error updating John Driver:', err.message);
+      } else {
+        console.log(`John Driver updated with password hash`);
       }
-    ];
+    });
     
-    // Insert test customers
-    const customers = [
-      {
-        name: 'Rahul Mehta',
-        phone: '9876543213'
-      },
-      {
-        name: 'Priya Sharma',
-        phone: '9876543214'
+    db.run(`UPDATE drivers SET password_hash = ? WHERE phone = '9876543211'`, 
+           [driverPassword], 
+           function(err) {
+      if (err) {
+        console.error('Error updating Jane Driver:', err.message);
+      } else {
+        console.log(`Jane Driver updated with password hash`);
       }
-    ];
+    });
     
-    // Insert drivers
-    for (const driver of drivers) {
-      db.run(`INSERT OR IGNORE INTO drivers (name, phone, password_hash, current_lat, current_lng, created_at, updated_at) 
-              VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))`, 
-              [driver.name, driver.phone, driver.password_hash, driver.current_lat, driver.current_lng], 
-              function(err) {
-        if (err) {
-          console.error('Error inserting driver:', err.message);
-        } else {
-          console.log(`Driver ${driver.name} inserted with ID: ${this.lastID}`);
-        }
-      });
-    }
+    // Update existing customers with passwords
+    db.run(`UPDATE customers SET password_hash = ? WHERE phone = '9876543213'`, 
+           [customerPassword], 
+           function(err) {
+      if (err) {
+        console.error('Error updating Rahul Mehta:', err.message);
+      } else {
+        console.log(`Rahul Mehta updated with password hash`);
+      }
+    });
     
-    // Insert customers
-    for (const customer of customers) {
-      db.run(`INSERT OR IGNORE INTO customers (name, phone, created_at, updated_at) 
-              VALUES (?, ?, datetime('now'), datetime('now'))`, 
-              [customer.name, customer.phone], 
-              function(err) {
-        if (err) {
-          console.error('Error inserting customer:', err.message);
-        } else {
-          console.log(`Customer ${customer.name} inserted with ID: ${this.lastID}`);
-        }
-      });
-    }
+    db.run(`UPDATE customers SET password_hash = ? WHERE phone = '9876543214'`, 
+           [customerPassword], 
+           function(err) {
+      if (err) {
+        console.error('Error updating Priya Sharma:', err.message);
+      } else {
+        console.log(`Priya Sharma updated with password hash`);
+      }
+    });
     
-    console.log('Test data insertion completed.');
+    console.log('Test data update completed.');
     
   } catch (error) {
-    console.error('Error inserting test data:', error.message);
+    console.error('Error updating test data:', error.message);
   }
 }
 
 // Run the function
-insertTestData();
+updateTestData();
 
-// Close the database connection after a delay to ensure inserts complete
+// Close the database connection after a delay to ensure updates complete
 setTimeout(() => {
   db.close((err) => {
     if (err) {

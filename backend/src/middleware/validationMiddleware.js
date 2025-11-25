@@ -1,4 +1,5 @@
 const validator = require('validator');
+const Joi = require('joi');
 
 /**
  * Sanitize input to prevent injection attacks
@@ -219,13 +220,111 @@ const validateSlotSelection = (req, res, next) => {
   }
 };
 
+// Validation for customer orders request (phone parameter)
+const validateCustomerOrdersRequest = (req, res, next) => {
+  // Extract phone from query parameters
+  const { phone } = req.query;
+  
+  // Define validation schema
+  const schema = Joi.object({
+    phone: Joi.string()
+      .pattern(/^[0-9]{10}$/)
+      .required()
+      .messages({
+        'string.pattern.base': 'Phone number must be exactly 10 digits',
+        'any.required': 'Phone number is required'
+      })
+  });
+  
+  // Validate the phone parameter
+  const { error } = schema.validate({ phone });
+  
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message
+    });
+  }
+  
+  next();
+};
+
+// Validation for customer login request
+const validateCustomerLogin = (req, res, next) => {
+  // Extract phone and password from request body
+  const { phone, password } = req.body;
+  
+  // Define validation schema
+  const schema = Joi.object({
+    phone: Joi.string()
+      .pattern(/^[0-9]{10}$/)
+      .required()
+      .messages({
+        'string.pattern.base': 'Phone number must be exactly 10 digits',
+        'any.required': 'Phone number is required'
+      }),
+    password: Joi.string()
+      .min(6)
+      .required()
+      .messages({
+        'string.min': 'Password must be at least 6 characters long',
+        'any.required': 'Password is required'
+      })
+  });
+  
+  // Validate the request body
+  const { error } = schema.validate({ phone, password });
+  
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message
+    });
+  }
+  
+  next();
+};
+
+// Validation for driver login request
+const validateDriverLogin = (req, res, next) => {
+  // Extract phone and password from request body
+  const { phone, password } = req.body;
+  
+  // Define validation schema
+  const schema = Joi.object({
+    phone: Joi.string()
+      .pattern(/^[0-9]{10}$/)
+      .required()
+      .messages({
+        'string.pattern.base': 'Phone number must be exactly 10 digits',
+        'any.required': 'Phone number is required'
+      }),
+    password: Joi.string()
+      .min(6)
+      .required()
+      .messages({
+        'string.min': 'Password must be at least 6 characters long',
+        'any.required': 'Password is required'
+      })
+  });
+  
+  // Validate the request body
+  const { error } = schema.validate({ phone, password });
+  
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message
+    });
+  }
+  
+  next();
+};
+
 module.exports = {
-  sanitizeInput,
-  sanitizeObject,
-  validateRequiredFields,
-  validatePhone,
-  validatePincode,
-  validateCoordinates,
   validateOrderCreation,
-  validateSlotSelection
+  validateSlotSelection,
+  validateCustomerOrdersRequest,
+  validateCustomerLogin,
+  validateDriverLogin
 };

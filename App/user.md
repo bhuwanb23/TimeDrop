@@ -9,5 +9,7 @@ Password: driver123
 # Customer Accounts
 ### Rahul Mehta
 Phone: 9876543213
+Password: customer123
 ### Priya Sharma
 Phone: 9876543214
+Password: customer123

@@ -1,23 +1,67 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const DriverLoginScreen = () => {
-  const [driverId, setDriverId] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Validation
-    if (!driverId || !password) {
+    if (!phone || !password) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
-    // Here we would normally make an API call to login
-    // For now, we'll just navigate to the driver dashboard
-    Alert.alert('Success', 'Driver login successful!');
-    navigation.navigate('DriverApp');
+    if (phone.length !== 10 || !/^\d+$/.test(phone)) {
+      Alert.alert('Error', 'Please enter a valid 10-digit phone number');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters long');
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      // Make API call to login
+      const response = await fetch('http://192.168.31.67:3000/api/drivers/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+      
+      setLoading(false);
+      
+      if (data.success) {
+        Alert.alert('Success', 'Driver login successful!');
+        // Navigate to driver dashboard with driver data
+        navigation.navigate('DriverApp', { 
+          driverData: {
+            id: data.data?.id,
+            name: data.data?.name,
+            phone: data.data?.phone
+          }
+        });
+      } else {
+        Alert.alert('Error', data.message || 'Login failed');
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error('Login error:', error);
+      Alert.alert('Error', 'Network request failed. Please make sure the backend server is running.');
+    }
   };
 
   const handleCustomerLogin = () => {
@@ -31,38 +75,40 @@ const DriverLoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Delivery Slot App</Text>
-      <Text style={styles.subtitle}>Driver Login</Text>
+      <Text style={styles.title}>Driver Login</Text>
       
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="Driver ID"
-          value={driverId}
-          onChangeText={setDriverId}
-        />
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+      <TextInput
+        style={styles.input}
+        placeholder="Phone Number"
+        value={phone}
+        onChangeText={setPhone}
+        keyboardType="phone-pad"
+      />
+      
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+      
+      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
           <Text style={styles.buttonText}>Login</Text>
+        )}
+      </TouchableOpacity>
+      
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={handleForgotPassword}>
+          <Text style={styles.linkText}>Forgot Password?</Text>
         </TouchableOpacity>
         
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={handleForgotPassword}>
-            <Text style={styles.linkText}>Forgot Password?</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity onPress={handleCustomerLogin}>
-            <Text style={styles.linkText}>Are you a customer? Customer Login</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={handleCustomerLogin}>
+          <Text style={styles.linkText}>Customer Login</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -72,23 +118,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
     padding: 20,
+    backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 18,
+    textAlign: 'center',
     marginBottom: 30,
-    color: '#666',
-  },
-  form: {
-    width: '100%',
   },
   input: {
     height: 50,
@@ -99,12 +136,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: '#fff',
   },
-  loginButton: {
+  button: {
     backgroundColor: '#007AFF',
-    paddingVertical: 15,
+    padding: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 10,
+    marginBottom: 20,
   },
   buttonText: {
     color: '#fff',
@@ -112,13 +149,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   footer: {
-    marginTop: 30,
     alignItems: 'center',
   },
   linkText: {
     color: '#007AFF',
-    fontSize: 16,
-    marginBottom: 15,
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
 
