@@ -7,8 +7,15 @@ const ordersRoutes = require('./routes/ordersRoutes');
 const customersRoutes = require('./routes/customersRoutes');
 const driversRoutes = require('./routes/driversRoutes');
 
+// Middleware
+const { rateLimiter } = require('./middleware/rateLimiter');
+const { globalErrorHandler } = require('./middleware/errorHandler');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Apply rate limiting to all requests
+app.use(rateLimiter());
 
 // Middleware
 app.use(cors());
@@ -35,6 +42,9 @@ sequelize.sync()
   .catch((error) => {
     console.error('Error syncing database models:', error);
   });
+
+// Global error handling middleware
+app.use(globalErrorHandler);
 
 // Start server
 app.listen(PORT, () => {

@@ -8,13 +8,7 @@ const driverLogin = async (req, res) => {
   try {
     const { phone, password } = req.body;
 
-    // Validate login credentials
-    if (!phone || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Phone and password are required'
-      });
-    }
+      // All validation is now handled by middleware
 
     // Validate phone number format (10 digits)
     const phoneRegex = /^[0-9]{10}$/;
@@ -78,22 +72,9 @@ const getDriverDeliveries = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate driver ID
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: 'Driver ID is required'
-      });
-    }
-
-    // Check if driver exists
-    const driver = await Driver.findByPk(id);
-    if (!driver) {
-      return res.status(404).json({
-        success: false,
-        message: 'Driver not found'
-      });
-    }
+    // All validation is now handled by middleware
+    // Driver authentication is now handled by middleware
+    const driver = req.driver;
 
     // Query deliveries assigned to driver
     const deliveries = await Order.findAll({
@@ -133,38 +114,9 @@ const updateDriverLocation = async (req, res) => {
     const { id } = req.params;
     const { lat, lng } = req.body;
 
-    // Validate driver ID
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: 'Driver ID is required'
-      });
-    }
-
-    // Validate location data
-    if (lat === undefined || lng === undefined) {
-      return res.status(400).json({
-        success: false,
-        message: 'Latitude and longitude are required'
-      });
-    }
-
-    // Validate that lat and lng are numbers
-    if (isNaN(lat) || isNaN(lng)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Latitude and longitude must be valid numbers'
-      });
-    }
-
-    // Check if driver exists
-    const driver = await Driver.findByPk(id);
-    if (!driver) {
-      return res.status(404).json({
-        success: false,
-        message: 'Driver not found'
-      });
-    }
+    // All validation is now handled by middleware
+    // Driver authentication is now handled by middleware
+    const driver = req.driver;
 
     // Update driver's current coordinates
     driver.current_lat = lat;
@@ -199,38 +151,10 @@ const updateOrderStatus = async (req, res) => {
     const { id, orderId } = req.params;
     const { status } = req.body;
     
-    // Validate driver ID
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: 'Driver ID is required'
-      });
-    }
+      // All validation is now handled by middleware
     
-    // Validate order ID
-    if (!orderId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Order ID is required'
-      });
-    }
-    
-    // Validate status
-    if (!status) {
-      return res.status(400).json({
-        success: false,
-        message: 'Status is required'
-      });
-    }
-    
-    // Check if driver exists
-    const driver = await Driver.findByPk(id);
-    if (!driver) {
-      return res.status(404).json({
-        success: false,
-        message: 'Driver not found'
-      });
-    }
+    // Driver authentication is now handled by middleware
+    const driver = req.driver;
     
     // Check if order exists and is assigned to this driver
     const order = await Order.findOne({

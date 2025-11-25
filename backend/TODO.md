@@ -127,22 +127,22 @@
 ## Phase 5: Security & Middleware
 
 ### Task 12: Authentication & Authorization
-- [ ] Implement JWT-based authentication
-- [ ] Create middleware for protected routes
-- [ ] Implement role-based access control
-- [ ] Add rate limiting to prevent abuse
+- [x] Implement JWT-based authentication
+- [x] Create middleware for protected routes
+- [x] Implement role-based access control
+- [x] Add rate limiting to prevent abuse
 
 ### Task 13: Input Validation & Sanitization
-- [ ] Implement request validation middleware
-- [ ] Sanitize user inputs to prevent injection attacks
-- [ ] Validate all required fields
-- [ ] Implement proper error messages
+- [x] Implement request validation middleware
+- [x] Sanitize user inputs to prevent injection attacks
+- [x] Validate all required fields
+- [x] Implement proper error messages
 
 ### Task 14: Error Handling
-- [ ] Create centralized error handling middleware
-- [ ] Define custom error classes
-- [ ] Implement proper HTTP status codes
-- [ ] Log errors for debugging
+- [x] Create centralized error handling middleware
+- [x] Define custom error classes
+- [x] Implement proper HTTP status codes
+- [x] Log errors for debugging
 
 ## Phase 6: Testing & Documentation
 

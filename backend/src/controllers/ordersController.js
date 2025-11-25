@@ -16,13 +16,7 @@ const createOrder = async (req, res) => {
       lng
     } = req.body;
 
-    // Validate required fields
-    if (!order_id || !customer_name || !phone || !address || !pincode || !lat || !lng) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing required fields'
-      });
-    }
+      // All validation is now handled by middleware
 
     // Check if order already exists
     const existingOrder = await Order.findOne({ where: { order_id } });
@@ -95,13 +89,7 @@ const selectSlot = async (req, res) => {
     const { id } = req.params;
     const { slot_date, slot_time } = req.body;
 
-    // Validate slot selection data
-    if (!slot_date || !slot_time) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing slot date or time'
-      });
-    }
+      // All validation is now handled by middleware
 
     // Retrieve order by ID
     const order = await Order.findByPk(id);
@@ -164,13 +152,7 @@ const updateOrderStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Validate status update request
-    if (!status) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing status'
-      });
-    }
+      // All validation is now handled by middleware
 
     // Retrieve order by ID
     const order = await Order.findByPk(id);
