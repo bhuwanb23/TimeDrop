@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { authAPI, setAuthToken } from '../services/api';
 
 const DriverLoginScreen = () => {
   const [phone, setPhone] = useState('');
@@ -29,38 +30,33 @@ const DriverLoginScreen = () => {
     
     try {
       // Make API call to login
-      const response = await fetch('http://192.168.31.67:3000/api/drivers/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone,
-          password,
-        }),
-      });
-
-      const data = await response.json();
+      const response = await authAPI.driverLogin(phone, password);
       
-      setLoading(false);
-      
-      if (data.success) {
+      if (response.data.success) {
+        // Save the auth token
+        await setAuthToken(response.data.token);
+        
         Alert.alert('Success', 'Driver login successful!');
         // Navigate to driver dashboard with driver data
         navigation.navigate('DriverApp', { 
           driverData: {
-            id: data.data?.id,
-            name: data.data?.name,
-            phone: data.data?.phone
+            id: response.data.data?.id,
+            name: response.data.data?.name,
+            phone: response.data.data?.phone
           }
         });
       } else {
-        Alert.alert('Error', data.message || 'Login failed');
+        Alert.alert('Error', response.data.message || 'Login failed');
       }
     } catch (error) {
-      setLoading(false);
       console.error('Login error:', error);
-      Alert.alert('Error', 'Network request failed. Please make sure the backend server is running.');
+      if (error.response) {
+        Alert.alert('Error', error.response.data.message || 'Login failed');
+      } else {
+        Alert.alert('Error', 'Network request failed. Please make sure the backend server is running.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 

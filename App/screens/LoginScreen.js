@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { authAPI, setAuthToken } from '../services/api';
 
 const LoginScreen = () => {
   const [phone, setPhone] = useState('');
@@ -29,38 +30,33 @@ const LoginScreen = () => {
     
     try {
       // Make API call to login
-      const response = await fetch('http://192.168.31.67:3000/api/customers/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone,
-          password,
-        }),
-      });
-
-      const data = await response.json();
+      const response = await authAPI.customerLogin(phone, password);
       
-      setLoading(false);
-      
-      if (data.success) {
+      if (response.data.success) {
+        // Save the auth token
+        await setAuthToken(response.data.token);
+        
         Alert.alert('Success', 'Login successful!');
         // Navigate to customer app with user data
         navigation.navigate('CustomerApp', { 
           userData: {
-            id: data.data?.id,
-            name: data.data?.name,
-            phone: data.data?.phone
+            id: response.data.customer?.id,
+            name: response.data.customer?.name,
+            phone: response.data.customer?.phone
           }
         });
       } else {
-        Alert.alert('Error', data.message || 'Login failed');
+        Alert.alert('Error', response.data.message || 'Login failed');
       }
     } catch (error) {
-      setLoading(false);
       console.error('Login error:', error);
-      Alert.alert('Error', 'Network request failed. Please make sure the backend server is running.');
+      if (error.response) {
+        Alert.alert('Error', error.response.data.message || 'Login failed');
+      } else {
+        Alert.alert('Error', 'Network request failed. Please make sure the backend server is running.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 

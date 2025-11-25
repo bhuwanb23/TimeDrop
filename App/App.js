@@ -1,38 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 // Import screens
 import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
-import CustomerHomeScreen from './screens/CustomerHomeScreen';
-import OrderCreationScreen from './screens/OrderCreationScreen';
-import OrderTrackingScreen from './screens/OrderTrackingScreen';
-import SlotSelectionScreen from './screens/SlotSelectionScreen';
 import DriverLoginScreen from './screens/DriverLoginScreen';
-import DriverDashboardScreen from './screens/DriverDashboardScreen';
-import ProfileScreen from './screens/ProfileScreen';
-import OrdersScreen from './screens/OrdersScreen';
-import OrderConfirmationScreen from './screens/OrderConfirmationScreen';
-import NotificationsScreen from './screens/NotificationsScreen';
-import DriverProfileScreen from './screens/DriverProfileScreen';
-import RouteOptimizationScreen from './screens/RouteOptimizationScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import CustomerApp from './screens/CustomerApp';
+import DriverApp from './screens/DriverApp';
 
-// Import providers
+// Import contexts
+import { CacheProvider } from './context/CacheContext';
 import { OrderProvider } from './context/OrderContext';
 import { DeliveryProvider } from './context/DeliveryContext';
-import { CacheProvider } from './context/CacheContext';
 
+// Import notification center
+import NotificationCenter from './components/NotificationCenter';
+
+// Import notification services
+import { requestNotificationPermission, handleNotificationReceived, handleNotificationResponse } from './services/notifications';
+
+// Create navigators
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-// Custom Drawer Content Component
-function CustomDrawerContent({ navigation, state }) {
+// Custom Drawer Content
+const CustomDrawerContent = (props) => {
+  const [showNotifications, setShowNotifications] = useState(false);
+  
+  useEffect(() => {
+    // Request notification permissions
+    requestNotificationPermission();
+    
+    // Set up notification listeners
+    const notificationReceivedSubscription = handleNotificationReceived(notification => {
+      console.log('Notification received:', notification);
+    });
+    
+    const notificationResponseSubscription = handleNotificationResponse(response => {
+      console.log('Notification response:', response);
+    });
+    
+    // Cleanup subscriptions
+    return () => {
+      notificationReceivedSubscription.remove();
+      notificationResponseSubscription.remove();
+    };
+  }, []);
+  
   return (
     <View style={styles.drawerContainer}>
       <View style={styles.drawerHeader}>
@@ -40,145 +60,105 @@ function CustomDrawerContent({ navigation, state }) {
       </View>
       
       <TouchableOpacity 
-        style={styles.drawerItem} 
-        onPress={() => navigation.navigate('Home')}
+        style={styles.drawerItem}
+        onPress={() => {
+          props.navigation.navigate('Home');
+          props.navigation.closeDrawer();
+        }}
       >
+        <Icon name="home-outline" size={20} color="#007AFF" style={styles.drawerIcon} />
         <Text style={styles.drawerItemText}>Home</Text>
       </TouchableOpacity>
       
       <TouchableOpacity 
-        style={styles.drawerItem} 
-        onPress={() => navigation.navigate('Orders')}
+        style={styles.drawerItem}
+        onPress={() => {
+          props.navigation.navigate('Profile');
+          props.navigation.closeDrawer();
+        }}
       >
-        <Text style={styles.drawerItemText}>My Orders</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.drawerItem} 
-        onPress={() => navigation.navigate('Profile')}
-      >
+        <Icon name="person-outline" size={20} color="#007AFF" style={styles.drawerIcon} />
         <Text style={styles.drawerItemText}>Profile</Text>
       </TouchableOpacity>
       
       <TouchableOpacity 
-        style={styles.drawerItem} 
-        onPress={() => navigation.navigate('Notifications')}
+        style={styles.drawerItem}
+        onPress={() => {
+          props.navigation.navigate('Orders');
+          props.navigation.closeDrawer();
+        }}
       >
-        <Text style={styles.drawerItemText}>Notifications</Text>
+        <Icon name="list-outline" size={20} color="#007AFF" style={styles.drawerIcon} />
+        <Text style={styles.drawerItemText}>My Orders</Text>
       </TouchableOpacity>
       
-      <View style={styles.drawerSeparator} />
-      
       <TouchableOpacity 
-        style={styles.drawerItem} 
-        onPress={() => navigation.navigate('Settings')}
+        style={styles.drawerItem}
+        onPress={() => {
+          props.navigation.navigate('Settings');
+          props.navigation.closeDrawer();
+        }}
       >
+        <Icon name="settings-outline" size={20} color="#007AFF" style={styles.drawerIcon} />
         <Text style={styles.drawerItemText}>Settings</Text>
       </TouchableOpacity>
       
       <TouchableOpacity 
-        style={styles.drawerItem} 
-        onPress={() => navigation.navigate('Help')}
+        style={styles.drawerItem}
+        onPress={() => setShowNotifications(true)}
       >
-        <Text style={styles.drawerItemText}>Help & Support</Text>
+        <Icon name="notifications-outline" size={20} color="#007AFF" style={styles.drawerIcon} />
+        <Text style={styles.drawerItemText}>Notifications</Text>
       </TouchableOpacity>
+      
+      <TouchableOpacity 
+        style={styles.drawerItem}
+        onPress={() => {
+          // Logout functionality would go here
+          props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'Auth' }],
+          });
+        }}
+      >
+        <Icon name="log-out-outline" size={20} color="#FF3B30" style={styles.drawerIcon} />
+        <Text style={styles.drawerItemTextLogout}>Logout</Text>
+      </TouchableOpacity>
+      
+      {/* Notification Center Modal */}
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={showNotifications}
+        onRequestClose={() => setShowNotifications(false)}
+      >
+        <NotificationCenter onClose={() => setShowNotifications(false)} />
+      </Modal>
     </View>
   );
-}
+};
 
-function CustomerApp() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen name="Home" component={CustomerHomeScreen} />
-      <Tab.Screen name="Orders" component={OrdersScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-    </Tab.Navigator>
-  );
-}
+// Auth Stack Navigator
+const AuthStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="Login" component={LoginScreen} />
+    <Stack.Screen name="DriverLogin" component={DriverLoginScreen} />
+    <Stack.Screen name="Register" component={RegisterScreen} />
+  </Stack.Navigator>
+);
 
-function DriverApp() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen name="Dashboard" component={DriverDashboardScreen} />
-      <Tab.Screen name="Route" component={RouteOptimizationScreen} />
-      <Tab.Screen name="Profile" component={DriverProfileScreen} />
-    </Tab.Navigator>
-  );
-}
-
-function CustomerAppWithDrawer() {
-  return (
-    <Drawer.Navigator 
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{
-        headerShown: true,
-        drawerStyle: {
-          backgroundColor: '#f5f5f5',
-          width: 240,
-        },
-        drawerActiveBackgroundColor: '#007AFF',
-        drawerActiveTintColor: '#fff',
-        drawerInactiveTintColor: '#333',
-      }}
-    >
-      <Drawer.Screen 
-        name="Main" 
-        component={CustomerApp}
-        options={{ 
-          drawerLabel: 'Home',
-          title: 'Delivery App'
-        }} 
-      />
-    </Drawer.Navigator>
-  );
-}
-
-function DriverAppWithDrawer() {
-  return (
-    <Drawer.Navigator 
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{
-        headerShown: true,
-        drawerStyle: {
-          backgroundColor: '#f5f5f5',
-          width: 240,
-        },
-        drawerActiveBackgroundColor: '#007AFF',
-        drawerActiveTintColor: '#fff',
-        drawerInactiveTintColor: '#333',
-      }}
-    >
-      <Drawer.Screen 
-        name="Main" 
-        component={DriverApp}
-        options={{ 
-          drawerLabel: 'Dashboard',
-          title: 'Driver App'
-        }} 
-      />
-    </Drawer.Navigator>
-  );
-}
-
+// Main App Component
 export default function App() {
   return (
     <CacheProvider>
       <OrderProvider>
         <DeliveryProvider>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName="Login">
-              <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-              <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
-              <Stack.Screen name="DriverLogin" component={DriverLoginScreen} options={{ headerShown: false }} />
-              <Stack.Screen name="CustomerApp" component={CustomerAppWithDrawer} options={{ headerShown: false }} />
-              <Stack.Screen name="DriverApp" component={DriverAppWithDrawer} options={{ headerShown: false }} />
-              <Stack.Screen name="OrderCreation" component={OrderCreationScreen} />
-              <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
-              <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />
-              <Stack.Screen name="SlotSelection" component={SlotSelectionScreen} />
-              <Stack.Screen name="Notifications" component={NotificationsScreen} />
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="Auth" component={AuthStack} />
+              <Stack.Screen name="CustomerApp" component={CustomerApp} />
+              <Stack.Screen name="DriverApp" component={DriverApp} />
             </Stack.Navigator>
-            <StatusBar style="auto" />
           </NavigationContainer>
         </DeliveryProvider>
       </OrderProvider>
@@ -187,12 +167,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   drawerContainer: {
     flex: 1,
     backgroundColor: '#f5f5f5',
@@ -208,17 +182,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   drawerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: '#eee',
+  },
+  drawerIcon: {
+    marginRight: 15,
+    width: 20,
+    textAlign: 'center',
   },
   drawerItemText: {
     fontSize: 16,
     color: '#333',
+    flex: 1,
   },
-  drawerSeparator: {
-    height: 1,
-    backgroundColor: '#e0e0e0',
-    marginVertical: 10,
+  drawerItemTextLogout: {
+    fontSize: 16,
+    color: '#FF3B30',
+    flex: 1,
   },
 });

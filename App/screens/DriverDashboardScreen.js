@@ -120,6 +120,13 @@ const DriverDashboardScreen = () => {
     );
   };
 
+  const handleLocationUpdate = (location) => {
+    // In a real app, this would send the location to the backend
+    console.log('Driver location updated:', location);
+    // You could call an API here to update the driver's location
+    // driverAPI.updateLocation(driverId, location);
+  };
+
   const getStatusStyle = (status) => {
     switch (status) {
       case 'Pending':
@@ -265,7 +272,10 @@ const DriverDashboardScreen = () => {
       {/* Map Component for Navigation */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Current Route</Text>
-        <MapComponent delivery={deliveriesState.find(d => d.status === 'Out for Delivery')} />
+        <MapComponent 
+          delivery={deliveriesState.find(d => d.status === 'Out for Delivery')} 
+          onLocationUpdate={handleLocationUpdate}
+        />
       </View>
 
       <View style={styles.section}>
