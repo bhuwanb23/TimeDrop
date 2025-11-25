@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MapComponent from '../components/MapComponent';
+import { useDelivery } from '../context/DeliveryContext';
 
 const DriverDashboardScreen = () => {
+  const { deliveries, loading, error } = useDelivery();
   const [driverInfo, setDriverInfo] = useState({
     name: 'Raj Kumar',
     vehicle: 'KA-01-AB-1234',
     phone: '9876543211',
   });
   
-  const [deliveries, setDeliveries] = useState([
+  const [deliveriesState, setDeliveriesState] = useState([
     { 
       id: 'DEL-001', 
       orderId: 'ORD-001', 
@@ -63,9 +65,16 @@ const DriverDashboardScreen = () => {
   
   const navigation = useNavigation();
 
+  // Example of how to use the delivery context
+  useEffect(() => {
+    // In a real app, this would fetch deliveries from an API
+    // For now, we'll just log the deliveries from context
+    console.log('Deliveries from context:', deliveries);
+  }, [deliveries]);
+
   const handleUpdateStatus = (deliveryId, newStatus) => {
     // In a real app, this would make an API call to update the status
-    setDeliveries(prevDeliveries => 
+    setDeliveriesState(prevDeliveries => 
       prevDeliveries.map(delivery => 
         delivery.id === deliveryId 
           ? { ...delivery, status: newStatus } 
@@ -192,20 +201,20 @@ const DriverDashboardScreen = () => {
 
       <View style={styles.statsSection}>
         <View style={styles.statBox}>
-          <Text style={styles.statNumber}>{deliveries.length}</Text>
+          <Text style={styles.statNumber}>{deliveriesState.length}</Text>
           <Text style={styles.statLabel}>Total Deliveries</Text>
         </View>
         
         <View style={styles.statBox}>
           <Text style={styles.statNumber}>
-            {deliveries.filter(d => d.status === 'Delivered').length}
+            {deliveriesState.filter(d => d.status === 'Delivered').length}
           </Text>
           <Text style={styles.statLabel}>Completed</Text>
         </View>
         
         <View style={styles.statBox}>
           <Text style={styles.statNumber}>
-            {deliveries.filter(d => d.status !== 'Delivered').length}
+            {deliveriesState.filter(d => d.status !== 'Delivered').length}
           </Text>
           <Text style={styles.statLabel}>Pending</Text>
         </View>
@@ -256,13 +265,17 @@ const DriverDashboardScreen = () => {
       {/* Map Component for Navigation */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Current Route</Text>
-        <MapComponent delivery={deliveries.find(d => d.status === 'Out for Delivery')} />
+        <MapComponent delivery={deliveriesState.find(d => d.status === 'Out for Delivery')} />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Today's Deliveries</Text>
-        {deliveries.length > 0 ? (
-          deliveries.map(renderDelivery)
+        {loading ? (
+          <Text style={styles.loadingText}>Loading deliveries...</Text>
+        ) : error ? (
+          <Text style={styles.errorText}>Error loading deliveries: {error}</Text>
+        ) : deliveriesState.length > 0 ? (
+          deliveriesState.map(renderDelivery)
         ) : (
           <Text style={styles.noDeliveriesText}>No deliveries assigned for today</Text>
         )}
@@ -473,6 +486,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#666',
     fontStyle: 'italic',
+  },
+  loadingText: {
+    textAlign: 'center',
+    color: '#666',
+    padding: 20,
+  },
+  errorText: {
+    textAlign: 'center',
+    color: '#E74C3C',
+    padding: 20,
   },
 });
 

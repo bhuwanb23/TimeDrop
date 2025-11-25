@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useOrder } from '../context/OrderContext';
 
 const CustomerHomeScreen = () => {
   const [userName, setUserName] = useState('John Doe');
+  const { orders, loading, error } = useOrder();
   const [activeOrders, setActiveOrders] = useState([
     { 
       id: 'ORD-001', 
@@ -46,6 +48,13 @@ const CustomerHomeScreen = () => {
   ]);
   
   const navigation = useNavigation();
+
+  // Example of how to use the order context
+  useEffect(() => {
+    // In a real app, this would fetch orders from an API
+    // For now, we'll just log the orders from context
+    console.log('Orders from context:', orders);
+  }, [orders]);
 
   const handleNewOrder = () => {
     navigation.navigate('OrderCreation');
@@ -201,17 +210,14 @@ const CustomerHomeScreen = () => {
             <Text style={styles.viewAllText}>View All</Text>
           </TouchableOpacity>
         </View>
-        
-        {activeOrders.length > 0 ? (
+        {loading ? (
+          <Text style={styles.loadingText}>Loading orders...</Text>
+        ) : error ? (
+          <Text style={styles.errorText}>Error loading orders: {error}</Text>
+        ) : activeOrders.length > 0 ? (
           activeOrders.map(renderActiveOrder)
         ) : (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No active orders</Text>
-            <Text style={styles.emptyStateSubtext}>Create your first order to get started</Text>
-            <TouchableOpacity style={styles.newOrderButton} onPress={handleNewOrder}>
-              <Text style={styles.newOrderButtonText}>Create Order</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.noOrdersText}>No active orders</Text>
         )}
       </View>
 
@@ -219,36 +225,22 @@ const CustomerHomeScreen = () => {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Notifications</Text>
-          <View style={styles.notificationsHeader}>
+          <TouchableOpacity onPress={handleViewAllNotifications}>
+            <Text style={styles.viewAllText}>View All</Text>
+          </TouchableOpacity>
+        </View>
+        {notifications.length > 0 ? (
+          <>
+            {notifications.slice(0, 2).map(renderNotification)}
             {unreadNotifications > 0 && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{unreadNotifications}</Text>
+              <View style={styles.unreadIndicator}>
+                <Text style={styles.unreadCount}>{unreadNotifications} unread</Text>
               </View>
             )}
-            <TouchableOpacity onPress={handleViewAllNotifications}>
-              <Text style={styles.viewAllText}>View All</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        
-        {notifications.length > 0 ? (
-          <View style={styles.notificationsList}>
-            {notifications.slice(0, 3).map(renderNotification)}
-          </View>
+          </>
         ) : (
-          <View style={styles.emptyNotifications}>
-            <Text style={styles.emptyNotificationsText}>No new notifications</Text>
-          </View>
+          <Text style={styles.noNotificationsText}>No notifications</Text>
         )}
-      </View>
-
-      {/* Promotional Banner */}
-      <View style={styles.promoBanner}>
-        <Text style={styles.promoTitle}>Refer & Earn</Text>
-        <Text style={styles.promoText}>Get ₹100 for every friend you refer!</Text>
-        <TouchableOpacity style={styles.promoButton}>
-          <Text style={styles.promoButtonText}>Share Now</Text>
-        </TouchableOpacity>
       </View>
     </ScrollView>
   );
