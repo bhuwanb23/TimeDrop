@@ -42,3 +42,6 @@ yarn-error.*
 
 .env
 *.sqlite
+*.json
+.env.local
+.env.development.local

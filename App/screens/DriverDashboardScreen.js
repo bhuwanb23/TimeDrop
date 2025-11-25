@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import MapComponent from '../components/MapComponent';
 
 const DriverDashboardScreen = () => {
   const [driverInfo, setDriverInfo] = useState({
@@ -17,7 +18,9 @@ const DriverDashboardScreen = () => {
       address: '123 Main Street, Bangalore', 
       slot: 'Today, 2:00 PM - 4:00 PM',
       status: 'Out for Delivery',
-      distance: '2.5 km'
+      distance: '2.5 km',
+      lat: 12.9716,
+      lng: 77.5946
     },
     { 
       id: 'DEL-002', 
@@ -26,7 +29,9 @@ const DriverDashboardScreen = () => {
       address: '456 Park Avenue, Bangalore', 
       slot: 'Today, 2:00 PM - 4:00 PM',
       status: 'Pending',
-      distance: '1.8 km'
+      distance: '1.8 km',
+      lat: 12.9716,
+      lng: 77.5946
     },
     { 
       id: 'DEL-003', 
@@ -35,9 +40,26 @@ const DriverDashboardScreen = () => {
       address: '789 Elm Street, Bangalore', 
       slot: 'Today, 4:00 PM - 6:00 PM',
       status: 'Pending',
-      distance: '3.2 km'
+      distance: '3.2 km',
+      lat: 12.9716,
+      lng: 77.5946
     },
   ]);
+  
+  // Performance metrics
+  const [performanceMetrics, setPerformanceMetrics] = useState({
+    onTimeDeliveries: 24,
+    totalDeliveries: 30,
+    rating: 4.8,
+    completedToday: 2
+  });
+  
+  // Earnings summary
+  const [earnings, setEarnings] = useState({
+    today: 1200,
+    week: 6500,
+    month: 24000
+  });
   
   const navigation = useNavigation();
 
@@ -73,6 +95,18 @@ const DriverDashboardScreen = () => {
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Call', onPress: () => {/* Initiate call */} }
+      ]
+    );
+  };
+  
+  const handleProofOfDelivery = (delivery) => {
+    Alert.alert(
+      'Proof of Delivery', 
+      `Collect proof of delivery for order ${delivery.orderId}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Collect Signature', onPress: () => {/* Collect signature */} },
+        { text: 'Take Photo', onPress: () => {/* Take photo */} }
       ]
     );
   };
@@ -129,12 +163,20 @@ const DriverDashboardScreen = () => {
         )}
         
         {delivery.status === 'Out for Delivery' && (
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.deliverButton]} 
-            onPress={() => handleUpdateStatus(delivery.id, 'Delivered')}
-          >
-            <Text style={styles.actionButtonText}>Mark Delivered</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.proofButton]} 
+              onPress={() => handleProofOfDelivery(delivery)}
+            >
+              <Text style={styles.actionButtonText}>Proof</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.deliverButton]} 
+              onPress={() => handleUpdateStatus(delivery.id, 'Delivered')}
+            >
+              <Text style={styles.actionButtonText}>Delivered</Text>
+            </TouchableOpacity>
+          </>
         )}
       </View>
     </View>
@@ -167,6 +209,54 @@ const DriverDashboardScreen = () => {
           </Text>
           <Text style={styles.statLabel}>Pending</Text>
         </View>
+      </View>
+      
+      {/* Performance Metrics Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Performance Metrics</Text>
+        <View style={styles.performanceGrid}>
+          <View style={styles.performanceBox}>
+            <Text style={styles.performanceValue}>{performanceMetrics.onTimeDeliveries}/{performanceMetrics.totalDeliveries}</Text>
+            <Text style={styles.performanceLabel}>On-Time Deliveries</Text>
+          </View>
+          
+          <View style={styles.performanceBox}>
+            <Text style={styles.performanceValue}>{performanceMetrics.rating}</Text>
+            <Text style={styles.performanceLabel}>Rating</Text>
+          </View>
+          
+          <View style={styles.performanceBox}>
+            <Text style={styles.performanceValue}>{performanceMetrics.completedToday}</Text>
+            <Text style={styles.performanceLabel}>Completed Today</Text>
+          </View>
+        </View>
+      </View>
+      
+      {/* Earnings Summary Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Earnings Summary</Text>
+        <View style={styles.earningsGrid}>
+          <View style={styles.earningsBox}>
+            <Text style={styles.earningsAmount}>₹{earnings.today}</Text>
+            <Text style={styles.earningsLabel}>Today</Text>
+          </View>
+          
+          <View style={styles.earningsBox}>
+            <Text style={styles.earningsAmount}>₹{earnings.week}</Text>
+            <Text style={styles.earningsLabel}>This Week</Text>
+          </View>
+          
+          <View style={styles.earningsBox}>
+            <Text style={styles.earningsAmount}>₹{earnings.month}</Text>
+            <Text style={styles.earningsLabel}>This Month</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Map Component for Navigation */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Current Route</Text>
+        <MapComponent delivery={deliveries.find(d => d.status === 'Out for Delivery')} />
       </View>
 
       <View style={styles.section}>
@@ -244,6 +334,52 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: '#333',
   },
+  performanceGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  performanceBox: {
+    backgroundColor: '#f0f8ff',
+    borderRadius: 8,
+    padding: 15,
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  performanceValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#007AFF',
+  },
+  performanceLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 5,
+    textAlign: 'center',
+  },
+  earningsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  earningsBox: {
+    backgroundColor: '#f0fff0',
+    borderRadius: 8,
+    padding: 15,
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  earningsAmount: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#00B894',
+  },
+  earningsLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 5,
+    textAlign: 'center',
+  },
   deliveryCard: {
     backgroundColor: '#f9f9f9',
     borderRadius: 8,
@@ -310,12 +446,14 @@ const styles = StyleSheet.create({
   deliveryActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
   },
   actionButton: {
     backgroundColor: '#007AFF',
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 5,
+    margin: 2,
   },
   updateButton: {
     backgroundColor: '#74B9FF',
@@ -323,9 +461,12 @@ const styles = StyleSheet.create({
   deliverButton: {
     backgroundColor: '#00B894',
   },
+  proofButton: {
+    backgroundColor: '#FDCB6E',
+  },
   actionButtonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   noDeliveriesText: {

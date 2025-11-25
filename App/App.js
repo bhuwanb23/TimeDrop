@@ -18,6 +18,8 @@ import ProfileScreen from './screens/ProfileScreen';
 import OrdersScreen from './screens/OrdersScreen';
 import OrderConfirmationScreen from './screens/OrderConfirmationScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
+import DriverProfileScreen from './screens/DriverProfileScreen';
+import RouteOptimizationScreen from './screens/RouteOptimizationScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -36,8 +38,8 @@ function DriverApp() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Dashboard" component={DriverDashboardScreen} />
-      <Tab.Screen name="Deliveries" component={DriverDashboardScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Route" component={RouteOptimizationScreen} />
+      <Tab.Screen name="Profile" component={DriverProfileScreen} />
     </Tab.Navigator>
   );
 }
