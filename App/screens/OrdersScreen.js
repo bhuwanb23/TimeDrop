@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
 
 const OrdersScreen = () => {
   const [orders, setOrders] = useState([
@@ -94,15 +96,15 @@ const OrdersScreen = () => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'Slot Selected':
-        return '🕒';
+        return 'time-outline';
       case 'Processing':
-        return '⚙️';
+        return 'construct-outline';
       case 'Out for Delivery':
-        return '🚚';
+        return 'car-outline';
       case 'Delivered':
-        return '✅';
+        return 'checkmark-circle-outline';
       default:
-        return '📋';
+        return 'clipboard-outline';
     }
   };
 
@@ -114,9 +116,10 @@ const OrdersScreen = () => {
           <Text style={styles.orderDate}>{order.date}</Text>
         </View>
         <View style={styles.statusContainer}>
-          <Text style={[styles.status, getStatusStyle(order.status)]}>
-            {getStatusIcon(order.status)} {order.status}
-          </Text>
+          <View style={[styles.status, getStatusStyle(order.status)]}>
+            <Icon name={getStatusIcon(order.status)} size={12} color={COLORS.textInverted} style={styles.statusIcon} />
+            <Text style={styles.statusText}>{order.status}</Text>
+          </View>
         </View>
       </View>
       
@@ -126,8 +129,14 @@ const OrdersScreen = () => {
       </View>
       
       <View style={styles.orderMeta}>
-        <Text style={styles.orderItems}>{order.items} items</Text>
-        <Text style={styles.deliverySlot}>🕒 {order.deliverySlot}</Text>
+        <View style={styles.metaItem}>
+          <Icon name="cube-outline" size={14} color={COLORS.textSecondary} />
+          <Text style={styles.orderItems}>{order.items} items</Text>
+        </View>
+        <View style={styles.metaItem}>
+          <Icon name="time-outline" size={14} color={COLORS.textSecondary} />
+          <Text style={styles.deliverySlot}>{order.deliverySlot}</Text>
+        </View>
       </View>
       
       <View style={styles.orderActions}>
@@ -135,6 +144,7 @@ const OrdersScreen = () => {
           style={styles.actionButton} 
           onPress={() => handleTrackOrder(order.id)}
         >
+          <Icon name="location-outline" size={16} color={COLORS.textInverted} />
           <Text style={styles.actionButtonText}>Track</Text>
         </TouchableOpacity>
         
@@ -143,6 +153,7 @@ const OrdersScreen = () => {
             style={[styles.actionButton, styles.selectSlotButton]} 
             onPress={() => handleSelectSlot(order.id)}
           >
+            <Icon name="time-outline" size={16} color={COLORS.textInverted} />
             <Text style={styles.actionButtonText}>
               {order.status === 'Processing' ? 'Select Slot' : 'Change Slot'}
             </Text>
@@ -185,18 +196,22 @@ const OrdersScreen = () => {
       <View style={styles.statusSummary}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.statusItem}>
+            <Icon name="checkmark-circle-outline" size={24} color={COLORS.secondary} />
             <Text style={styles.statusCount}>{statusCounts['Delivered']}</Text>
             <Text style={styles.statusLabel}>Delivered</Text>
           </View>
           <View style={styles.statusItem}>
+            <Icon name="car-outline" size={24} color={COLORS.primary} />
             <Text style={styles.statusCount}>{statusCounts['Out for Delivery']}</Text>
             <Text style={styles.statusLabel}>Out</Text>
           </View>
           <View style={styles.statusItem}>
+            <Icon name="construct-outline" size={24} color={COLORS.primaryLight} />
             <Text style={styles.statusCount}>{statusCounts['Processing']}</Text>
             <Text style={styles.statusLabel}>Processing</Text>
           </View>
           <View style={styles.statusItem}>
+            <Icon name="time-outline" size={24} color={COLORS.accentLight} />
             <Text style={styles.statusCount}>{statusCounts['Slot Selected']}</Text>
             <Text style={styles.statusLabel}>Scheduled</Text>
           </View>
@@ -214,12 +229,14 @@ const OrdersScreen = () => {
           orders.map(renderOrder)
         ) : (
           <View style={styles.emptyState}>
+            <Icon name="clipboard-outline" size={60} color={COLORS.gray} />
             <Text style={styles.emptyStateText}>No orders found</Text>
             <Text style={styles.emptyStateSubtext}>Create your first order to get started</Text>
             <TouchableOpacity 
               style={styles.createOrderButton} 
               onPress={() => navigation.navigate('OrderCreation')}
             >
+              <Icon name="add-outline" size={20} color={COLORS.textInverted} />
               <Text style={styles.createOrderButtonText}>Create Order</Text>
             </TouchableOpacity>
           </View>
@@ -232,189 +249,199 @@ const OrdersScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: COLORS.background,
   },
   header: {
-    backgroundColor: '#007AFF',
-    padding: 20,
+    backgroundColor: COLORS.primary,
+    padding: SPACING.m,
     paddingTop: 50,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: BORDER_RADIUS.large,
+    borderBottomRightRadius: BORDER_RADIUS.large,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: TYPOGRAPHY.h2,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textInverted,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#e0e0e0',
-    marginTop: 5,
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textInverted,
+    opacity: 0.8,
+    marginTop: SPACING.s,
   },
   statusSummary: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 12,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    margin: SPACING.m,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
   },
   statusItem: {
     alignItems: 'center',
-    paddingHorizontal: 15,
+    paddingHorizontal: SPACING.m,
     borderRightWidth: 1,
-    borderRightColor: '#eee',
+    borderRightColor: COLORS.grayLight,
+    minWidth: 80,
   },
   statusCount: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#007AFF',
+    fontSize: TYPOGRAPHY.h3,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginTop: SPACING.s,
   },
   statusLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 5,
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.s,
   },
   ordersList: {
     flex: 1,
-    padding: 20,
+    padding: SPACING.m,
     paddingTop: 0,
   },
   orderCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    marginBottom: SPACING.s,
+    ...SHADOW,
   },
   orderHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: SPACING.m,
   },
   orderInfo: {
     flex: 1,
   },
   orderId: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
   },
   orderDate: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 3,
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.xs,
   },
   statusContainer: {
     alignItems: 'flex-end',
   },
   status: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.s,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.small,
+  },
+  statusIcon: {
+    marginRight: SPACING.xs,
+  },
+  statusText: {
+    fontSize: TYPOGRAPHY.caption,
+    fontWeight: TYPOGRAPHY.semiBold,
+    color: COLORS.textInverted,
   },
   slotSelectedStatus: {
-    backgroundColor: '#FFEAA7',
-    color: '#D35400',
+    backgroundColor: COLORS.accentLight,
   },
   processingStatus: {
-    backgroundColor: '#74B9FF',
-    color: '#0984E3',
+    backgroundColor: COLORS.primaryLight,
   },
   outForDeliveryStatus: {
-    backgroundColor: '#00B894',
-    color: '#00A085',
+    backgroundColor: COLORS.secondary,
   },
   deliveredStatus: {
-    backgroundColor: '#00B894',
-    color: '#00A085',
+    backgroundColor: COLORS.secondary,
   },
   defaultStatus: {
-    backgroundColor: '#DDDDDD',
-    color: '#666666',
+    backgroundColor: COLORS.gray,
   },
   orderDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: SPACING.m,
   },
   customerName: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textPrimary,
   },
   orderAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#007AFF',
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.primary,
   },
   orderMeta: {
+    marginBottom: SPACING.m,
+  },
+  metaItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 15,
+    alignItems: 'center',
+    marginBottom: SPACING.xs,
   },
   orderItems: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textSecondary,
+    marginLeft: SPACING.s,
   },
   deliverySlot: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textSecondary,
+    marginLeft: SPACING.s,
   },
   orderActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
   actionButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginLeft: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.s,
+    borderRadius: BORDER_RADIUS.small,
+    marginLeft: SPACING.s,
   },
   selectSlotButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: COLORS.secondary,
   },
   actionButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
+    color: COLORS.textInverted,
+    fontSize: TYPOGRAPHY.caption,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginLeft: SPACING.xs,
   },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 50,
+    paddingVertical: SPACING.xl,
   },
   emptyStateText: {
-    fontSize: 18,
-    color: '#333',
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontSize: TYPOGRAPHY.h3,
+    color: COLORS.textPrimary,
+    fontWeight: TYPOGRAPHY.bold,
+    marginBottom: SPACING.s,
+    marginTop: SPACING.m,
   },
   emptyStateSubtext: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 20,
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.m,
     textAlign: 'center',
   },
   createOrderButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.l,
+    paddingVertical: SPACING.m,
+    borderRadius: BORDER_RADIUS.small,
   },
   createOrderButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: COLORS.textInverted,
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginLeft: SPACING.s,
   },
 });
 

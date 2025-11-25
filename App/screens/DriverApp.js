@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, TYPOGRAPHY } from '../styles/DesignSystem';
 
 // Import screens
 import DriverDashboardScreen from './DriverDashboardScreen';
@@ -72,16 +73,20 @@ const MainTabs = ({ navigation }) => {
             
             return <Icon name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#007AFF',
-          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: COLORS.primary,
+          tabBarInactiveTintColor: COLORS.textLight,
           headerShown: true,
           headerTitle: 'Driver App',
-          headerTintColor: '#007AFF',
+          headerTitleStyle: {
+            fontWeight: TYPOGRAPHY.bold,
+            fontSize: TYPOGRAPHY.h3,
+          },
+          headerTintColor: COLORS.primary,
           headerRight: () => (
             <Icon 
               name="notifications-outline" 
               size={24} 
-              color="#007AFF" 
+              color={COLORS.primary} 
               style={{ marginRight: 15 }}
               onPress={() => setShowNotifications(true)}
             />
@@ -114,7 +119,11 @@ const DriverDrawer = () => (
     screenOptions={{
       headerShown: true,
       headerTitle: 'Driver App',
-      headerTintColor: '#007AFF',
+      headerTitleStyle: {
+        fontWeight: TYPOGRAPHY.bold,
+        fontSize: TYPOGRAPHY.h3,
+      },
+      headerTintColor: COLORS.primary,
     }}
   >
     <Drawer.Screen 
@@ -123,7 +132,7 @@ const DriverDrawer = () => (
       options={{ 
         title: 'Dashboard',
         drawerIcon: ({ focused, size }) => (
-          <Icon name="home-outline" size={size} color="#007AFF" />
+          <Icon name="home-outline" size={size} color={COLORS.primary} />
         ),
       }} 
     />
@@ -133,7 +142,7 @@ const DriverDrawer = () => (
       options={{ 
         title: 'My Profile',
         drawerIcon: ({ focused, size }) => (
-          <Icon name="person-outline" size={size} color="#007AFF" />
+          <Icon name="person-outline" size={size} color={COLORS.primary} />
         ),
       }} 
     />
@@ -143,7 +152,7 @@ const DriverDrawer = () => (
       options={{ 
         title: 'Manage Deliveries',
         drawerIcon: ({ focused, size }) => (
-          <Icon name="cube-outline" size={size} color="#007AFF" />
+          <Icon name="cube-outline" size={size} color={COLORS.primary} />
         ),
       }} 
     />
@@ -153,7 +162,7 @@ const DriverDrawer = () => (
       options={{ 
         title: 'Settings',
         drawerIcon: ({ focused, size }) => (
-          <Icon name="settings-outline" size={size} color="#007AFF" />
+          <Icon name="settings-outline" size={size} color={COLORS.primary} />
         ),
       }} 
     />

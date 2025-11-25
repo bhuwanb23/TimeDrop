@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, TYPOGRAPHY } from '../styles/DesignSystem';
 
 // Import screens
 import OrderCreationScreen from './OrderCreationScreen';
@@ -74,16 +75,20 @@ const MainTabs = ({ navigation }) => {
             
             return <Icon name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#007AFF',
-          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: COLORS.primary,
+          tabBarInactiveTintColor: COLORS.textLight,
           headerShown: true,
           headerTitle: 'Delivery App',
-          headerTintColor: '#007AFF',
+          headerTitleStyle: {
+            fontWeight: TYPOGRAPHY.bold,
+            fontSize: TYPOGRAPHY.h3,
+          },
+          headerTintColor: COLORS.primary,
           headerRight: () => (
             <Icon 
               name="notifications-outline" 
               size={24} 
-              color="#007AFF" 
+              color={COLORS.primary} 
               style={{ marginRight: 15 }}
               onPress={() => setShowNotifications(true)}
             />
@@ -116,7 +121,11 @@ const CustomerDrawer = () => (
     screenOptions={{
       headerShown: true,
       headerTitle: 'Delivery App',
-      headerTintColor: '#007AFF',
+      headerTitleStyle: {
+        fontWeight: TYPOGRAPHY.bold,
+        fontSize: TYPOGRAPHY.h3,
+      },
+      headerTintColor: COLORS.primary,
     }}
   >
     <Drawer.Screen 
@@ -125,7 +134,7 @@ const CustomerDrawer = () => (
       options={{ 
         title: 'Home',
         drawerIcon: ({ focused, size }) => (
-          <Icon name="home-outline" size={size} color="#007AFF" />
+          <Icon name="home-outline" size={size} color={COLORS.primary} />
         ),
       }} 
     />
@@ -135,7 +144,7 @@ const CustomerDrawer = () => (
       options={{ 
         title: 'My Profile',
         drawerIcon: ({ focused, size }) => (
-          <Icon name="person-outline" size={size} color="#007AFF" />
+          <Icon name="person-outline" size={size} color={COLORS.primary} />
         ),
       }} 
     />
@@ -145,7 +154,7 @@ const CustomerDrawer = () => (
       options={{ 
         title: 'My Orders',
         drawerIcon: ({ focused, size }) => (
-          <Icon name="list-outline" size={size} color="#007AFF" />
+          <Icon name="list-outline" size={size} color={COLORS.primary} />
         ),
       }} 
     />
@@ -155,7 +164,7 @@ const CustomerDrawer = () => (
       options={{ 
         title: 'Settings',
         drawerIcon: ({ focused, size }) => (
-          <Icon name="settings-outline" size={size} color="#007AFF" />
+          <Icon name="settings-outline" size={size} color={COLORS.primary} />
         ),
       }} 
     />

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
 
 const OrderConfirmationScreen = () => {
   const [order, setOrder] = useState(null);
@@ -42,7 +44,10 @@ const OrderConfirmationScreen = () => {
   if (!order) {
     return (
       <View style={styles.container}>
-        <Text>Loading order details...</Text>
+        <View style={styles.loadingContainer}>
+          <Icon name="hourglass-outline" size={40} color={COLORS.textSecondary} />
+          <Text style={styles.loadingText}>Loading order details...</Text>
+        </View>
       </View>
     );
   }
@@ -50,6 +55,7 @@ const OrderConfirmationScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
+        <Icon name="checkmark-circle-outline" size={60} color={COLORS.textInverted} />
         <Text style={styles.title}>Order Confirmed!</Text>
         <Text style={styles.subtitle}>Your order has been successfully created</Text>
       </View>
@@ -61,53 +67,89 @@ const OrderConfirmationScreen = () => {
         </View>
         
         <View style={styles.orderDetails}>
-          <Text style={styles.orderDate}>Date: {order.date}</Text>
-          <Text style={styles.orderValue}>Total: {order.orderValue}</Text>
+          <View style={styles.detailItem}>
+            <Icon name="calendar-outline" size={16} color={COLORS.textSecondary} />
+            <Text style={styles.orderDate}>Date: {order.date}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Icon name="cash-outline" size={16} color={COLORS.textSecondary} />
+            <Text style={styles.orderValue}>Total: {order.orderValue}</Text>
+          </View>
         </View>
         
         <View style={styles.divider} />
         
-        <View style={styles.customerInfo}>
-          <Text style={styles.sectionTitle}>Customer Information</Text>
-          <Text style={styles.infoText}>Name: {order.customerName}</Text>
-          <Text style={styles.infoText}>Phone: {order.customerPhone}</Text>
+        <View style={styles.infoSection}>
+          <View style={styles.sectionHeader}>
+            <Icon name="person-outline" size={18} color={COLORS.primary} />
+            <Text style={styles.sectionTitle}>Customer Information</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Icon name="person-outline" size={16} color={COLORS.textSecondary} />
+            <Text style={styles.infoText}>Name: {order.customerName}</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Icon name="call-outline" size={16} color={COLORS.textSecondary} />
+            <Text style={styles.infoText}>Phone: {order.customerPhone}</Text>
+          </View>
         </View>
         
         <View style={styles.divider} />
         
-        <View style={styles.deliveryInfo}>
-          <Text style={styles.sectionTitle}>Delivery Information</Text>
-          <Text style={styles.infoText}>Address: {order.deliveryAddress}</Text>
-          <Text style={styles.infoText}>Estimated Delivery: {order.estimatedDelivery}</Text>
+        <View style={styles.infoSection}>
+          <View style={styles.sectionHeader}>
+            <Icon name="location-outline" size={18} color={COLORS.primary} />
+            <Text style={styles.sectionTitle}>Delivery Information</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Icon name="home-outline" size={16} color={COLORS.textSecondary} />
+            <Text style={styles.infoText}>Address: {order.deliveryAddress}</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Icon name="time-outline" size={16} color={COLORS.textSecondary} />
+            <Text style={styles.infoText}>Estimated Delivery: {order.estimatedDelivery}</Text>
+          </View>
         </View>
       </View>
 
       <View style={styles.nextSteps}>
-        <Text style={styles.nextStepsTitle}>Next Steps</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="list-outline" size={18} color={COLORS.primary} />
+          <Text style={styles.nextStepsTitle}>Next Steps</Text>
+        </View>
         <View style={styles.step}>
-          <Text style={styles.stepNumber}>1</Text>
+          <View style={styles.stepIcon}>
+            <Text style={styles.stepNumber}>1</Text>
+          </View>
           <Text style={styles.stepText}>Select a delivery slot for your order</Text>
         </View>
         <View style={styles.step}>
-          <Text style={styles.stepNumber}>2</Text>
+          <View style={styles.stepIcon}>
+            <Text style={styles.stepNumber}>2</Text>
+          </View>
           <Text style={styles.stepText}>Driver will be assigned based on your slot</Text>
         </View>
         <View style={styles.step}>
-          <Text style={styles.stepNumber}>3</Text>
+          <View style={styles.stepIcon}>
+            <Text style={styles.stepNumber}>3</Text>
+          </View>
           <Text style={styles.stepText}>Track your order in real-time</Text>
         </View>
       </View>
 
       <View style={styles.actions}>
         <TouchableOpacity style={styles.primaryButton} onPress={handleSelectSlot}>
+          <Icon name="time-outline" size={20} color={COLORS.textInverted} />
           <Text style={styles.buttonText}>Select Delivery Slot</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.secondaryButton} onPress={handleViewOrders}>
+          <Icon name="list-outline" size={20} color={COLORS.primary} />
           <Text style={styles.secondaryButtonText}>View All Orders</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.tertiaryButton} onPress={handleCreateAnother}>
+          <Icon name="add-outline" size={20} color={COLORS.textSecondary} />
           <Text style={styles.tertiaryButtonText}>Create Another Order</Text>
         </TouchableOpacity>
       </View>
@@ -118,171 +160,199 @@ const OrderConfirmationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: COLORS.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.l,
+  },
+  loadingText: {
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.m,
   },
   header: {
-    backgroundColor: '#34C759',
-    padding: 30,
+    backgroundColor: COLORS.secondary,
+    padding: SPACING.l,
     alignItems: 'center',
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 10,
+    fontSize: TYPOGRAPHY.h1,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textInverted,
+    marginTop: SPACING.m,
+    marginBottom: SPACING.s,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#fff',
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textInverted,
     textAlign: 'center',
   },
   orderCard: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    margin: SPACING.m,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
   },
   orderHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: SPACING.m,
   },
   orderId: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: TYPOGRAPHY.h3,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
   },
   status: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 12,
+    fontSize: TYPOGRAPHY.caption,
+    fontWeight: TYPOGRAPHY.semiBold,
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.small,
   },
   pendingStatus: {
-    backgroundColor: '#74B9FF',
-    color: '#0984E3',
+    backgroundColor: COLORS.primaryLight,
+    color: COLORS.primary,
   },
   orderDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
+    marginBottom: SPACING.m,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   orderDate: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    marginLeft: SPACING.s,
   },
   orderValue: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#007AFF',
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.primary,
+    marginLeft: SPACING.s,
   },
   divider: {
     height: 1,
-    backgroundColor: '#eee',
-    marginVertical: 15,
+    backgroundColor: COLORS.grayLight,
+    marginVertical: SPACING.m,
+  },
+  infoSection: {
+    marginBottom: SPACING.m,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.m,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
+    fontSize: TYPOGRAPHY.h3,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginLeft: SPACING.s,
   },
-  customerInfo: {
-    marginBottom: 15,
-  },
-  deliveryInfo: {
-    marginBottom: 10,
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.s,
   },
   infoText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    marginLeft: SPACING.m,
+    flex: 1,
   },
   nextSteps: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    margin: SPACING.m,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
   },
   nextStepsTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
-    textAlign: 'center',
+    fontSize: TYPOGRAPHY.h3,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginLeft: SPACING.s,
   },
   step: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: SPACING.m,
+  },
+  stepIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: SPACING.m,
   },
   stepNumber: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#007AFF',
-    color: '#fff',
-    textAlign: 'center',
-    lineHeight: 24,
-    fontWeight: 'bold',
-    marginRight: 15,
+    color: COLORS.textInverted,
+    fontWeight: TYPOGRAPHY.bold,
   },
   stepText: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textPrimary,
     flex: 1,
   },
   actions: {
-    padding: 20,
+    padding: SPACING.m,
   },
   primaryButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 15,
-    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15,
+    backgroundColor: COLORS.primary,
+    paddingVertical: SPACING.m,
+    borderRadius: BORDER_RADIUS.medium,
+    marginBottom: SPACING.s,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: COLORS.textInverted,
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginLeft: SPACING.s,
   },
   secondaryButton: {
-    backgroundColor: '#fff',
-    paddingVertical: 15,
-    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15,
+    backgroundColor: COLORS.cardBackground,
+    paddingVertical: SPACING.m,
+    borderRadius: BORDER_RADIUS.medium,
+    marginBottom: SPACING.s,
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: COLORS.primary,
   },
   secondaryButtonText: {
-    color: '#007AFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: COLORS.primary,
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginLeft: SPACING.s,
   },
   tertiaryButton: {
-    backgroundColor: '#f0f0f0',
-    paddingVertical: 15,
-    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: COLORS.grayLight,
+    paddingVertical: SPACING.m,
+    borderRadius: BORDER_RADIUS.medium,
   },
   tertiaryButtonText: {
-    color: '#666',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: COLORS.textSecondary,
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginLeft: SPACING.s,
   },
 });
 

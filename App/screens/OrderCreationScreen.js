@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
 
 const OrderCreationScreen = () => {
   const [orderDetails, setOrderDetails] = useState({
@@ -155,108 +157,161 @@ const OrderCreationScreen = () => {
 
   const renderOrderInfo = () => (
     <View>
-      <Text style={styles.sectionTitle}>Order Information</Text>
+      <View style={styles.sectionHeader}>
+        <Icon name="clipboard-outline" size={24} color={COLORS.primary} />
+        <Text style={styles.sectionTitle}>Order Information</Text>
+      </View>
       
-      <TextInput
-        style={styles.input}
-        placeholder="Order ID (e.g., ORD-001)"
-        value={orderDetails.orderId}
-        onChangeText={(value) => handleInputChange('orderId', value)}
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="pricetag-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Order ID (e.g., ORD-001)"
+          value={orderDetails.orderId}
+          onChangeText={(value) => handleInputChange('orderId', value)}
+          placeholderTextColor={COLORS.textLight}
+        />
+      </View>
       
-      <TextInput
-        style={styles.input}
-        placeholder="Order Value (₹)"
-        value={orderDetails.orderValue}
-        onChangeText={(value) => handleInputChange('orderValue', value)}
-        keyboardType="numeric"
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="cash-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Order Value (₹)"
+          value={orderDetails.orderValue}
+          onChangeText={(value) => handleInputChange('orderValue', value)}
+          keyboardType="numeric"
+          placeholderTextColor={COLORS.textLight}
+        />
+      </View>
       
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        placeholder="Order Description"
-        value={orderDetails.orderDescription}
-        onChangeText={(value) => handleInputChange('orderDescription', value)}
-        multiline
-        numberOfLines={3}
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="document-text-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+        <TextInput
+          style={[styles.input, styles.textArea]}
+          placeholder="Order Description"
+          value={orderDetails.orderDescription}
+          onChangeText={(value) => handleInputChange('orderDescription', value)}
+          multiline
+          numberOfLines={3}
+          placeholderTextColor={COLORS.textLight}
+        />
+      </View>
     </View>
   );
 
   const renderCustomerInfo = () => (
     <View>
-      <Text style={styles.sectionTitle}>Customer Information</Text>
+      <View style={styles.sectionHeader}>
+        <Icon name="person-outline" size={24} color={COLORS.primary} />
+        <Text style={styles.sectionTitle}>Customer Information</Text>
+      </View>
       
-      <TextInput
-        style={styles.input}
-        placeholder="Customer Name"
-        value={orderDetails.customerName}
-        onChangeText={(value) => handleInputChange('customerName', value)}
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="person-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Customer Name"
+          value={orderDetails.customerName}
+          onChangeText={(value) => handleInputChange('customerName', value)}
+          placeholderTextColor={COLORS.textLight}
+        />
+      </View>
       
-      <TextInput
-        style={styles.input}
-        placeholder="Customer Phone"
-        value={orderDetails.customerPhone}
-        onChangeText={(value) => handleInputChange('customerPhone', value)}
-        keyboardType="phone-pad"
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="call-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Customer Phone"
+          value={orderDetails.customerPhone}
+          onChangeText={(value) => handleInputChange('customerPhone', value)}
+          keyboardType="phone-pad"
+          placeholderTextColor={COLORS.textLight}
+        />
+      </View>
     </View>
   );
 
   const renderAddressInfo = () => (
     <View>
-      <Text style={styles.sectionTitle}>Delivery Address</Text>
+      <View style={styles.sectionHeader}>
+        <Icon name="location-outline" size={24} color={COLORS.primary} />
+        <Text style={styles.sectionTitle}>Delivery Address</Text>
+      </View>
       
       <TouchableOpacity style={styles.locationButton} onPress={handleGetCurrentLocation}>
-        <Text style={styles.locationButtonText}>📍 Use Current Location</Text>
+        <Icon name="locate-outline" size={20} color={COLORS.primary} />
+        <Text style={styles.locationButtonText}>Use Current Location</Text>
       </TouchableOpacity>
       
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        placeholder="Delivery Address"
-        value={orderDetails.deliveryAddress}
-        onChangeText={(value) => handleInputChange('deliveryAddress', value)}
-        multiline
-        numberOfLines={3}
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="home-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+        <TextInput
+          style={[styles.input, styles.textArea]}
+          placeholder="Delivery Address"
+          value={orderDetails.deliveryAddress}
+          onChangeText={(value) => handleInputChange('deliveryAddress', value)}
+          multiline
+          numberOfLines={3}
+          placeholderTextColor={COLORS.textLight}
+        />
+      </View>
       
-      <TextInput
-        style={styles.input}
-        placeholder="Landmark (Optional)"
-        value={orderDetails.landmark}
-        onChangeText={(value) => handleInputChange('landmark', value)}
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="navigate-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Landmark (Optional)"
+          value={orderDetails.landmark}
+          onChangeText={(value) => handleInputChange('landmark', value)}
+          placeholderTextColor={COLORS.textLight}
+        />
+      </View>
       
-      <TextInput
-        style={styles.input}
-        placeholder="Pincode"
-        value={orderDetails.pincode}
-        onChangeText={(value) => handleInputChange('pincode', value)}
-        keyboardType="numeric"
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="mail-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Pincode"
+          value={orderDetails.pincode}
+          onChangeText={(value) => handleInputChange('pincode', value)}
+          keyboardType="numeric"
+          placeholderTextColor={COLORS.textLight}
+        />
+      </View>
       
       <View style={styles.row}>
-        <TextInput
-          style={[styles.input, styles.halfInput]}
-          placeholder="City"
-          value={orderDetails.city}
-          onChangeText={(value) => handleInputChange('city', value)}
-        />
+        <View style={[styles.inputContainer, styles.halfInput]}>
+          <Icon name="business-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="City"
+            value={orderDetails.city}
+            onChangeText={(value) => handleInputChange('city', value)}
+            placeholderTextColor={COLORS.textLight}
+          />
+        </View>
         
-        <TextInput
-          style={[styles.input, styles.halfInput]}
-          placeholder="State"
-          value={orderDetails.state}
-          onChangeText={(value) => handleInputChange('state', value)}
-        />
+        <View style={[styles.inputContainer, styles.halfInput]}>
+          <Icon name="map-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="State"
+            value={orderDetails.state}
+            onChangeText={(value) => handleInputChange('state', value)}
+            placeholderTextColor={COLORS.textLight}
+          />
+        </View>
       </View>
     </View>
   );
 
   const renderOrderSummary = () => (
     <View>
-      <Text style={styles.sectionTitle}>Order Summary</Text>
+      <View style={styles.sectionHeader}>
+        <Icon name="receipt-outline" size={24} color={COLORS.primary} />
+        <Text style={styles.sectionTitle}>Order Summary</Text>
+      </View>
       
       <View style={styles.summaryCard}>
         <View style={styles.summaryRow}>
@@ -317,13 +372,18 @@ const OrderCreationScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create New Order</Text>
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <View style={styles.header}>
+        <Text style={styles.title}>Create New Order</Text>
+      </View>
       
       {renderStepIndicator()}
       {renderProgressBar()}
       
-      <ScrollView style={styles.formContainer}>
+      <ScrollView style={styles.formContainer} contentContainerStyle={styles.formContent}>
         <View style={styles.form}>
           {currentStep === 1 && renderOrderInfo()}
           {currentStep === 2 && renderCustomerInfo()}
@@ -335,6 +395,7 @@ const OrderCreationScreen = () => {
       <View style={styles.buttonContainer}>
         {currentStep > 1 && (
           <TouchableOpacity style={[styles.button, styles.backButton]} onPress={handleBack}>
+            <Icon name="arrow-back-outline" size={20} color={COLORS.textInverted} />
             <Text style={styles.buttonText}>Back</Text>
           </TouchableOpacity>
         )}
@@ -342,49 +403,56 @@ const OrderCreationScreen = () => {
         {currentStep < 4 ? (
           <TouchableOpacity style={[styles.button, styles.nextButton]} onPress={handleNext}>
             <Text style={styles.buttonText}>Next</Text>
+            <Icon name="arrow-forward-outline" size={20} color={COLORS.textInverted} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity style={[styles.button, styles.createButton]} onPress={handleCreateOrder}>
-            <Text style={styles.buttonText}>Create Order</Text>
+            <Icon name="checkmark-circle-outline" size={20} color={COLORS.textInverted} />
+            <Text style={styles.buttonText}>Create</Text>
           </TouchableOpacity>
         )}
         
         <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
+          <Icon name="close-circle-outline" size={20} color={COLORS.textInverted} />
           <Text style={styles.buttonText}>Cancel</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: COLORS.background,
+  },
+  header: {
+    backgroundColor: COLORS.cardBackground,
+    padding: SPACING.m,
+    alignItems: 'center',
+    ...SHADOW,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-    color: '#333',
+    fontSize: TYPOGRAPHY.h2,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
   },
   stepIndicator: {
-    backgroundColor: '#007AFF',
-    padding: 15,
+    backgroundColor: COLORS.primary,
+    padding: SPACING.m,
     alignItems: 'center',
   },
   stepIndicatorText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: COLORS.textInverted,
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.semiBold,
   },
   progressBarContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
-    backgroundColor: '#fff',
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.cardBackground,
   },
   progressStepContainer: {
     flexDirection: 'row',
@@ -398,74 +466,87 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressStepActive: {
-    backgroundColor: '#007AFF',
+    backgroundColor: COLORS.primary,
   },
   progressStepInactive: {
-    backgroundColor: '#ddd',
+    backgroundColor: COLORS.gray,
   },
   progressStepText: {
-    fontWeight: 'bold',
+    fontWeight: TYPOGRAPHY.bold,
   },
   progressStepTextActive: {
-    color: '#fff',
+    color: COLORS.textInverted,
   },
   progressStepTextInactive: {
-    color: '#666',
+    color: COLORS.textSecondary,
   },
   progressConnector: {
     width: 30,
     height: 2,
   },
   progressConnectorActive: {
-    backgroundColor: '#007AFF',
+    backgroundColor: COLORS.primary,
   },
   progressConnectorInactive: {
-    backgroundColor: '#ddd',
+    backgroundColor: COLORS.gray,
   },
   formContainer: {
     flex: 1,
   },
+  formContent: {
+    padding: SPACING.m,
+  },
   form: {
-    padding: 20,
+    flex: 1,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.m,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 15,
-    color: '#007AFF',
+    fontSize: TYPOGRAPHY.h3,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.primary,
+    marginLeft: SPACING.s,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.cardBackground,
+    borderRadius: BORDER_RADIUS.medium,
+    marginBottom: SPACING.m,
+    paddingHorizontal: SPACING.m,
+    ...SHADOW,
+  },
+  inputIcon: {
+    marginRight: SPACING.s,
   },
   input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-    fontSize: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
+    flex: 1,
+    height: 50,
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textPrimary,
   },
   textArea: {
     height: 80,
     textAlignVertical: 'top',
   },
   locationButton: {
-    backgroundColor: '#e3f2fd',
-    padding: 15,
-    borderRadius: 8,
+    flexDirection: 'row',
+    backgroundColor: COLORS.primaryLight,
+    padding: SPACING.m,
+    borderRadius: BORDER_RADIUS.medium,
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: SPACING.m,
     borderWidth: 1,
-    borderColor: '#bbdefb',
+    borderColor: COLORS.primary,
   },
   locationButtonText: {
-    color: '#1976d2',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: COLORS.primary,
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginLeft: SPACING.s,
   },
   row: {
     flexDirection: 'row',
@@ -475,65 +556,60 @@ const styles = StyleSheet.create({
     flex: 0.48,
   },
   summaryCard: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
+    backgroundColor: COLORS.cardBackground,
+    borderRadius: BORDER_RADIUS.medium,
+    padding: SPACING.m,
+    marginBottom: SPACING.m,
+    ...SHADOW,
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: SPACING.s,
   },
   summaryLabel: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: 'bold',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    fontWeight: TYPOGRAPHY.semiBold,
   },
   summaryValue: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textPrimary,
     textAlign: 'right',
     flex: 0.6,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 20,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+    padding: SPACING.m,
+    backgroundColor: COLORS.cardBackground,
+    ...SHADOW,
   },
   button: {
-    flex: 0.3,
-    paddingVertical: 15,
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.m,
+    borderRadius: BORDER_RADIUS.medium,
+    flex: 0.3,
   },
   backButton: {
-    backgroundColor: '#6c757d',
+    backgroundColor: COLORS.grayDark,
   },
   nextButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: COLORS.primary,
   },
   createButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: COLORS.secondary,
   },
   cancelButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: COLORS.error,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
+    color: COLORS.textInverted,
+    fontSize: TYPOGRAPHY.bodySmall,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginHorizontal: SPACING.xs,
   },
 });
 

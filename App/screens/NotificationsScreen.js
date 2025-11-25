@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
 
 const NotificationsScreen = () => {
   const [notifications, setNotifications] = useState([
@@ -182,126 +183,119 @@ const NotificationsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: COLORS.background,
   },
   header: {
-    backgroundColor: '#007AFF',
-    padding: 20,
+    backgroundColor: COLORS.primary,
+    padding: SPACING.m,
     paddingTop: 50,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: BORDER_RADIUS.large,
+    borderBottomRightRadius: BORDER_RADIUS.large,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: TYPOGRAPHY.h2,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textInverted,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#e0e0e0',
-    marginTop: 5,
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textInverted,
+    opacity: 0.8,
+    marginTop: SPACING.s,
   },
   actions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 20,
+    padding: SPACING.m,
   },
   actionButton: {
-    backgroundColor: '#fff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    paddingVertical: SPACING.s,
+    paddingHorizontal: SPACING.m,
+    borderRadius: BORDER_RADIUS.small,
+    ...SHADOW,
   },
   actionButtonText: {
-    color: '#007AFF',
-    fontSize: 14,
-    fontWeight: 'bold',
+    color: COLORS.primary,
+    fontSize: TYPOGRAPHY.bodySmall,
+    fontWeight: TYPOGRAPHY.bold,
   },
   disabledButtonText: {
-    color: '#ccc',
+    color: COLORS.textLight,
   },
   notificationsList: {
     flex: 1,
-    padding: 20,
+    padding: SPACING.m,
     paddingTop: 0,
   },
   notificationCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    borderRadius: BORDER_RADIUS.medium,
+    padding: SPACING.m,
+    marginBottom: SPACING.s,
+    ...SHADOW,
   },
   unreadNotification: {
     borderLeftWidth: 4,
-    borderLeftColor: '#007AFF',
+    borderLeftColor: COLORS.primary,
   },
   notificationHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: SPACING.s,
   },
   notificationIcon: {
     fontSize: 20,
-    marginRight: 10,
+    marginRight: SPACING.s,
   },
   notificationTitleContainer: {
     flex: 1,
   },
   notificationTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
   },
   unreadTitle: {
-    color: '#007AFF',
+    color: COLORS.primary,
   },
   notificationTime: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 3,
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.xs,
   },
   notificationMessage: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
     lineHeight: 20,
   },
   successNotification: {
-    borderLeftColor: '#34C759',
+    borderLeftColor: COLORS.secondary,
   },
   infoNotification: {
-    borderLeftColor: '#007AFF',
+    borderLeftColor: COLORS.primary,
   },
   promotionNotification: {
-    borderLeftColor: '#FF9500',
+    borderLeftColor: COLORS.accent,
   },
   defaultNotification: {
-    borderLeftColor: '#6c757d',
+    borderLeftColor: COLORS.grayDark,
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
+    padding: SPACING.xl,
   },
   emptyStateText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
+    fontSize: TYPOGRAPHY.h3,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.s,
   },
   emptyStateSubtext: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
   },
 });
 

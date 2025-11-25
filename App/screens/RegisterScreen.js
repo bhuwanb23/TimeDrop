@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [confirmSecureTextEntry, setConfirmSecureTextEntry] = useState(true);
   const navigation = useNavigation();
 
   const handleRegister = () => {
@@ -41,108 +45,174 @@ const RegisterScreen = () => {
     navigation.navigate('Login');
   };
 
+  const toggleSecureEntry = () => {
+    setSecureTextEntry(!secureTextEntry);
+  };
+
+  const toggleConfirmSecureEntry = () => {
+    setConfirmSecureTextEntry(!confirmSecureTextEntry);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Delivery Slot App</Text>
-      <Text style={styles.subtitle}>Create Account</Text>
-      
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="Full Name"
-          value={name}
-          onChangeText={setName}
-        />
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-        />
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry
-        />
-        
-        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Register</Text>
-        </TouchableOpacity>
-        
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={handleLogin}>
-            <Text style={styles.linkText}>Already have an account? Login</Text>
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.header}>
+          <Icon name="person-add-outline" size={80} color={COLORS.secondary} />
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>Join our delivery service</Text>
+        </View>
+
+        <View style={styles.formContainer}>
+          <View style={styles.inputContainer}>
+            <Icon name="person-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Full Name"
+              value={name}
+              onChangeText={setName}
+              placeholderTextColor={COLORS.textLight}
+            />
+          </View>
+          
+          <View style={styles.inputContainer}>
+            <Icon name="call-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+              placeholderTextColor={COLORS.textLight}
+            />
+          </View>
+          
+          <View style={styles.inputContainer}>
+            <Icon name="lock-closed-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={secureTextEntry}
+              placeholderTextColor={COLORS.textLight}
+            />
+            <TouchableOpacity onPress={toggleSecureEntry} style={styles.eyeIcon}>
+              <Icon name={secureTextEntry ? "eye-outline" : "eye-off-outline"} size={20} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.inputContainer}>
+            <Icon name="lock-closed-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={confirmSecureTextEntry}
+              placeholderTextColor={COLORS.textLight}
+            />
+            <TouchableOpacity onPress={toggleConfirmSecureEntry} style={styles.eyeIcon}>
+              <Icon name={confirmSecureTextEntry ? "eye-outline" : "eye-off-outline"} size={20} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+            <Text style={styles.buttonText}>Create Account</Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </View>
+
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={handleLogin} style={styles.footerButton}>
+            <Text style={styles.footerText}>Already have an account? </Text>
+            <Text style={styles.footerLink}>Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
+    padding: SPACING.m,
+  },
+  header: {
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    padding: 20,
+    marginBottom: SPACING.xl,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
+    fontSize: TYPOGRAPHY.h1,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginTop: SPACING.m,
   },
   subtitle: {
-    fontSize: 18,
-    marginBottom: 30,
-    color: '#666',
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.s,
   },
-  form: {
-    width: '100%',
+  formContainer: {
+    backgroundColor: COLORS.cardBackground,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.grayLight,
+    borderRadius: BORDER_RADIUS.medium,
+    marginBottom: SPACING.m,
+    paddingHorizontal: SPACING.m,
+  },
+  inputIcon: {
+    marginRight: SPACING.s,
   },
   input: {
+    flex: 1,
     height: 50,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    backgroundColor: '#fff',
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textPrimary,
+  },
+  eyeIcon: {
+    padding: SPACING.xs,
   },
   registerButton: {
-    backgroundColor: '#34C759',
-    paddingVertical: 15,
-    borderRadius: 8,
+    backgroundColor: COLORS.secondary,
+    paddingVertical: SPACING.m,
+    borderRadius: BORDER_RADIUS.medium,
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: SPACING.s,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: COLORS.textInverted,
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.semiBold,
   },
   footer: {
-    marginTop: 30,
+    marginTop: SPACING.l,
     alignItems: 'center',
   },
-  linkText: {
-    color: '#007AFF',
-    fontSize: 16,
-    marginBottom: 15,
+  footerButton: {
+    flexDirection: 'row',
+  },
+  footerText: {
+    color: COLORS.textSecondary,
+    fontSize: TYPOGRAPHY.bodySmall,
+  },
+  footerLink: {
+    color: COLORS.secondary,
+    fontSize: TYPOGRAPHY.bodySmall,
+    fontWeight: TYPOGRAPHY.semiBold,
   },
 });
 

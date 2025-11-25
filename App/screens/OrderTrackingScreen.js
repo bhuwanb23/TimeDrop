@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
 
 const OrderTrackingScreen = () => {
   const [order, setOrder] = useState(null);
@@ -89,7 +91,10 @@ const OrderTrackingScreen = () => {
   if (!order) {
     return (
       <View style={styles.container}>
-        <Text>Loading order details...</Text>
+        <View style={styles.loadingContainer}>
+          <Icon name="hourglass-outline" size={40} color={COLORS.textSecondary} />
+          <Text style={styles.loadingText}>Loading order details...</Text>
+        </View>
       </View>
     );
   }
@@ -102,7 +107,11 @@ const OrderTrackingScreen = () => {
           <View style={[
             styles.timelineDot,
             event.completed ? styles.completedDot : styles.pendingDot
-          ]} />
+          ]}>
+            {event.completed && (
+              <Icon name="checkmark" size={12} color={COLORS.textInverted} />
+            )}
+          </View>
           {!isLast && (
             <View style={[
               styles.timelineLine,
@@ -120,7 +129,10 @@ const OrderTrackingScreen = () => {
             </Text>
             <Text style={styles.timelineTime}>{event.timestamp}</Text>
           </View>
-          <Text style={styles.timelineLocation}>{event.location}</Text>
+          <View style={styles.timelineLocationContainer}>
+            <Icon name="location-outline" size={14} color={COLORS.textLight} />
+            <Text style={styles.timelineLocation}>{event.location}</Text>
+          </View>
         </View>
       </View>
     );
@@ -129,7 +141,13 @@ const OrderTrackingScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Order Tracking</Text>
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Icon name="arrow-back-outline" size={24} color={COLORS.textInverted} />
+          </TouchableOpacity>
+          <Text style={styles.title}>Order Tracking</Text>
+          <View style={styles.placeholder} />
+        </View>
         <Text style={styles.orderIdText}>Order ID: {order.id}</Text>
       </View>
       
@@ -137,9 +155,10 @@ const OrderTrackingScreen = () => {
       <View style={styles.orderSummary}>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Status:</Text>
-          <Text style={[styles.statusBadge, getStatusStyle(order.status)]}>
-            {order.status}
-          </Text>
+          <View style={[styles.statusBadge, getStatusStyle(order.status)]}>
+            <Icon name={getStatusIcon(order.status)} size={14} color={COLORS.textInverted} />
+            <Text style={styles.statusText}>{order.status}</Text>
+          </View>
         </View>
         
         <View style={styles.summaryRow}>
@@ -163,20 +182,34 @@ const OrderTrackingScreen = () => {
       {/* Driver Information */}
       {order.assignedDriver && (
         <View style={styles.driverSection}>
-          <Text style={styles.sectionTitle}>Delivery Information</Text>
+          <View style={styles.sectionHeader}>
+            <Icon name="car-outline" size={20} color={COLORS.primary} />
+            <Text style={styles.sectionTitle}>Delivery Information</Text>
+          </View>
           <View style={styles.driverInfo}>
-            <Text style={styles.driverName}>Driver: {order.assignedDriver}</Text>
-            <Text style={styles.driverDetail}>Vehicle: {order.driverVehicle}</Text>
-            <Text style={styles.driverDetail}>Slot: {order.selectedSlot}</Text>
+            <View style={styles.driverDetailRow}>
+              <Icon name="person-outline" size={16} color={COLORS.textSecondary} />
+              <Text style={styles.driverName}>Driver: {order.assignedDriver}</Text>
+            </View>
+            <View style={styles.driverDetailRow}>
+              <Icon name="car-outline" size={16} color={COLORS.textSecondary} />
+              <Text style={styles.driverDetail}>Vehicle: {order.driverVehicle}</Text>
+            </View>
+            <View style={styles.driverDetailRow}>
+              <Icon name="time-outline" size={16} color={COLORS.textSecondary} />
+              <Text style={styles.driverDetail}>Slot: {order.selectedSlot}</Text>
+            </View>
           </View>
           
           <View style={styles.driverActions}>
             <TouchableOpacity style={styles.actionButton} onPress={handleContactDriver}>
-              <Text style={styles.actionButtonText}>📞 Contact Driver</Text>
+              <Icon name="call-outline" size={20} color={COLORS.textInverted} />
+              <Text style={styles.actionButtonText}>Contact Driver</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={[styles.actionButton, styles.rescheduleButton]} onPress={handleReschedule}>
-              <Text style={styles.actionButtonText}>🕒 Reschedule</Text>
+              <Icon name="time-outline" size={20} color={COLORS.textInverted} />
+              <Text style={styles.actionButtonText}>Reschedule</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -184,7 +217,10 @@ const OrderTrackingScreen = () => {
       
       {/* Delivery Timeline */}
       <View style={styles.timelineSection}>
-        <Text style={styles.sectionTitle}>Delivery Timeline</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="list-outline" size={20} color={COLORS.primary} />
+          <Text style={styles.sectionTitle}>Delivery Timeline</Text>
+        </View>
         <View style={styles.timeline}>
           {timelineEvents.map((event, index) => renderTimelineEvent(event, index))}
         </View>
@@ -192,7 +228,10 @@ const OrderTrackingScreen = () => {
       
       {/* Order Details */}
       <View style={styles.detailsSection}>
-        <Text style={styles.sectionTitle}>Order Details</Text>
+        <View style={styles.sectionHeader}>
+          <Icon name="document-text-outline" size={20} color={COLORS.primary} />
+          <Text style={styles.sectionTitle}>Order Details</Text>
+        </View>
         <View style={styles.detailItem}>
           <Text style={styles.detailLabel}>Description:</Text>
           <Text style={styles.detailValue}>{order.orderDescription}</Text>
@@ -225,230 +264,274 @@ const getStatusStyle = (status) => {
   }
 };
 
+const getStatusIcon = (status) => {
+  switch (status) {
+    case 'Slot Selected':
+      return 'time-outline';
+    case 'Processing':
+      return 'construct-outline';
+    case 'Out for Delivery':
+      return 'car-outline';
+    case 'Delivered':
+      return 'checkmark-circle-outline';
+    default:
+      return 'clipboard-outline';
+  }
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: COLORS.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.l,
+  },
+  loadingText: {
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.m,
   },
   header: {
-    backgroundColor: '#007AFF',
-    padding: 20,
+    backgroundColor: COLORS.primary,
     paddingTop: 50,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    paddingBottom: 20,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.m,
+  },
+  backButton: {
+    padding: 5,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: TYPOGRAPHY.h2,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textInverted,
+  },
+  placeholder: {
+    width: 24,
   },
   orderIdText: {
-    fontSize: 16,
-    color: '#e0e0e0',
-    marginTop: 5,
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textInverted,
+    opacity: 0.8,
+    marginTop: 10,
+    textAlign: 'center',
   },
   orderSummary: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    margin: SPACING.m,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: SPACING.m,
   },
   summaryLabel: {
-    fontSize: 16,
-    color: '#666',
-    fontWeight: 'bold',
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textSecondary,
+    fontWeight: TYPOGRAPHY.semiBold,
   },
   summaryValue: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textPrimary,
   },
   statusBadge: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.s,
+    borderRadius: BORDER_RADIUS.small,
+  },
+  statusText: {
+    fontSize: TYPOGRAPHY.caption,
+    fontWeight: TYPOGRAPHY.semiBold,
+    color: COLORS.textInverted,
+    marginLeft: SPACING.xs,
   },
   slotSelectedStatus: {
-    backgroundColor: '#FFEAA7',
-    color: '#D35400',
+    backgroundColor: COLORS.accentLight,
   },
   processingStatus: {
-    backgroundColor: '#74B9FF',
-    color: '#0984E3',
+    backgroundColor: COLORS.primaryLight,
   },
   outForDeliveryStatus: {
-    backgroundColor: '#00B894',
-    color: '#00A085',
+    backgroundColor: COLORS.secondary,
   },
   deliveredStatus: {
-    backgroundColor: '#00B894',
-    color: '#00A085',
+    backgroundColor: COLORS.secondary,
   },
   defaultStatus: {
-    backgroundColor: '#DDDDDD',
-    color: '#666666',
+    backgroundColor: COLORS.gray,
   },
   estimatedDelivery: {
-    fontSize: 16,
-    color: '#00B894',
-    fontWeight: 'bold',
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.secondary,
+    fontWeight: TYPOGRAPHY.bold,
   },
   driverSection: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    margin: SPACING.m,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.m,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
+    fontSize: TYPOGRAPHY.h3,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginLeft: SPACING.s,
   },
   driverInfo: {
-    marginBottom: 20,
+    marginBottom: SPACING.m,
+  },
+  driverDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.s,
   },
   driverName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.semiBold,
+    color: COLORS.textPrimary,
+    marginLeft: SPACING.s,
   },
   driverDetail: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 3,
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    marginLeft: SPACING.s,
   },
   driverActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   actionButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    flex: 0.48,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.l,
+    paddingVertical: SPACING.m,
+    borderRadius: BORDER_RADIUS.medium,
+    flex: 0.48,
   },
   rescheduleButton: {
-    backgroundColor: '#FF9500',
+    backgroundColor: COLORS.accent,
   },
   actionButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: COLORS.textInverted,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginLeft: SPACING.s,
   },
   timelineSection: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    margin: SPACING.m,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
   },
   timeline: {
-    marginTop: 10,
+    marginTop: SPACING.s,
   },
   timelineItem: {
     flexDirection: 'row',
   },
   timelineIndicator: {
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: SPACING.m,
   },
   timelineDot: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   completedDot: {
-    backgroundColor: '#00B894',
+    backgroundColor: COLORS.secondary,
   },
   pendingDot: {
-    backgroundColor: '#ddd',
+    backgroundColor: COLORS.gray,
   },
   timelineLine: {
     width: 2,
     flex: 1,
-    marginTop: 5,
+    marginTop: SPACING.s,
   },
   completedLine: {
-    backgroundColor: '#00B894',
+    backgroundColor: COLORS.secondary,
   },
   pendingLine: {
-    backgroundColor: '#ddd',
+    backgroundColor: COLORS.gray,
   },
   timelineContent: {
     flex: 1,
-    paddingBottom: 20,
+    paddingBottom: SPACING.l,
   },
   timelineHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5,
+    marginBottom: SPACING.s,
   },
   timelineStatus: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.bold,
   },
   completedText: {
-    color: '#00B894',
+    color: COLORS.secondary,
   },
   pendingText: {
-    color: '#999',
+    color: COLORS.textLight,
   },
   timelineTime: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+  },
+  timelineLocationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SPACING.s,
   },
   timelineLocation: {
-    fontSize: 14,
-    color: '#999',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textLight,
+    marginLeft: SPACING.s,
   },
   detailsSection: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    marginBottom: 20,
+    backgroundColor: COLORS.cardBackground,
+    margin: SPACING.m,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
+    marginBottom: SPACING.m,
   },
   detailItem: {
-    marginBottom: 15,
+    marginBottom: SPACING.m,
   },
   detailLabel: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: 'bold',
-    marginBottom: 5,
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginBottom: SPACING.xs,
   },
   detailValue: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textPrimary,
   },
 });
 

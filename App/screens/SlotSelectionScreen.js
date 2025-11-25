@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, FlatList } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
 
 const SlotSelectionScreen = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -132,15 +134,25 @@ const SlotSelectionScreen = () => {
       onPress={() => handleSelectSlot(item)}
       disabled={!item.available}
     >
-      <Text style={[
-        styles.slotText,
-        selectedSlot?.id === item.id ? styles.selectedSlotText : null,
-        !item.available ? styles.unavailableSlotText : null
-      ]}>
-        {item.time}
-      </Text>
+      <View style={styles.slotContent}>
+        <Icon 
+          name={selectedSlot?.id === item.id ? "radio-button-on-outline" : "radio-button-off-outline"} 
+          size={20} 
+          color={selectedSlot?.id === item.id ? COLORS.textInverted : (item.available ? COLORS.primary : COLORS.gray)} 
+          style={styles.slotIcon}
+        />
+        <Text style={[
+          styles.slotText,
+          selectedSlot?.id === item.id ? styles.selectedSlotText : null,
+          !item.available ? styles.unavailableSlotText : null
+        ]}>
+          {item.time}
+        </Text>
+      </View>
       {!item.available && (
-        <Text style={styles.unavailableText}>Unavailable</Text>
+        <View style={styles.unavailableBadge}>
+          <Text style={styles.unavailableText}>Unavailable</Text>
+        </View>
       )}
     </TouchableOpacity>
   );
@@ -148,14 +160,23 @@ const SlotSelectionScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Select Delivery Slot</Text>
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={handleCancel} style={styles.backButton}>
+            <Icon name="arrow-back-outline" size={24} color={COLORS.textInverted} />
+          </TouchableOpacity>
+          <Text style={styles.title}>Delivery Slots</Text>
+          <View style={styles.placeholder} />
+        </View>
         {orderId && <Text style={styles.orderId}>Order: {orderId}</Text>}
       </View>
       
       <View style={styles.content}>
         {/* Date Selection */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Select Date</Text>
+          <View style={styles.sectionHeader}>
+            <Icon name="calendar-outline" size={20} color={COLORS.primary} />
+            <Text style={styles.sectionTitle}>Select Date</Text>
+          </View>
           <FlatList
             data={dates}
             renderItem={renderDateItem}
@@ -168,7 +189,10 @@ const SlotSelectionScreen = () => {
         
         {/* Time Slot Selection */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Available Time Slots</Text>
+          <View style={styles.sectionHeader}>
+            <Icon name="time-outline" size={20} color={COLORS.primary} />
+            <Text style={styles.sectionTitle}>Available Time Slots</Text>
+          </View>
           <Text style={styles.subTitle}>{selectedDate?.display}</Text>
           
           {availableSlots.length > 0 ? (
@@ -180,14 +204,20 @@ const SlotSelectionScreen = () => {
               contentContainerStyle={styles.slotListContent}
             />
           ) : (
-            <Text style={styles.noSlotsText}>Loading available slots...</Text>
+            <View style={styles.loadingContainer}>
+              <Icon name="hourglass-outline" size={30} color={COLORS.textSecondary} />
+              <Text style={styles.noSlotsText}>Loading available slots...</Text>
+            </View>
           )}
         </View>
         
         {/* Selected Slot Preview */}
         {selectedSlot && (
           <View style={styles.selectedSlotPreview}>
-            <Text style={styles.previewTitle}>Selected Slot</Text>
+            <View style={styles.previewHeader}>
+              <Icon name="checkmark-circle-outline" size={20} color={COLORS.secondary} />
+              <Text style={styles.previewTitle}>Selected Slot</Text>
+            </View>
             <View style={styles.previewContent}>
               <Text style={styles.previewDate}>{selectedDate?.display}</Text>
               <Text style={styles.previewTime}>{selectedSlot.time}</Text>
@@ -198,11 +228,13 @@ const SlotSelectionScreen = () => {
         {/* Actions */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
+            <Icon name="close-outline" size={20} color={COLORS.textInverted} />
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
           
           {orderId && (
             <TouchableOpacity style={[styles.button, styles.rescheduleButton]} onPress={handleReschedule}>
+              <Icon name="refresh-outline" size={20} color={COLORS.textInverted} />
               <Text style={styles.buttonText}>Reschedule</Text>
             </TouchableOpacity>
           )}
@@ -212,8 +244,9 @@ const SlotSelectionScreen = () => {
             onPress={handleConfirmSlot}
             disabled={!selectedSlot}
           >
+            <Icon name="checkmark-outline" size={20} color={COLORS.textInverted} />
             <Text style={styles.buttonText}>
-              {orderId ? 'Confirm Slot' : 'Select Slot'}
+              {orderId ? 'Confirm' : 'Select'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -225,178 +258,214 @@ const SlotSelectionScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: COLORS.background,
   },
   header: {
-    backgroundColor: '#007AFF',
-    padding: 20,
+    backgroundColor: COLORS.primary,
     paddingTop: 50,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    paddingBottom: 20,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  backButton: {
+    padding: 5,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: TYPOGRAPHY.h2,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textInverted,
+  },
+  placeholder: {
+    width: 24,
   },
   orderId: {
-    fontSize: 16,
-    color: '#e0e0e0',
-    marginTop: 5,
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textInverted,
+    opacity: 0.8,
+    marginTop: 10,
+    textAlign: 'center',
   },
   content: {
     flex: 1,
   },
   section: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    margin: SPACING.m,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.m,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
+    fontSize: TYPOGRAPHY.h3,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginLeft: SPACING.s,
   },
   subTitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 15,
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.m,
     textAlign: 'center',
+    fontWeight: TYPOGRAPHY.medium,
   },
   dateList: {
     flexGrow: 0,
   },
   dateItem: {
-    backgroundColor: '#f0f8ff',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginRight: 10,
+    backgroundColor: COLORS.primaryLight,
+    paddingVertical: SPACING.m,
+    paddingHorizontal: SPACING.l,
+    borderRadius: BORDER_RADIUS.medium,
+    marginRight: SPACING.s,
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: COLORS.primary,
   },
   selectedDate: {
-    backgroundColor: '#007AFF',
+    backgroundColor: COLORS.primary,
   },
   dateText: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: 'bold',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textPrimary,
+    fontWeight: TYPOGRAPHY.semiBold,
   },
   selectedDateText: {
-    color: '#fff',
+    color: COLORS.textInverted,
   },
   slotList: {
     flex: 1,
   },
   slotListContent: {
-    paddingBottom: 10,
+    paddingBottom: SPACING.s,
   },
   slotItem: {
-    backgroundColor: '#f0f8ff',
-    padding: 20,
-    borderRadius: 8,
-    marginBottom: 15,
+    backgroundColor: COLORS.cardBackground,
+    padding: SPACING.m,
+    borderRadius: BORDER_RADIUS.medium,
+    marginBottom: SPACING.s,
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: COLORS.primary,
+    ...SHADOW,
   },
   selectedSlot: {
-    backgroundColor: '#007AFF',
-    borderColor: '#0056b3',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primaryDark,
   },
   unavailableSlot: {
-    backgroundColor: '#f5f5f5',
-    borderColor: '#ddd',
+    backgroundColor: COLORS.grayLight,
+    borderColor: COLORS.gray,
+  },
+  slotContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  slotIcon: {
+    marginRight: SPACING.m,
   },
   slotText: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textPrimary,
+    fontWeight: TYPOGRAPHY.semiBold,
   },
   selectedSlotText: {
-    color: '#fff',
+    color: COLORS.textInverted,
   },
   unavailableSlotText: {
-    color: '#999',
+    color: COLORS.textLight,
+  },
+  unavailableBadge: {
+    backgroundColor: COLORS.error,
+    borderRadius: BORDER_RADIUS.small,
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.s,
+    alignSelf: 'flex-start',
+    marginTop: SPACING.s,
   },
   unavailableText: {
-    fontSize: 12,
-    color: '#ff3b30',
-    textAlign: 'center',
-    marginTop: 5,
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textInverted,
+    fontWeight: TYPOGRAPHY.semiBold,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    padding: SPACING.l,
   },
   noSlotsText: {
     textAlign: 'center',
-    color: '#666',
+    color: COLORS.textSecondary,
     fontStyle: 'italic',
-    padding: 20,
+    marginTop: SPACING.s,
   },
   selectedSlotPreview: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.cardBackground,
+    margin: SPACING.m,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
+  },
+  previewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.m,
   },
   previewTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-    textAlign: 'center',
+    fontSize: TYPOGRAPHY.h3,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginLeft: SPACING.s,
   },
   previewContent: {
     alignItems: 'center',
   },
   previewDate: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
   },
   previewTime: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#007AFF',
-    marginTop: 5,
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.primary,
+    marginTop: SPACING.xs,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 20,
+    padding: SPACING.m,
   },
   button: {
-    flex: 0.3,
-    paddingVertical: 15,
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.m,
+    borderRadius: BORDER_RADIUS.medium,
+    flex: 0.3,
   },
   cancelButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: COLORS.error,
   },
   rescheduleButton: {
-    backgroundColor: '#FF9500',
+    backgroundColor: COLORS.accent,
   },
   confirmButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: COLORS.secondary,
   },
   disabledButton: {
-    backgroundColor: '#ccc',
+    backgroundColor: COLORS.gray,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
+    color: COLORS.textInverted,
+    fontSize: TYPOGRAPHY.bodySmall,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginHorizontal: SPACING.xs,
   },
 });
 

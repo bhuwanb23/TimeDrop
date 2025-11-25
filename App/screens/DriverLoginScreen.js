@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { authAPI, setAuthToken } from '../services/api';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
 
 const DriverLoginScreen = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
   const navigation = useNavigation();
 
   const handleLogin = async () => {
@@ -69,88 +72,170 @@ const DriverLoginScreen = () => {
     Alert.alert('Info', 'Forgot password functionality to be implemented');
   };
 
+  const toggleSecureEntry = () => {
+    setSecureTextEntry(!secureTextEntry);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Driver Login</Text>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Phone Number"
-        value={phone}
-        onChangeText={setPhone}
-        keyboardType="phone-pad"
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Login</Text>
-        )}
-      </TouchableOpacity>
-      
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={handleForgotPassword}>
-          <Text style={styles.linkText}>Forgot Password?</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity onPress={handleCustomerLogin}>
-          <Text style={styles.linkText}>Customer Login</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.header}>
+          <Icon name="car-outline" size={80} color={COLORS.primary} />
+          <Text style={styles.title}>Driver Login</Text>
+          <Text style={styles.subtitle}>Sign in to your driver account</Text>
+        </View>
+
+        <View style={styles.formContainer}>
+          <View style={styles.inputContainer}>
+            <Icon name="call-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+              placeholderTextColor={COLORS.textLight}
+            />
+          </View>
+          
+          <View style={styles.inputContainer}>
+            <Icon name="lock-closed-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={secureTextEntry}
+              placeholderTextColor={COLORS.textLight}
+            />
+            <TouchableOpacity onPress={toggleSecureEntry} style={styles.eyeIcon}>
+              <Icon name={secureTextEntry ? "eye-outline" : "eye-off-outline"} size={20} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+          </View>
+          
+          <TouchableOpacity style={styles.forgotPassword}>
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.button, loading && styles.buttonDisabled]} 
+            onPress={handleLogin} 
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color={COLORS.textInverted} />
+            ) : (
+              <Text style={styles.buttonText}>Sign In</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={handleCustomerLogin} style={styles.footerButton}>
+            <Text style={styles.footerText}>Are you a customer? </Text>
+            <Text style={styles.footerLink}>Customer Login</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    padding: SPACING.m,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: SPACING.xl,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
+    fontSize: TYPOGRAPHY.h1,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginTop: SPACING.m,
+  },
+  subtitle: {
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.s,
+  },
+  formContainer: {
+    backgroundColor: COLORS.cardBackground,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.m,
+    ...SHADOW,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.grayLight,
+    borderRadius: BORDER_RADIUS.medium,
+    marginBottom: SPACING.m,
+    paddingHorizontal: SPACING.m,
+  },
+  inputIcon: {
+    marginRight: SPACING.s,
   },
   input: {
+    flex: 1,
     height: 50,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    backgroundColor: '#fff',
+    fontSize: TYPOGRAPHY.body,
+    color: COLORS.textPrimary,
+  },
+  eyeIcon: {
+    padding: SPACING.xs,
+  },
+  forgotPassword: {
+    alignSelf: 'flex-end',
+    marginBottom: SPACING.m,
+  },
+  forgotPasswordText: {
+    color: COLORS.primary,
+    fontSize: TYPOGRAPHY.bodySmall,
+    fontWeight: TYPOGRAPHY.medium,
   },
   button: {
-    backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+    padding: SPACING.m,
+    borderRadius: BORDER_RADIUS.medium,
     alignItems: 'center',
-    marginBottom: 20,
+    justifyContent: 'center',
+    marginBottom: SPACING.m,
+  },
+  buttonDisabled: {
+    backgroundColor: COLORS.primaryLight,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: COLORS.textInverted,
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.semiBold,
   },
   footer: {
+    marginTop: SPACING.l,
     alignItems: 'center',
   },
-  linkText: {
-    color: '#007AFF',
-    textAlign: 'center',
-    marginTop: 10,
+  footerButton: {
+    flexDirection: 'row',
+    marginBottom: SPACING.s,
+  },
+  footerText: {
+    color: COLORS.textSecondary,
+    fontSize: TYPOGRAPHY.bodySmall,
+  },
+  footerLink: {
+    color: COLORS.primary,
+    fontSize: TYPOGRAPHY.bodySmall,
+    fontWeight: TYPOGRAPHY.semiBold,
   },
 });
 
