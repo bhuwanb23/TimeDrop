@@ -8,9 +8,10 @@ const {
 } = require('../controllers/driversController');
 const { authenticateJWT, authorizeRoles } = require('../middleware/authMiddleware');
 const { authRateLimiter } = require('../middleware/rateLimiter');
+const { validateDriverLogin } = require('../middleware/validationMiddleware');
 
-// POST /api/driver/login - Driver authentication
-router.post('/login', authRateLimiter, driverLogin);
+// POST /api/drivers/login - Driver authentication
+router.post('/login', authRateLimiter, validateDriverLogin, driverLogin);
 
 // GET /api/drivers/:id/deliveries - Get driver's assigned deliveries
 router.get('/:id/deliveries', authenticateJWT, authorizeRoles('driver'), getDriverDeliveries);
