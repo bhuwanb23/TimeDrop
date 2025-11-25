@@ -1,4 +1,7 @@
 const { Order } = require('../models');
+const { groupAndAssignDeliveries } = require('../utils/deliveryGrouping');
+const { validateStatusTransition, logStatusChange, sendStatusNotification } = require('../utils/statusManagement');
+const { sendCourierCallback } = require('../utils/courierIntegration');
 
 // POST /api/orders/new - Receive new order from courier
 const createOrder = async (req, res) => {
@@ -117,9 +120,29 @@ const selectSlot = async (req, res) => {
     order.status = 'Slot Selected';
     await order.save();
 
-    // Trigger delivery grouping logic (to be implemented)
-    // For now, we'll just log that it should be triggered
-    console.log('Delivery grouping logic should be triggered here');
+    // Trigger delivery grouping logic
+    const allOrders = await Order.findAll({
+      where: {
+        status: 'Slot Selected'
+      }
+    });
+    
+    const groupingResult = await groupAndAssignDeliveries(allOrders);
+    console.log('Delivery grouping result:', groupingResult);
+    
+    // Update assigned orders in database
+    if (groupingResult.success) {
+      for (const [pincode, group] of Object.entries(groupingResult.groups)) {
+        for (const orderData of group.orders) {
+          if (orderData.assigned_driver_id) {
+            await Order.update(
+              { assigned_driver_id: orderData.assigned_driver_id },
+              { where: { id: orderData.id } }
+            );
+          }
+        }
+      }
+    }
 
     return res.status(200).json({
       success: true,
@@ -164,13 +187,23 @@ const updateOrderStatus = async (req, res) => {
     order.status = status;
     await order.save();
 
-    // Notify courier system via callback (to be implemented)
-    // For now, we'll just log that it should happen
-    console.log('Courier system notification should be sent here');
-
-    // Log status change in delivery history (to be implemented)
-    // For now, we'll just log that it should happen
-    console.log(`Order ${order.order_id} status changed to ${status}`);
+    // Validate status transition
+    const oldStatus = order.status;
+    if (!validateStatusTransition(oldStatus, status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status transition from ${oldStatus} to ${status}`
+      });
+    }
+    
+    // Log status change
+    logStatusChange(order.id, oldStatus, status);
+    
+    // Send notification
+    sendStatusNotification(order, oldStatus, status);
+    
+    // Notify courier system via callback
+    await sendCourierCallback(order, status);
 
     return res.status(200).json({
       success: true,

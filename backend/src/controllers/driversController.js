@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { Driver, Order } = require('../models');
+const { validateStatusTransition, logStatusChange, sendStatusNotification } = require('../utils/statusManagement');
+const { sendCourierCallback } = require('../utils/courierIntegration');
 
 // POST /api/driver/login - Driver authentication
 const driverLogin = async (req, res) => {
@@ -191,8 +193,99 @@ const updateDriverLocation = async (req, res) => {
   }
 };
 
+// PUT /api/drivers/:id/orders/:orderId/status - Update order status
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { id, orderId } = req.params;
+    const { status } = req.body;
+    
+    // Validate driver ID
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Driver ID is required'
+      });
+    }
+    
+    // Validate order ID
+    if (!orderId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Order ID is required'
+      });
+    }
+    
+    // Validate status
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        message: 'Status is required'
+      });
+    }
+    
+    // Check if driver exists
+    const driver = await Driver.findByPk(id);
+    if (!driver) {
+      return res.status(404).json({
+        success: false,
+        message: 'Driver not found'
+      });
+    }
+    
+    // Check if order exists and is assigned to this driver
+    const order = await Order.findOne({
+      where: {
+        id: orderId,
+        assigned_driver_id: id
+      }
+    });
+    
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found or not assigned to this driver'
+      });
+    }
+    
+    // Validate status transition
+    const oldStatus = order.status;
+    if (!validateStatusTransition(oldStatus, status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status transition from ${oldStatus} to ${status}`
+      });
+    }
+    
+    // Update order status
+    order.status = status;
+    await order.save();
+    
+    // Log status change
+    logStatusChange(order.id, oldStatus, status, id);
+    
+    // Send notification
+    sendStatusNotification(order, oldStatus, status);
+    
+    // Notify courier system via callback
+    await sendCourierCallback(order, status);
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Order status updated successfully',
+      data: order
+    });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
 module.exports = {
   driverLogin,
   getDriverDeliveries,
-  updateDriverLocation
+  updateDriverLocation,
+  updateOrderStatus
 };
