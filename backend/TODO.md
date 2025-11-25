@@ -82,26 +82,26 @@
   - [x] Log status change in delivery history
 
 ### Task 7: Customers API
-- [ ] GET /api/customers/orders?phone= - Get customer orders by phone
-  - [ ] Validate phone number parameter
-  - [ ] Query orders associated with phone number
-  - [ ] Return formatted list of orders
-  - [ ] Handle empty result sets
+- [x] GET /api/customers/orders?phone= - Get customer orders by phone
+  - [x] Validate phone number parameter
+  - [x] Query orders associated with phone number
+  - [x] Return formatted list of orders
+  - [x] Handle empty result sets
 
 ### Task 8: Drivers API
-- [ ] POST /api/driver/login - Driver authentication
-  - [ ] Validate login credentials
-  - [ ] Implement JWT token generation
-  - [ ] Return driver information with token
-- [ ] GET /api/drivers/:id/deliveries - Get driver's assigned deliveries
-  - [ ] Validate driver ID
-  - [ ] Query deliveries assigned to driver
-  - [ ] Sort deliveries by optimal route
-  - [ ] Return formatted delivery list
-- [ ] PUT /api/drivers/update-location - Update driver's current location
-  - [ ] Validate location data
-  - [ ] Update driver's current coordinates
-  - [ ] Broadcast location to relevant parties
+- [x] POST /api/driver/login - Driver authentication
+  - [x] Validate login credentials
+  - [x] Implement JWT token generation
+  - [x] Return driver information with token
+- [x] GET /api/drivers/:id/deliveries - Get driver's assigned deliveries
+  - [x] Validate driver ID
+  - [x] Query deliveries assigned to driver
+  - [x] Sort deliveries by optimal route
+  - [x] Return formatted delivery list
+- [x] PUT /api/drivers/update-location - Update driver's current location
+  - [x] Validate location data
+  - [x] Update driver's current coordinates
+  - [x] Broadcast location to relevant parties
 
 ## Phase 4: Business Logic Implementation
 

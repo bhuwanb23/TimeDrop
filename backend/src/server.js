@@ -4,6 +4,8 @@ require('dotenv').config();
 const connectDB = require('./config/dbConnectionTest');
 const { sequelize } = require('./models');
 const ordersRoutes = require('./routes/ordersRoutes');
+const customersRoutes = require('./routes/customersRoutes');
+const driversRoutes = require('./routes/driversRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +16,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/orders', ordersRoutes);
+app.use('/api/customers', customersRoutes);
+app.use('/api/drivers', driversRoutes);
 
 // Basic route for testing
 app.get('/', (req, res) => {

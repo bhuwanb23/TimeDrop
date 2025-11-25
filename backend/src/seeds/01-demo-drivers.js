@@ -10,7 +10,7 @@ module.exports = {
     await queryInterface.bulkInsert('drivers', [
       {
         name: 'John Driver',
-        phone: '9876543210',
+        phone: '9876543215',
         password_hash: hashedPassword,
         current_lat: 17.3850,
         current_lng: 78.4867,
@@ -19,7 +19,7 @@ module.exports = {
       },
       {
         name: 'Jane Driver',
-        phone: '9876543211',
+        phone: '9876543216',
         password_hash: hashedPassword,
         current_lat: 17.3851,
         current_lng: 78.4868,

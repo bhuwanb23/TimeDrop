@@ -6,13 +6,13 @@ module.exports = {
     await queryInterface.bulkInsert('customers', [
       {
         name: 'Rahul Mehta',
-        phone: '9876543210',
+        phone: '9876543213',
         created_at: new Date(),
         updated_at: new Date()
       },
       {
         name: 'Priya Sharma',
-        phone: '9876543212',
+        phone: '9876543214',
         created_at: new Date(),
         updated_at: new Date()
       }

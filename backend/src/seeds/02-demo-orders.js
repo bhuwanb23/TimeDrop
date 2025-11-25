@@ -5,7 +5,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.bulkInsert('orders', [
       {
-        order_id: 'AMZ-45210',
+        order_id: 'AMZ-45212',
         customer_name: 'Rahul Mehta',
         phone: '9876543210',
         address: 'Hyderabad, India',
@@ -20,7 +20,7 @@ module.exports = {
         updated_at: new Date()
       },
       {
-        order_id: 'AMZ-45211',
+        order_id: 'AMZ-45213',
         customer_name: 'Priya Sharma',
         phone: '9876543212',
         address: 'Hyderabad, India',
