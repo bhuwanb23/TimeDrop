@@ -1,4 +1,60 @@
-# Delivery Slot Selection Mobile App - TODO
+# Time Slot Selection Mobile App - TODO List
+
+## 1. Authentication Module
+- [x] Customer Login Screen
+- [x] Driver Login Screen
+- [x] Customer Registration Screen
+- [x] Password Recovery Screen
+
+## 2. Customer Module
+- [x] Order Creation Screen
+- [x] Slot Selection Screen
+- [x] Order Confirmation Screen
+- [x] Orders Tracking Screen
+- [x] Profile Management Screen
+
+## 3. Driver Module
+- [x] Driver Dashboard Screen
+- [x] Delivery Management Screen
+- [x] Route Optimization Screen
+- [x] Driver Profile Screen
+
+## 4. Common Features
+- [x] Drawer Navigator (Optional)
+- [x] Order State Management
+- [x] Delivery Status Tracking
+- [x] Local Data Caching
+
+## 4.4 API Integration
+- [x] REST API Connection Setup
+- [x] Authentication Token Management
+- [x] Request/Response Interceptors
+- [x] Error Handling
+
+## 5. Additional Features
+
+### 5.1 Notifications
+- [x] Push Notification Setup
+- [x] In-app Notification Center
+- [x] Delivery Status Alerts
+- [x] Reminder Notifications
+
+### 5.2 Maps & Location
+- [x] Google Maps Integration
+- [x] Location Permission Handling
+- [x] Real-time Location Tracking
+- [x] Geocoding/Reverse Geocoding
+
+## 6. Testing & Optimization
+- [x] Unit Testing (Basic utilities and math functions)
+- [x] Performance Testing (Math functions)
+- [ ] Integration Testing
+- [ ] Performance Optimization
+
+## 7. Deployment
+- [ ] App Store Preparation
+- [ ] Production Build
+- [ ] Distribution
 
 ## Project Overview
 Mobile application for customers and drivers to interact with the AI-Powered Delivery Slot Selection & Route Optimization System.

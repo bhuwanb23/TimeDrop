@@ -1,4 +1,5 @@
 import * as Location from 'expo-location';
+import { deg2rad } from '../utils/mathUtils';
 
 // Function to get address from coordinates (reverse geocoding)
 export const reverseGeocode = async (latitude, longitude) => {
@@ -61,11 +62,6 @@ export const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c; // Distance in kilometers
   return distance;
-};
-
-// Helper function to convert degrees to radians
-const deg2rad = (deg) => {
-  return deg * (Math.PI / 180);
 };
 
 // Function to get current location with permission handling
