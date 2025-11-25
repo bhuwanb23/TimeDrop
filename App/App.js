@@ -16,6 +16,8 @@ import DriverLoginScreen from './screens/DriverLoginScreen';
 import DriverDashboardScreen from './screens/DriverDashboardScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import OrdersScreen from './screens/OrdersScreen';
+import OrderConfirmationScreen from './screens/OrderConfirmationScreen';
+import NotificationsScreen from './screens/NotificationsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -50,8 +52,10 @@ export default function App() {
         <Stack.Screen name="CustomerApp" component={CustomerApp} options={{ headerShown: false }} />
         <Stack.Screen name="DriverApp" component={DriverApp} options={{ headerShown: false }} />
         <Stack.Screen name="OrderCreation" component={OrderCreationScreen} />
+        <Stack.Screen name="OrderConfirmation" component={OrderConfirmationScreen} />
         <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />
         <Stack.Screen name="SlotSelection" component={SlotSelectionScreen} />
+        <Stack.Screen name="Notifications" component={NotificationsScreen} />
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>
