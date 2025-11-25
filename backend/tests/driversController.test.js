@@ -42,6 +42,13 @@ jest.mock('../src/utils/courierIntegration', () => ({
   })
 }));
 
+// Mock status management utilities
+jest.mock('../src/utils/statusManagement', () => ({
+  validateStatusTransition: jest.fn().mockReturnValue(true),
+  logStatusChange: jest.fn(),
+  sendStatusNotification: jest.fn()
+}));
+
 describe('Drivers Controller', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -206,9 +213,7 @@ describe('Drivers Controller', () => {
         .send({
           status: 'Delivered'
         })
-        .expect(400);
-
-      console.log('Response body:', response.body);
+        .expect(200);
 
       expect(response.body.success).toBe(true);
       expect(response.body.message).toBe('Order status updated successfully');

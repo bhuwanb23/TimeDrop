@@ -17,13 +17,36 @@ jest.mock('../src/models', () => {
       create: jest.fn(),
       findByPk: jest.fn(),
       findAll: jest.fn(),
-      update: jest.fn()
+      update: jest.fn(),
+      findOne: jest.fn()
     },
     Driver: {
       findAll: jest.fn()
     }
   };
 });
+
+// Mock delivery grouping utility
+jest.mock('../src/utils/deliveryGrouping', () => ({
+  groupAndAssignDeliveries: jest.fn().mockResolvedValue({
+    success: true,
+    groups: {}
+  })
+}));
+
+// Mock status management utility
+jest.mock('../src/utils/statusManagement', () => ({
+  validateStatusTransition: jest.fn().mockReturnValue(true),
+  logStatusChange: jest.fn(),
+  sendStatusNotification: jest.fn()
+}));
+
+// Mock courier integration utility
+jest.mock('../src/utils/courierIntegration', () => ({
+  sendCourierCallback: jest.fn().mockResolvedValue({
+    success: true
+  })
+}));
 
 describe('Orders Controller', () => {
   beforeEach(() => {
@@ -68,7 +91,7 @@ describe('Orders Controller', () => {
     });
 
     it('should return 409 if order already exists', async () => {
-      Order.create.mockRejectedValue({ name: 'SequelizeUniqueConstraintError' });
+      Order.findOne.mockResolvedValue({ id: 1, order_id: 'TEST-001' });
       // Mock Driver.findAll for delivery grouping
       const { Driver } = require('../src/models');
       Driver.findAll.mockResolvedValue([]);
