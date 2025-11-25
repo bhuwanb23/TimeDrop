@@ -19,7 +19,7 @@
 ## Phase 2: Database Schema Implementation
 
 ### Task 3: Orders Table
-- [ ] Define orders model with all required fields
+- [x] Define orders model with all required fields
   - id (PK)
   - order_id
   - customer_name
@@ -34,52 +34,52 @@
   - assigned_driver_id (FK)
   - created_at
   - updated_at
-- [ ] Create migration file for orders table
-- [ ] Implement model validation rules
-- [ ] Create seed data for testing
+- [x] Create migration file for orders table
+- [x] Implement model validation rules
+- [x] Create seed data for testing
 
 ### Task 4: Drivers Table
-- [ ] Define drivers model with all required fields
+- [x] Define drivers model with all required fields
   - id
   - name
   - phone
   - password_hash
   - current_lat
   - current_lng
-- [ ] Create migration file for drivers table
-- [ ] Implement password hashing mechanism
-- [ ] Add validation for phone number format
+- [x] Create migration file for drivers table
+- [x] Implement password hashing mechanism
+- [x] Add validation for phone number format
 
 ### Task 5: Customers Table
-- [ ] Define customers model with all required fields
+- [x] Define customers model with all required fields
   - id
   - name
   - phone
-- [ ] Create migration file for customers table
-- [ ] Implement phone number validation
+- [x] Create migration file for customers table
+- [x] Implement phone number validation
 
 ## Phase 3: API Endpoints Implementation
 
 ### Task 6: Orders API
-- [ ] POST /api/orders/new - Receive new order from courier
-  - [ ] Validate incoming request body
-  - [ ] Store order with "Pending Slot Selection" status
-  - [ ] Implement error handling for duplicate orders
-  - [ ] Send success/failure response
-- [ ] GET /api/orders/:id - View order details
-  - [ ] Retrieve order by ID
-  - [ ] Handle case when order doesn't exist
-  - [ ] Return formatted order data
-- [ ] PUT /api/orders/select-slot - Customer selects delivery slot
-  - [ ] Validate slot selection data
-  - [ ] Update order with selected slot
-  - [ ] Change order status to "Slot Selected"
-  - [ ] Trigger delivery grouping logic
-- [ ] PUT /api/orders/update-status - Driver updates delivery status
-  - [ ] Validate status update request
-  - [ ] Update order status in database
-  - [ ] Notify courier system via callback
-  - [ ] Log status change in delivery history
+- [x] POST /api/orders/new - Receive new order from courier
+  - [x] Validate incoming request body
+  - [x] Store order with "Pending Slot Selection" status
+  - [x] Implement error handling for duplicate orders
+  - [x] Send success/failure response
+- [x] GET /api/orders/:id - View order details
+  - [x] Retrieve order by ID
+  - [x] Handle case when order doesn't exist
+  - [x] Return formatted order data
+- [x] PUT /api/orders/select-slot - Customer selects delivery slot
+  - [x] Validate slot selection data
+  - [x] Update order with selected slot
+  - [x] Change order status to "Slot Selected"
+  - [x] Trigger delivery grouping logic
+- [x] PUT /api/orders/update-status - Driver updates delivery status
+  - [x] Validate status update request
+  - [x] Update order status in database
+  - [x] Notify courier system via callback
+  - [x] Log status change in delivery history
 
 ### Task 7: Customers API
 - [ ] GET /api/customers/orders?phone= - Get customer orders by phone
