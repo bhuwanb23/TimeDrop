@@ -20,7 +20,8 @@ describe('Customer Model', () => {
     it('should create a valid customer', async () => {
       const customerData = {
         name: 'Test Customer',
-        phone: '9876543210'
+        phone: '9876543210',
+        password_hash: 'password123'
       };
 
       const customer = await Customer.create(customerData);
@@ -57,7 +58,8 @@ describe('Customer Model', () => {
     it('should validate required fields', async () => {
       const customerData = {
         // Missing required fields
-        name: 'Test Customer'
+        name: 'Test Customer',
+        password_hash: 'password123'
       };
 
       await expect(Customer.create(customerData)).rejects.toThrow();
@@ -66,7 +68,8 @@ describe('Customer Model', () => {
     it('should validate phone number format', async () => {
       const customerData = {
         name: 'Test Customer',
-        phone: 'invalid-phone'
+        phone: 'invalid-phone',
+        password_hash: 'password123'
       };
 
       await expect(Customer.create(customerData)).rejects.toThrow();

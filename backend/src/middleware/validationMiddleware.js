@@ -231,7 +231,7 @@ const validateCustomerOrdersRequest = (req, res, next) => {
       .pattern(/^[0-9]{10}$/)
       .required()
       .messages({
-        'string.pattern.base': 'Phone number must be exactly 10 digits',
+        'string.pattern.base': 'Invalid phone number format. Phone number must be 10 digits.',
         'any.required': 'Phone number is required'
       })
   });
