@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS, TYPOGRAPHY } from '../styles/DesignSystem';
 
 // Import screens
 import DriverDashboardScreen from './DriverDashboardScreen';
-import DeliveryManagementScreen from './DeliveryManagementScreen';
 import RouteOptimizationScreen from './RouteOptimizationScreen';
 import DriverProfileScreen from './DriverProfileScreen';
 
@@ -18,8 +16,6 @@ import NotificationCenter from '../components/NotificationCenter';
 // Create navigators
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
-
 // Delivery Stack Navigator
 const DeliveryStack = () => (
   <Stack.Navigator>
@@ -32,10 +28,10 @@ const DeliveryStack = () => (
       }} 
     />
     <Stack.Screen 
-      name="DeliveryManagement" 
-      component={DeliveryManagementScreen} 
+      name="RouteOptimization" 
+      component={RouteOptimizationScreen} 
       options={{ 
-        title: 'Manage Deliveries',
+        title: 'Optimize Route',
         headerShown: false
       }} 
     />
@@ -51,7 +47,7 @@ const DeliveryStack = () => (
 );
 
 // Main Tab Navigator
-const MainTabs = ({ navigation }) => {
+const MainTabs = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   
   return (
@@ -94,8 +90,7 @@ const MainTabs = ({ navigation }) => {
         })}
       >
         <Tab.Screen name="Dashboard" component={DriverDashboardScreen} />
-        <Tab.Screen name="Deliveries" component={DeliveryStack} />
-        <Tab.Screen name="Route" component={RouteOptimizationScreen} />
+        <Tab.Screen name="Route" component={DeliveryStack} />
         <Tab.Screen name="Profile" component={DriverProfileScreen} />
       </Tab.Navigator>
       
@@ -112,61 +107,6 @@ const MainTabs = ({ navigation }) => {
   );
 };
 
-// Drawer Navigator with Main Tabs as content
-const DriverDrawer = () => (
-  <Drawer.Navigator
-    initialRouteName="MainTabs"
-    screenOptions={{
-      headerShown: true,
-      headerTitle: 'Driver App',
-      headerTitleStyle: {
-        fontWeight: TYPOGRAPHY.bold,
-        fontSize: TYPOGRAPHY.h3,
-      },
-      headerTintColor: COLORS.primary,
-    }}
-  >
-    <Drawer.Screen 
-      name="MainTabs" 
-      component={MainTabs} 
-      options={{ 
-        title: 'Dashboard',
-        drawerIcon: ({ focused, size }) => (
-          <Icon name="home-outline" size={size} color={COLORS.primary} />
-        ),
-      }} 
-    />
-    <Drawer.Screen 
-      name="Profile" 
-      component={DriverProfileScreen} 
-      options={{ 
-        title: 'My Profile',
-        drawerIcon: ({ focused, size }) => (
-          <Icon name="person-outline" size={size} color={COLORS.primary} />
-        ),
-      }} 
-    />
-    <Drawer.Screen 
-      name="Deliveries" 
-      component={DeliveryManagementScreen} 
-      options={{ 
-        title: 'Manage Deliveries',
-        drawerIcon: ({ focused, size }) => (
-          <Icon name="cube-outline" size={size} color={COLORS.primary} />
-        ),
-      }} 
-    />
-    <Drawer.Screen 
-      name="Settings" 
-      component={DriverProfileScreen} // Using ProfileScreen as placeholder
-      options={{ 
-        title: 'Settings',
-        drawerIcon: ({ focused, size }) => (
-          <Icon name="settings-outline" size={size} color={COLORS.primary} />
-        ),
-      }} 
-    />
-  </Drawer.Navigator>
-);
+const DriverApp = () => <MainTabs />;
 
-export default DriverDrawer;
+export default DriverApp;

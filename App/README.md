@@ -69,6 +69,7 @@ Handles all backend communication and data synchronization.
 ### Customer Screens
 - **LoginScreen**: Customer authentication
 - **RegisterScreen**: New customer registration
+- **CustomerHomeScreen**: Main dashboard with quick actions
 - **OrderCreationScreen**: Create new orders
 - **SlotSelectionScreen**: Select delivery time slots
 - **OrderConfirmationScreen**: Confirm order details
@@ -79,7 +80,6 @@ Handles all backend communication and data synchronization.
 ### Driver Screens
 - **DriverLoginScreen**: Driver authentication
 - **DriverDashboardScreen**: Main dashboard with metrics
-- **DeliveryManagementScreen**: Manage deliveries
 - **RouteOptimizationScreen**: View optimized routes
 - **DriverProfileScreen**: Manage driver profile
 

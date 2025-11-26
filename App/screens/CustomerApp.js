@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS, TYPOGRAPHY } from '../styles/DesignSystem';
 
 // Import screens
+import CustomerHomeScreen from './CustomerHomeScreen';
 import OrderCreationScreen from './OrderCreationScreen';
 import SlotSelectionScreen from './SlotSelectionScreen';
 import OrderConfirmationScreen from './OrderConfirmationScreen';
@@ -20,8 +20,6 @@ import NotificationCenter from '../components/NotificationCenter';
 // Create navigators
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
-
 // Order Stack Navigator
 const OrderStack = () => (
   <Stack.Navigator>
@@ -53,7 +51,7 @@ const OrderStack = () => (
 );
 
 // Main Tab Navigator
-const MainTabs = ({ navigation }) => {
+const MainTabs = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   
   return (
@@ -63,7 +61,9 @@ const MainTabs = ({ navigation }) => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
             
-            if (route.name === 'Orders') {
+            if (route.name === 'Home') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'Orders') {
               iconName = focused ? 'list' : 'list-outline';
             } else if (route.name === 'Create') {
               iconName = focused ? 'add-circle' : 'add-circle-outline';
@@ -95,6 +95,7 @@ const MainTabs = ({ navigation }) => {
           ),
         })}
       >
+        <Tab.Screen name="Home" component={CustomerHomeScreen} />
         <Tab.Screen name="Orders" component={OrdersScreen} />
         <Tab.Screen name="Create" component={OrderStack} />
         <Tab.Screen name="Track" component={OrderTrackingScreen} />
@@ -114,61 +115,6 @@ const MainTabs = ({ navigation }) => {
   );
 };
 
-// Drawer Navigator with Main Tabs as content
-const CustomerDrawer = () => (
-  <Drawer.Navigator
-    initialRouteName="MainTabs"
-    screenOptions={{
-      headerShown: true,
-      headerTitle: 'Delivery App',
-      headerTitleStyle: {
-        fontWeight: TYPOGRAPHY.bold,
-        fontSize: TYPOGRAPHY.h3,
-      },
-      headerTintColor: COLORS.primary,
-    }}
-  >
-    <Drawer.Screen 
-      name="MainTabs" 
-      component={MainTabs} 
-      options={{ 
-        title: 'Home',
-        drawerIcon: ({ focused, size }) => (
-          <Icon name="home-outline" size={size} color={COLORS.primary} />
-        ),
-      }} 
-    />
-    <Drawer.Screen 
-      name="Profile" 
-      component={ProfileScreen} 
-      options={{ 
-        title: 'My Profile',
-        drawerIcon: ({ focused, size }) => (
-          <Icon name="person-outline" size={size} color={COLORS.primary} />
-        ),
-      }} 
-    />
-    <Drawer.Screen 
-      name="Orders" 
-      component={OrdersScreen} 
-      options={{ 
-        title: 'My Orders',
-        drawerIcon: ({ focused, size }) => (
-          <Icon name="list-outline" size={size} color={COLORS.primary} />
-        ),
-      }} 
-    />
-    <Drawer.Screen 
-      name="Settings" 
-      component={ProfileScreen} // Using ProfileScreen as placeholder
-      options={{ 
-        title: 'Settings',
-        drawerIcon: ({ focused, size }) => (
-          <Icon name="settings-outline" size={size} color={COLORS.primary} />
-        ),
-      }} 
-    />
-  </Drawer.Navigator>
-);
+const CustomerApp = () => <MainTabs />;
 
-export default CustomerDrawer;
+export default CustomerApp;
