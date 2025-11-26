@@ -10,6 +10,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [userType, setUserType] = useState('customer');
   const navigation = useNavigation();
 
   const handleLogin = async () => {
@@ -32,22 +33,37 @@ const LoginScreen = () => {
     setLoading(true);
     
     try {
-      // Make API call to login
-      const response = await authAPI.customerLogin(phone, password);
+      const response = await authAPI.login(phone, password, userType);
       
       if (response.data.success) {
-        // Save the auth token
-        await setAuthToken(response.data.token);
+        if (response.data.token) {
+          await setAuthToken(response.data.token);
+        }
         
-        Alert.alert('Success', 'Login successful!');
-        // Navigate to customer app with user data
-        navigation.navigate('CustomerApp', { 
-          userData: {
-            id: response.data.customer?.id,
-            name: response.data.customer?.name,
-            phone: response.data.customer?.phone
-          }
-        });
+        const { data: profileData = {}, userType: responseUserType } = response.data;
+
+        Alert.alert('Success', `${responseUserType === 'driver' ? 'Driver' : 'Customer'} login successful!`);
+        
+        if (responseUserType === 'driver') {
+          navigation.navigate('DriverApp', { 
+            driverData: {
+              id: profileData.id,
+              name: profileData.name,
+              phone: profileData.phone,
+              current_lat: profileData.current_lat,
+              current_lng: profileData.current_lng,
+            }
+          });
+        } else {
+          navigation.navigate('CustomerApp', { 
+            userData: {
+              id: profileData.id,
+              name: profileData.name,
+              phone: profileData.phone,
+              email: profileData.email,
+            }
+          });
+        }
       } else {
         Alert.alert('Error', response.data.message || 'Login failed');
       }
@@ -67,10 +83,6 @@ const LoginScreen = () => {
     navigation.navigate('Register');
   };
 
-  const handleDriverLogin = () => {
-    navigation.navigate('DriverLogin');
-  };
-
   const toggleSecureEntry = () => {
     setSecureTextEntry(!secureTextEntry);
   };
@@ -88,6 +100,43 @@ const LoginScreen = () => {
         </View>
 
         <View style={styles.formContainer}>
+          <View style={styles.userTypeContainer}>
+            <Text style={styles.userTypeLabel}>Sign in as</Text>
+            <View style={styles.userTypeButtons}>
+              <TouchableOpacity
+                style={[
+                  styles.userTypeButton,
+                  userType === 'customer' && styles.userTypeButtonActive
+                ]}
+                onPress={() => setUserType('customer')}
+              >
+                <Text
+                  style={[
+                    styles.userTypeButtonText,
+                    userType === 'customer' && styles.userTypeButtonTextActive
+                  ]}
+                >
+                  Customer
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.userTypeButton,
+                  userType === 'driver' && styles.userTypeButtonActive
+                ]}
+                onPress={() => setUserType('driver')}
+              >
+                <Text
+                  style={[
+                    styles.userTypeButtonText,
+                    userType === 'driver' && styles.userTypeButtonTextActive
+                  ]}
+                >
+                  Driver
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           <View style={styles.inputContainer}>
             <Icon name="call-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
             <TextInput
@@ -127,7 +176,9 @@ const LoginScreen = () => {
             {loading ? (
               <ActivityIndicator color={COLORS.textInverted} />
             ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
+              <Text style={styles.buttonText}>
+                Sign In as {userType === 'driver' ? 'Driver' : 'Customer'}
+              </Text>
             )}
           </TouchableOpacity>
         </View>
@@ -137,11 +188,9 @@ const LoginScreen = () => {
             <Text style={styles.footerText}>Don't have an account? </Text>
             <Text style={styles.footerLink}>Register</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity onPress={handleDriverLogin} style={styles.footerButton}>
-            <Text style={styles.footerText}>Are you a driver? </Text>
-            <Text style={styles.footerLink}>Driver Login</Text>
-          </TouchableOpacity>
+          <Text style={styles.helperText}>
+            Need to switch roles later? Use the selector above before signing in.
+          </Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -178,6 +227,36 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.large,
     padding: SPACING.m,
     ...SHADOW,
+  },
+  userTypeContainer: {
+    marginBottom: SPACING.m,
+  },
+  userTypeLabel: {
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.s,
+    fontWeight: TYPOGRAPHY.medium,
+  },
+  userTypeButtons: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.grayLight,
+    borderRadius: BORDER_RADIUS.medium,
+    overflow: 'hidden',
+  },
+  userTypeButton: {
+    flex: 1,
+    paddingVertical: SPACING.s,
+    alignItems: 'center',
+  },
+  userTypeButtonActive: {
+    backgroundColor: COLORS.primary,
+  },
+  userTypeButtonText: {
+    color: COLORS.textSecondary,
+    fontWeight: TYPOGRAPHY.semiBold,
+  },
+  userTypeButtonTextActive: {
+    color: COLORS.textInverted,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -240,6 +319,11 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontSize: TYPOGRAPHY.bodySmall,
     fontWeight: TYPOGRAPHY.semiBold,
+  },
+  helperText: {
+    color: COLORS.textLight,
+    fontSize: TYPOGRAPHY.caption,
+    textAlign: 'center',
   },
 });
 

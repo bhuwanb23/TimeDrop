@@ -83,6 +83,10 @@ export const authAPI = {
   // Driver login
   driverLogin: (phone, password) => 
     api.post('/drivers/login', { phone, password }),
+
+  // Unified login with user type
+  login: (phone, password, userType) =>
+    api.post('/auth/login', { phone, password, userType }),
 };
 
 // Customer API calls

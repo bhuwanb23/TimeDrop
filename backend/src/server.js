@@ -6,6 +6,7 @@ const { sequelize } = require('./models');
 const ordersRoutes = require('./routes/ordersRoutes');
 const customersRoutes = require('./routes/customersRoutes');
 const driversRoutes = require('./routes/driversRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // Middleware
 const { rateLimiter } = require('./middleware/rateLimiter');
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use('/api/orders', ordersRoutes);
 app.use('/api/customers', customersRoutes);
 app.use('/api/drivers', driversRoutes);
+app.use('/api/auth', authRoutes);
 
 // Basic route for testing
 app.get('/', (req, res) => {
