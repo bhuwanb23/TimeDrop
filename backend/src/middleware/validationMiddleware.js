@@ -368,11 +368,40 @@ const validateAuthLogin = (req, res, next) => {
   next();
 };
 
+// Validation for assigning driver to order
+const validateDriverAssignment = (req, res, next) => {
+  const schema = Joi.object({
+    driver_id: Joi.number()
+      .integer()
+      .positive()
+      .required()
+      .messages({
+        'number.base': 'Driver ID must be a number',
+        'number.integer': 'Driver ID must be an integer',
+        'number.positive': 'Driver ID must be positive',
+        'any.required': 'Driver ID is required'
+      })
+  });
+
+  const { error, value } = schema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message
+    });
+  }
+
+  req.body = sanitizeObject(value);
+  next();
+};
+
 module.exports = {
   validateOrderCreation,
   validateSlotSelection,
   validateCustomerOrdersRequest,
   validateCustomerLogin,
   validateDriverLogin,
-  validateAuthLogin
+  validateAuthLogin,
+  validateDriverAssignment
 };

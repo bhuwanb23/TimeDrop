@@ -1,53 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, Linking, Platform } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import MapComponent from '../components/MapComponent';
-import { useDelivery } from '../context/DeliveryContext';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
+import { driverAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const DriverDashboardScreen = () => {
-  const { deliveries, loading, error } = useDelivery();
+  const { session } = useAuth();
+  const driverProfile = session?.type === 'driver' ? session.profile : null;
   const [driverInfo, setDriverInfo] = useState({
-    name: 'Raj Kumar',
-    vehicle: 'KA-01-AB-1234',
-    phone: '9876543211',
+    name: driverProfile?.name || 'Driver',
+    vehicle: driverProfile?.vehicle || 'Vehicle ID',
+    phone: driverProfile?.phone || '—',
   });
   
-  const [deliveriesState, setDeliveriesState] = useState([
-    { 
-      id: 'DEL-001', 
-      orderId: 'ORD-001', 
-      customerName: 'John Doe', 
-      address: '123 Main Street, Bangalore', 
-      slot: 'Today, 2:00 PM - 4:00 PM',
-      status: 'Out for Delivery',
-      distance: '2.5 km',
-      lat: 12.9716,
-      lng: 77.5946
-    },
-    { 
-      id: 'DEL-002', 
-      orderId: 'ORD-002', 
-      customerName: 'Jane Smith', 
-      address: '456 Park Avenue, Bangalore', 
-      slot: 'Today, 2:00 PM - 4:00 PM',
-      status: 'Pending',
-      distance: '1.8 km',
-      lat: 12.9716,
-      lng: 77.5946
-    },
-    { 
-      id: 'DEL-003', 
-      orderId: 'ORD-003', 
-      customerName: 'Robert Johnson', 
-      address: '789 Elm Street, Bangalore', 
-      slot: 'Today, 4:00 PM - 6:00 PM',
-      status: 'Pending',
-      distance: '3.2 km',
-      lat: 12.9716,
-      lng: 77.5946
-    },
-  ]);
+  const [deliveriesState, setDeliveriesState] = useState([]);
+  const [loadingDeliveries, setLoadingDeliveries] = useState(false);
+  const [deliveriesError, setDeliveriesError] = useState(null);
   
   // Performance metrics
   const [performanceMetrics, setPerformanceMetrics] = useState({
@@ -65,95 +35,143 @@ const DriverDashboardScreen = () => {
   });
   
   const navigation = useNavigation();
+  const fetchDeliveries = useCallback(async () => {
+    if (!driverProfile?.id) {
+      return;
+    }
+    try {
+      setLoadingDeliveries(true);
+      const response = await driverAPI.getDeliveries(driverProfile.id);
+      const list = response.data?.data || [];
+      setDeliveriesState(list);
+      setDeliveriesError(null);
+    } catch (error) {
+      console.error('Error fetching driver deliveries:', error);
+      const message = error.response?.data?.message || 'Unable to load deliveries';
+      setDeliveriesError(message);
+      Alert.alert('Error', message);
+    } finally {
+      setLoadingDeliveries(false);
+    }
+  }, [driverProfile?.id]);
 
-  // Example of how to use the delivery context
+  useFocusEffect(
+    useCallback(() => {
+      if (driverProfile?.id) {
+        fetchDeliveries();
+      }
+    }, [driverProfile?.id, fetchDeliveries])
+  );
+
   useEffect(() => {
-    // In a real app, this would fetch deliveries from an API
-    // For now, we'll just log the deliveries from context
-    console.log('Deliveries from context:', deliveries);
-  }, [deliveries]);
+    if (driverProfile) {
+      setDriverInfo((prev) => ({
+        ...prev,
+        name: driverProfile.name || prev.name,
+        phone: driverProfile.phone || prev.phone,
+        vehicle: driverProfile.vehicle || prev.vehicle,
+      }));
+    }
+  }, [driverProfile]);
 
-  const handleUpdateStatus = (deliveryId, newStatus) => {
-    // In a real app, this would make an API call to update the status
-    setDeliveriesState(prevDeliveries => 
-      prevDeliveries.map(delivery => 
-        delivery.id === deliveryId 
-          ? { ...delivery, status: newStatus } 
-          : delivery
-      )
-    );
-    
-    Alert.alert('Status Updated', `Delivery status updated to ${newStatus}`);
+  const handleUpdateStatus = async (deliveryId, newStatus) => {
+    if (!driverProfile?.id) {
+      Alert.alert('Not Authorized', 'Please sign in as a driver to update order status.');
+      return;
+    }
+    try {
+      await driverAPI.updateOrderStatus(driverProfile.id, deliveryId, newStatus);
+      Alert.alert('Status Updated', `Order updated to ${newStatus}`);
+      fetchDeliveries();
+    } catch (error) {
+      console.error('Error updating status:', error);
+      const message = error.response?.data?.message || 'Failed to update status';
+      Alert.alert('Error', message);
+    }
   };
 
   const handleNavigate = (delivery) => {
-    // In a real app, this would open the map with directions
-    Alert.alert(
-      'Navigation', 
-      `Opening navigation to ${delivery.customerName}'s address: ${delivery.address}`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Open Maps', onPress: () => {/* Open maps app */} }
-      ]
-    );
+    if (!delivery.lat || !delivery.lng) {
+      Alert.alert('Location unavailable', 'No coordinates available for this delivery.');
+      return;
+    }
+    const latLng = `${delivery.lat},${delivery.lng}`;
+    const url = Platform.select({
+      ios: `http://maps.apple.com/?daddr=${latLng}`,
+      android: `geo:${latLng}?q=${latLng}`,
+      default: `https://www.google.com/maps/dir/?api=1&destination=${latLng}`
+    });
+    Linking.openURL(url).catch(() => {
+      Alert.alert('Unable to open maps', 'Please open your maps app manually.');
+    });
   };
 
   const handleContactCustomer = (delivery) => {
-    Alert.alert(
-      'Contact Customer', 
-      `Call ${delivery.customerName} at their registered number?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Call', onPress: () => {/* Initiate call */} }
-      ]
-    );
+    if (!delivery.phone) {
+      Alert.alert('No phone number', 'Customer phone number unavailable.');
+      return;
+    }
+    Linking.openURL(`tel:${delivery.phone}`).catch(() => {
+      Alert.alert('Unable to place call', 'Please dial the number manually.');
+    });
   };
   
   const handleProofOfDelivery = (delivery) => {
     Alert.alert(
       'Proof of Delivery', 
-      `Collect proof of delivery for order ${delivery.orderId}?`,
+      `Collect proof of delivery for order ${delivery.order_id}?`,
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Collect Signature', onPress: () => {/* Collect signature */} },
-        { text: 'Take Photo', onPress: () => {/* Take photo */} }
+        { text: 'Collect Signature', onPress: () => {/* Placeholder */} },
+        { text: 'Take Photo', onPress: () => {/* Placeholder */} }
       ]
     );
   };
 
-  const handleLocationUpdate = (location) => {
-    // In a real app, this would send the location to the backend
-    console.log('Driver location updated:', location);
-    // You could call an API here to update the driver's location
-    // driverAPI.updateLocation(driverId, location);
+  const handleLocationUpdate = async (location) => {
+    if (!driverProfile?.id) return;
+    try {
+      await driverAPI.updateLocation(driverProfile.id, location);
+    } catch (error) {
+      console.log('Unable to update driver location', error);
+    }
   };
 
   const getStatusStyle = (status) => {
     switch (status) {
-      case 'Pending':
+      case 'Assigned to Driver':
         return styles.pendingStatus;
       case 'Out for Delivery':
         return styles.outForDeliveryStatus;
       case 'Delivered':
         return styles.deliveredStatus;
+      case 'Customer Not Available':
+      case 'Rescheduled':
+        return styles.warningStatus;
       default:
         return styles.defaultStatus;
     }
   };
 
+  const formatSlotWindow = (delivery) => {
+    if (delivery.slot_date && delivery.slot_time) {
+      return `${delivery.slot_date} • ${delivery.slot_time}`;
+    }
+    return 'Slot not scheduled';
+  };
+
   const renderDelivery = (delivery) => (
     <View key={delivery.id} style={styles.deliveryCard}>
       <View style={styles.deliveryHeader}>
-        <Text style={styles.orderId}>Order: {delivery.orderId}</Text>
+        <Text style={styles.orderId}>Order: {delivery.order_id}</Text>
         <Text style={[styles.statusBadge, getStatusStyle(delivery.status)]}>
           {delivery.status}
         </Text>
       </View>
       
-      <Text style={styles.customerName}>{delivery.customerName}</Text>
+      <Text style={styles.customerName}>{delivery.customer_name}</Text>
       <Text style={styles.address}>{delivery.address}</Text>
-      <Text style={styles.slot}>Slot: {delivery.slot}</Text>
-      <Text style={styles.distance}>{delivery.distance}</Text>
+      <Text style={styles.slot}>Slot: {formatSlotWindow(delivery)}</Text>
       
       <View style={styles.deliveryActions}>
         <TouchableOpacity 
@@ -170,7 +188,7 @@ const DriverDashboardScreen = () => {
           <Text style={styles.actionButtonText}>Contact</Text>
         </TouchableOpacity>
         
-        {delivery.status === 'Pending' && (
+        {delivery.status === 'Assigned to Driver' && (
           <TouchableOpacity 
             style={[styles.actionButton, styles.updateButton]} 
             onPress={() => handleUpdateStatus(delivery.id, 'Out for Delivery')}
@@ -195,9 +213,34 @@ const DriverDashboardScreen = () => {
             </TouchableOpacity>
           </>
         )}
+        
+        {delivery.status === 'Customer Not Available' && (
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.updateButton]} 
+            onPress={() => handleUpdateStatus(delivery.id, 'Rescheduled')}
+          >
+            <Text style={styles.actionButtonText}>Reschedule</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
+
+  if (!driverProfile) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.welcomeText}>Driver session not found</Text>
+          <Text style={styles.driverName}>Please sign in again</Text>
+        </View>
+        <View style={styles.section}>
+          <Text style={styles.noDeliveriesText}>
+            Log in as a driver from the main screen to view assignments.
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -274,17 +317,17 @@ const DriverDashboardScreen = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Current Route</Text>
         <MapComponent 
-          delivery={deliveriesState.find(d => d.status === 'Out for Delivery')} 
+          delivery={deliveriesState.find(d => d.status === 'Out for Delivery') || deliveriesState[0] || null} 
           onLocationUpdate={handleLocationUpdate}
         />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Today's Deliveries</Text>
-        {loading ? (
+        {loadingDeliveries ? (
           <Text style={styles.loadingText}>Loading deliveries...</Text>
-        ) : error ? (
-          <Text style={styles.errorText}>Error loading deliveries: {error}</Text>
+        ) : deliveriesError ? (
+          <Text style={styles.errorText}>{deliveriesError}</Text>
         ) : deliveriesState.length > 0 ? (
           deliveriesState.map(renderDelivery)
         ) : (
@@ -440,6 +483,10 @@ const styles = StyleSheet.create({
   deliveredStatus: {
     backgroundColor: COLORS.secondary,
     color: COLORS.secondaryDark,
+  },
+  warningStatus: {
+    backgroundColor: COLORS.accent,
+    color: COLORS.textInverted,
   },
   defaultStatus: {
     backgroundColor: COLORS.gray,

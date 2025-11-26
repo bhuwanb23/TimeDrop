@@ -1,7 +1,12 @@
-const { Order } = require('../models');
+const { Order, Driver } = require('../models');
+const { Op } = require('sequelize');
 const { groupAndAssignDeliveries } = require('../utils/deliveryGrouping');
 const { validateStatusTransition, logStatusChange, sendStatusNotification } = require('../utils/statusManagement');
 const { sendCourierCallback } = require('../utils/courierIntegration');
+
+const SLOT_BASE_URL = process.env.SLOT_SELECTION_BASE_URL || 'https://delivery-app.example.com/slots';
+
+const buildSlotLink = (orderId) => `${SLOT_BASE_URL}/${orderId}`;
 
 // POST /api/orders/new - Receive new order from courier
 const createOrder = async (req, res) => {
@@ -42,7 +47,8 @@ const createOrder = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: 'Order created successfully',
-      data: newOrder
+      data: newOrder,
+      slot_link: buildSlotLink(order_id)
     });
   } catch (error) {
     console.error('Error creating order:', error);
@@ -108,30 +114,6 @@ const selectSlot = async (req, res) => {
     order.status = 'Slot Selected';
     await order.save();
 
-    // Trigger delivery grouping logic
-    const allOrders = await Order.findAll({
-      where: {
-        status: 'Slot Selected'
-      }
-    });
-    
-    const groupingResult = await groupAndAssignDeliveries(allOrders);
-    console.log('Delivery grouping result:', groupingResult);
-    
-    // Update assigned orders in database
-    if (groupingResult.success) {
-      for (const [pincode, group] of Object.entries(groupingResult.groups)) {
-        for (const orderData of group.orders) {
-          if (orderData.assigned_driver_id) {
-            await Order.update(
-              { assigned_driver_id: orderData.assigned_driver_id },
-              { where: { id: orderData.id } }
-            );
-          }
-        }
-      }
-    }
-
     return res.status(200).json({
       success: true,
       message: 'Slot selected successfully',
@@ -139,6 +121,117 @@ const selectSlot = async (req, res) => {
     });
   } catch (error) {
     console.error('Error selecting slot:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+// PUT /api/orders/:id/assign-driver - Assign driver manually
+const assignDriver = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { driver_id } = req.body;
+
+    const order = await Order.findByPk(id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    const driver = await Driver.findByPk(driver_id);
+    if (!driver) {
+      return res.status(404).json({
+        success: false,
+        message: 'Driver not found'
+      });
+    }
+
+    if (!['Slot Selected', 'Rescheduled'].includes(order.status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Order is not ready for driver assignment'
+      });
+    }
+
+    order.assigned_driver_id = driver_id;
+    order.status = 'Assigned to Driver';
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Driver assigned successfully',
+      data: order
+    });
+  } catch (error) {
+    console.error('Error assigning driver:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+// POST /api/orders/auto-assign - Auto assign drivers using grouping logic
+const autoAssignDrivers = async (req, res) => {
+  try {
+    const pendingOrders = await Order.findAll({
+      where: {
+        status: 'Slot Selected',
+        assigned_driver_id: { [Op.is]: null }
+      }
+    });
+
+    if (pendingOrders.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'No orders waiting for assignment',
+        assigned: 0
+      });
+    }
+
+    const groupingResult = await groupAndAssignDeliveries(pendingOrders);
+
+    if (!groupingResult.success) {
+      return res.status(500).json({
+        success: false,
+        message: groupingResult.error || 'Unable to assign drivers'
+      });
+    }
+
+    let assignedCount = 0;
+    const updatePromises = [];
+
+    Object.values(groupingResult.groups).forEach((group) => {
+      group.orders.forEach((orderData) => {
+        if (orderData.assigned_driver_id) {
+          assignedCount += 1;
+          updatePromises.push(
+            Order.update(
+              {
+                assigned_driver_id: orderData.assigned_driver_id,
+                status: 'Assigned to Driver'
+              },
+              { where: { id: orderData.id } }
+            )
+          );
+        }
+      });
+    });
+
+    await Promise.all(updatePromises);
+
+    return res.status(200).json({
+      success: true,
+      message: `Assigned ${assignedCount} orders to drivers`,
+      assigned: assignedCount,
+      groups: groupingResult.groups
+    });
+  } catch (error) {
+    console.error('Error auto assigning drivers:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -165,10 +258,6 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    // Update order status in database
-    order.status = status;
-    await order.save();
-
     // Validate status transition
     const oldStatus = order.status;
     if (!validateStatusTransition(oldStatus, status)) {
@@ -177,6 +266,9 @@ const updateOrderStatus = async (req, res) => {
         message: `Invalid status transition from ${oldStatus} to ${status}`
       });
     }
+
+    order.status = status;
+    await order.save();
     
     // Log status change
     logStatusChange(order.id, oldStatus, status);
@@ -205,5 +297,8 @@ module.exports = {
   createOrder,
   getOrderById,
   selectSlot,
-  updateOrderStatus
+  updateOrderStatus,
+  assignDriver,
+  autoAssignDrivers
+};
 };

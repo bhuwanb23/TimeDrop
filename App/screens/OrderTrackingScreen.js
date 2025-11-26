@@ -1,80 +1,117 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, Linking } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
+import { customerAPI } from '../services/api';
 
 const OrderTrackingScreen = () => {
   const [order, setOrder] = useState(null);
   const [timelineEvents, setTimelineEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigation = useNavigation();
   const route = useRoute();
   const { orderId } = route.params || {};
 
-  // Mock order data - in a real app, this would come from an API
   useEffect(() => {
-    if (orderId) {
-      // Simulate API call
-      const mockOrder = {
-        id: orderId,
-        customerName: 'John Doe',
-        customerPhone: '9876543210',
-        deliveryAddress: '123 Main Street, Bangalore, Karnataka 560001',
-        orderValue: '₹2,499',
-        orderDescription: 'Electronics package',
-        status: 'Out for Delivery',
-        selectedSlot: 'Today, 2:00 PM - 4:00 PM',
-        assignedDriver: 'Raj Kumar',
-        driverPhone: '9876543211',
-        driverVehicle: 'KA-01-AB-1234',
-        estimatedDelivery: '30 mins',
-        statusHistory: [
-          { 
-            status: 'Order Placed', 
-            timestamp: '2023-06-15 10:30 AM', 
-            location: 'Warehouse',
-            completed: true
-          },
-          { 
-            status: 'Processing', 
-            timestamp: '2023-06-15 11:15 AM', 
-            location: 'Sorting Facility',
-            completed: true
-          },
-          { 
-            status: 'Slot Selected', 
-            timestamp: '2023-06-15 12:00 PM', 
-            location: 'Customer',
-            completed: true
-          },
-          { 
-            status: 'Out for Delivery', 
-            timestamp: '2023-06-15 1:45 PM', 
-            location: 'Delivery Hub',
-            completed: true
-          },
-          { 
-            status: 'Delivered', 
-            timestamp: 'Expected by 2:30 PM', 
-            location: 'Customer Address',
-            completed: false
-          },
-        ]
-      };
-      setOrder(mockOrder);
-      setTimelineEvents(mockOrder.statusHistory);
-    }
+    const fetchOrder = async () => {
+      if (!orderId) {
+        setLoading(false);
+        setError('No order selected');
+        return;
+      }
+      try {
+        setLoading(true);
+        const response = await customerAPI.getOrderById(orderId);
+        const data = response.data?.data;
+        if (!data) {
+          setError('Order not found');
+          return;
+        }
+        setOrder(data);
+        setTimelineEvents(buildTimeline(data));
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching order details:', err);
+        const message = err.response?.data?.message || 'Failed to load order details.';
+        setError(message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
   }, [orderId]);
 
+  const buildTimeline = (orderData) => {
+    const events = [];
+
+    if (orderData.created_at) {
+      events.push({
+        status: 'Order Created',
+        timestamp: new Date(orderData.created_at).toLocaleString(),
+        location: 'Warehouse',
+        completed: true
+      });
+    }
+
+    if (orderData.slot_date && orderData.slot_time) {
+      events.push({
+        status: 'Slot Selected',
+        timestamp: `${orderData.slot_date} ${orderData.slot_time}`,
+        location: orderData.address,
+        completed: true
+      });
+    }
+
+    if (orderData.assigned_driver_id) {
+      events.push({
+        status: 'Assigned to Driver',
+        timestamp: new Date(orderData.updated_at).toLocaleString(),
+        location: 'Driver Hub',
+        completed: ['Assigned to Driver', 'Out for Delivery', 'Delivered'].includes(orderData.status)
+      });
+    }
+
+    if (['Out for Delivery', 'Delivered'].includes(orderData.status)) {
+      events.push({
+        status: 'Out for Delivery',
+        timestamp: new Date(orderData.updated_at).toLocaleString(),
+        location: 'On Route',
+        completed: orderData.status === 'Delivered'
+      });
+    }
+
+    events.push({
+      status: 'Delivered',
+      timestamp: orderData.status === 'Delivered'
+        ? new Date(orderData.updated_at).toLocaleString()
+        : 'Awaiting delivery',
+      location: orderData.address,
+      completed: orderData.status === 'Delivered'
+    });
+
+    return events;
+  };
+
   const handleSelectSlot = () => {
-    navigation.navigate('SlotSelection', { orderId });
+    navigation.navigate('SlotSelection', { 
+      orderId,
+      orderCode: order?.order_id,
+      slotDate: order?.slot_date,
+      slotTime: order?.slot_time
+    });
   };
 
   const handleContactDriver = () => {
-    Alert.alert('Contact Driver', `Call ${order.assignedDriver} at ${order.driverPhone}?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Call', onPress: () => {/* In a real app, this would initiate a phone call */} }
-    ]);
+    if (!order?.driver_phone) {
+      Alert.alert('Driver contact unavailable', 'Driver contact will be available once assigned.');
+      return;
+    }
+    Linking.openURL(`tel:${order.driver_phone}`).catch(() => {
+      Alert.alert('Unable to place call', 'Please dial the driver manually.');
+    });
   };
 
   const handleReschedule = () => {
@@ -83,20 +120,35 @@ const OrderTrackingScreen = () => {
       'Are you sure you want to reschedule this delivery?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Reschedule', onPress: () => navigation.navigate('SlotSelection', { orderId }) }
+        { text: 'Reschedule', onPress: handleSelectSlot }
       ]
     );
   };
 
-  if (!order) {
+  if (loading) {
     return (
       <View style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Icon name="hourglass-outline" size={40} color={COLORS.textSecondary} />
+          <ActivityIndicator color={COLORS.primary} size="large" />
           <Text style={styles.loadingText}>Loading order details...</Text>
         </View>
       </View>
     );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Icon name="alert-circle-outline" size={40} color={COLORS.error} />
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (!order) {
+    return null;
   }
 
   const renderTimelineEvent = (event, index) => {
@@ -148,7 +200,7 @@ const OrderTrackingScreen = () => {
           <Text style={styles.title}>Order Tracking</Text>
           <View style={styles.placeholder} />
         </View>
-        <Text style={styles.orderIdText}>Order ID: {order.id}</Text>
+        <Text style={styles.orderIdText}>Order ID: {order.order_id || order.id}</Text>
       </View>
       
       {/* Order Summary */}
@@ -162,25 +214,20 @@ const OrderTrackingScreen = () => {
         </View>
         
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Order Value:</Text>
-          <Text style={styles.summaryValue}>{order.orderValue}</Text>
+          <Text style={styles.summaryLabel}>Delivery Slot:</Text>
+          <Text style={styles.summaryValue}>
+            {order.slot_date && order.slot_time ? `${order.slot_date} • ${order.slot_time}` : 'Not scheduled'}
+          </Text>
         </View>
         
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Delivery Slot:</Text>
-          <Text style={styles.summaryValue}>{order.selectedSlot}</Text>
+          <Text style={styles.summaryLabel}>Address:</Text>
+          <Text style={styles.summaryValue}>{order.address}</Text>
         </View>
-        
-        {order.estimatedDelivery && (
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Estimated Delivery:</Text>
-            <Text style={styles.estimatedDelivery}>{order.estimatedDelivery}</Text>
-          </View>
-        )}
       </View>
       
       {/* Driver Information */}
-      {order.assignedDriver && (
+      {order.assigned_driver_id && (
         <View style={styles.driverSection}>
           <View style={styles.sectionHeader}>
             <Icon name="car-outline" size={20} color={COLORS.primary} />
@@ -189,15 +236,17 @@ const OrderTrackingScreen = () => {
           <View style={styles.driverInfo}>
             <View style={styles.driverDetailRow}>
               <Icon name="person-outline" size={16} color={COLORS.textSecondary} />
-              <Text style={styles.driverName}>Driver: {order.assignedDriver}</Text>
+              <Text style={styles.driverName}>Driver ID: {order.assigned_driver_id}</Text>
             </View>
             <View style={styles.driverDetailRow}>
               <Icon name="car-outline" size={16} color={COLORS.textSecondary} />
-              <Text style={styles.driverDetail}>Vehicle: {order.driverVehicle}</Text>
+              <Text style={styles.driverDetail}>Vehicle: Assigned driver</Text>
             </View>
             <View style={styles.driverDetailRow}>
               <Icon name="time-outline" size={16} color={COLORS.textSecondary} />
-              <Text style={styles.driverDetail}>Slot: {order.selectedSlot}</Text>
+              <Text style={styles.driverDetail}>
+                Slot: {order.slot_date && order.slot_time ? `${order.slot_date} • ${order.slot_time}` : 'Not scheduled'}
+              </Text>
             </View>
           </View>
           
@@ -251,14 +300,19 @@ const OrderTrackingScreen = () => {
 
 const getStatusStyle = (status) => {
   switch (status) {
+    case 'Pending Slot Selection':
+      return styles.processingStatus;
     case 'Slot Selected':
       return styles.slotSelectedStatus;
-    case 'Processing':
-      return styles.processingStatus;
+    case 'Assigned to Driver':
+      return styles.assignedStatus;
     case 'Out for Delivery':
       return styles.outForDeliveryStatus;
     case 'Delivered':
       return styles.deliveredStatus;
+    case 'Customer Not Available':
+    case 'Rescheduled':
+      return styles.warningStatus;
     default:
       return styles.defaultStatus;
   }
@@ -266,14 +320,20 @@ const getStatusStyle = (status) => {
 
 const getStatusIcon = (status) => {
   switch (status) {
+    case 'Pending Slot Selection':
+      return 'time-outline';
     case 'Slot Selected':
       return 'time-outline';
-    case 'Processing':
-      return 'construct-outline';
+    case 'Assigned to Driver':
+      return 'swap-horizontal-outline';
     case 'Out for Delivery':
       return 'car-outline';
     case 'Delivered':
       return 'checkmark-circle-outline';
+    case 'Customer Not Available':
+      return 'alert-circle-outline';
+    case 'Rescheduled':
+      return 'refresh-outline';
     default:
       return 'clipboard-outline';
   }
@@ -365,11 +425,17 @@ const styles = StyleSheet.create({
   processingStatus: {
     backgroundColor: COLORS.primaryLight,
   },
+  assignedStatus: {
+    backgroundColor: COLORS.secondaryLight,
+  },
   outForDeliveryStatus: {
     backgroundColor: COLORS.secondary,
   },
   deliveredStatus: {
     backgroundColor: COLORS.secondary,
+  },
+  warningStatus: {
+    backgroundColor: COLORS.accent,
   },
   defaultStatus: {
     backgroundColor: COLORS.gray,

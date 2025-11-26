@@ -4,6 +4,7 @@ const { Order } = require('../models');
 const ORDER_STATUSES = [
   'Pending Slot Selection',
   'Slot Selected',
+  'Assigned to Driver',
   'Out for Delivery',
   'Delivered',
   'Customer Not Available',
@@ -13,10 +14,11 @@ const ORDER_STATUSES = [
 // Define valid status transitions
 const VALID_STATUS_TRANSITIONS = {
   'Pending Slot Selection': ['Slot Selected', 'Rescheduled'],
-  'Slot Selected': ['Out for Delivery', 'Rescheduled'],
+  'Slot Selected': ['Assigned to Driver', 'Out for Delivery', 'Rescheduled'],
+  'Assigned to Driver': ['Out for Delivery', 'Rescheduled'],
   'Out for Delivery': ['Delivered', 'Customer Not Available', 'Rescheduled'],
   'Customer Not Available': ['Rescheduled'],
-  'Rescheduled': ['Out for Delivery', 'Delivered'],
+  'Rescheduled': ['Assigned to Driver', 'Out for Delivery'],
   'Delivered': [] // Final state, no transitions allowed
 };
 

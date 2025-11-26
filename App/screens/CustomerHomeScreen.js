@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'rea
 import { useNavigation } from '@react-navigation/native';
 import { useOrder } from '../context/OrderContext';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
+import { useAuth } from '../context/AuthContext';
 
 const CustomerHomeScreen = () => {
   const [userName, setUserName] = useState('John Doe');
@@ -49,11 +50,17 @@ const CustomerHomeScreen = () => {
   ]);
   
   const navigation = useNavigation();
+  const { session } = useAuth();
+  const customerProfile = session?.type === 'customer' ? session.profile : null;
 
   // Example of how to use the order context
   useEffect(() => {
-    // In a real app, this would fetch orders from an API
-    // For now, we'll just log the orders from context
+    if (customerProfile?.name) {
+      setUserName(customerProfile.name);
+    }
+  }, [customerProfile]);
+
+  useEffect(() => {
     console.log('Orders from context:', orders);
   }, [orders]);
 

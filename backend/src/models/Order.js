@@ -97,8 +97,16 @@ const Order = sequelize.define('Order', {
         msg: 'Status is required'
       },
       isIn: {
-        args: [['Pending Slot Selection', 'Slot Selected', 'Out for Delivery', 'Delivered', 'Customer Not Available', 'Rescheduled']],
-        msg: 'Status must be one of: Pending Slot Selection, Slot Selected, Out for Delivery, Delivered, Customer Not Available, Rescheduled'
+        args: [[
+          'Pending Slot Selection',
+          'Slot Selected',
+          'Assigned to Driver',
+          'Out for Delivery',
+          'Delivered',
+          'Customer Not Available',
+          'Rescheduled'
+        ]],
+        msg: 'Status must be a valid order status'
       }
     }
   },

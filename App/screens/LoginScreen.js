@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityInd
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { authAPI, setAuthToken } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
 
 const LoginScreen = () => {
@@ -12,6 +13,7 @@ const LoginScreen = () => {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [userType, setUserType] = useState('customer');
   const navigation = useNavigation();
+  const { setSession } = useAuth();
 
   const handleLogin = async () => {
     // Validation
@@ -42,27 +44,17 @@ const LoginScreen = () => {
         
         const { data: profileData = {}, userType: responseUserType } = response.data;
 
+        setSession({
+          type: responseUserType,
+          profile: profileData,
+        });
+
         Alert.alert('Success', `${responseUserType === 'driver' ? 'Driver' : 'Customer'} login successful!`);
         
         if (responseUserType === 'driver') {
-          navigation.navigate('DriverApp', { 
-            driverData: {
-              id: profileData.id,
-              name: profileData.name,
-              phone: profileData.phone,
-              current_lat: profileData.current_lat,
-              current_lng: profileData.current_lng,
-            }
-          });
+          navigation.navigate('DriverApp');
         } else {
-          navigation.navigate('CustomerApp', { 
-            userData: {
-              id: profileData.id,
-              name: profileData.name,
-              phone: profileData.phone,
-              email: profileData.email,
-            }
-          });
+          navigation.navigate('CustomerApp');
         }
       } else {
         Alert.alert('Error', response.data.message || 'Login failed');

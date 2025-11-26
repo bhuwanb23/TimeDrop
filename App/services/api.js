@@ -95,6 +95,9 @@ export const customerAPI = {
   getOrders: (phone) => 
     api.get(`/customers/orders?phone=${phone}`),
   
+  getOrderById: (orderId) =>
+    api.get(`/orders/${orderId}`),
+
   // Create new order
   createOrder: (orderData) => 
     api.post('/orders/new', orderData),

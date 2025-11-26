@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
+import { useAuth } from '../context/AuthContext';
 
 const DriverProfileScreen = () => {
+  const { session } = useAuth();
+  const driverProfile = session?.type === 'driver' ? session.profile : null;
   const [driverInfo, setDriverInfo] = useState({
-    name: 'Raj Kumar',
-    phone: '9876543211',
-    email: 'raj.kumar@example.com',
-    licenseNumber: 'DL1234567890',
-    vehicleNumber: 'KA-01-AB-1234',
-    vehicleType: 'Bike',
+    name: driverProfile?.name || 'Driver',
+    phone: driverProfile?.phone || '',
+    email: driverProfile?.email || '',
+    licenseNumber: driverProfile?.license_number || '',
+    vehicleNumber: driverProfile?.vehicle_number || '',
+    vehicleType: driverProfile?.vehicle_type || 'Bike',
   });
   
   const [availability, setAvailability] = useState({
@@ -32,6 +35,17 @@ const DriverProfileScreen = () => {
     avgRating: 4.7,
     cancellationRate: 2,
   });
+
+  useEffect(() => {
+    if (driverProfile) {
+      setDriverInfo((prev) => ({
+        ...prev,
+        name: driverProfile.name || prev.name,
+        phone: driverProfile.phone || prev.phone,
+        email: driverProfile.email || prev.email,
+      }));
+    }
+  }, [driverProfile]);
 
   const handleSaveProfile = () => {
     Alert.alert('Success', 'Profile information saved successfully!');

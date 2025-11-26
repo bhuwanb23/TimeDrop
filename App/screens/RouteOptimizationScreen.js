@@ -1,56 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, Linking, Platform } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
+import { driverAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const RouteOptimizationScreen = () => {
-  const [deliveries, setDeliveries] = useState([
-    { 
-      id: 'DEL-001', 
-      orderId: 'ORD-001', 
-      customerName: 'John Doe', 
-      address: '123 Main Street, Bangalore', 
-      slot: 'Today, 2:00 PM - 4:00 PM',
-      status: 'Out for Delivery',
-      distance: '2.5 km',
-      lat: 12.9716,
-      lng: 77.5946,
-      completed: false
-    },
-    { 
-      id: 'DEL-002', 
-      orderId: 'ORD-002', 
-      customerName: 'Jane Smith', 
-      address: '456 Park Avenue, Bangalore', 
-      slot: 'Today, 2:00 PM - 4:00 PM',
-      status: 'Pending',
-      distance: '1.8 km',
-      lat: 12.9716,
-      lng: 77.5946,
-      completed: false
-    },
-    { 
-      id: 'DEL-003', 
-      orderId: 'ORD-003', 
-      customerName: 'Robert Johnson', 
-      address: '789 Elm Street, Bangalore', 
-      slot: 'Today, 4:00 PM - 6:00 PM',
-      status: 'Pending',
-      distance: '3.2 km',
-      lat: 12.9716,
-      lng: 77.5946,
-      completed: false
-    },
-  ]);
-  
-  const [routeProgress, setRouteProgress] = useState({
-    totalStops: 3,
-    completedStops: 0,
-    currentStop: 1,
-    estimatedTime: '45 mins',
-    distanceRemaining: '7.5 km'
-  });
-  
+  const { session } = useAuth();
+  const driverProfile = session?.type === 'driver' ? session.profile : null;
+  const [deliveries, setDeliveries] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [alternativeRoutes, setAlternativeRoutes] = useState([
     { id: 1, name: 'Fastest Route', time: '40 mins', distance: '7.2 km' },
     { id: 2, name: 'Shortest Route', time: '45 mins', distance: '6.8 km' },
@@ -59,37 +18,71 @@ const RouteOptimizationScreen = () => {
   
   const navigation = useNavigation();
 
-  const handleStartNavigation = (delivery) => {
-    Alert.alert(
-      'Start Navigation', 
-      `Starting navigation to ${delivery.customerName}'s address: ${delivery.address}`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Start', onPress: () => {
-            // In a real app, this would open the map with directions
-            Alert.alert('Navigation Started', 'Turn-by-turn navigation has begun.');
-          }
-        }
-      ]
-    );
+  const fetchDeliveries = useCallback(async () => {
+    if (!driverProfile?.id) {
+      return;
+    }
+    try {
+      setLoading(true);
+      const response = await driverAPI.getDeliveries(driverProfile.id);
+      const list = response.data?.data || [];
+      setDeliveries(list);
+    } catch (error) {
+      console.error('Error loading deliveries:', error);
+      const message = error.response?.data?.message || 'Unable to load deliveries for optimization.';
+      Alert.alert('Error', message);
+    } finally {
+      setLoading(false);
+    }
+  }, [driverProfile?.id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchDeliveries();
+    }, [fetchDeliveries])
+  );
+
+  const remainingStops = deliveries.filter(d => d.status !== 'Delivered').length;
+  const completedStops = deliveries.filter(d => d.status === 'Delivered').length;
+  const totalStops = deliveries.length || 1;
+  const routeProgress = {
+    totalStops,
+    completedStops,
+    currentStop: completedStops + 1,
+    estimatedTime: `${Math.max(remainingStops, 1) * 15} mins`,
+    distanceRemaining: `${Math.max(remainingStops, 1) * 2.5} km`
   };
 
-  const handleMarkCompleted = (deliveryId) => {
-    setDeliveries(prevDeliveries => 
-      prevDeliveries.map(delivery => 
-        delivery.id === deliveryId 
-          ? { ...delivery, completed: true, status: 'Delivered' } 
-          : delivery
-      )
-    );
-    
-    setRouteProgress(prev => ({
-      ...prev,
-      completedStops: prev.completedStops + 1,
-      currentStop: prev.currentStop + 1
-    }));
-    
-    Alert.alert('Success', 'Delivery marked as completed!');
+  const handleStartNavigation = (delivery) => {
+    if (!delivery.lat || !delivery.lng) {
+      Alert.alert('Location unavailable', 'Coordinates missing for this delivery.');
+      return;
+    }
+    const latLng = `${delivery.lat},${delivery.lng}`;
+    const url = Platform.select({
+      ios: `http://maps.apple.com/?daddr=${latLng}`,
+      android: `geo:${latLng}?q=${latLng}`,
+      default: `https://www.google.com/maps/dir/?api=1&destination=${latLng}`
+    });
+    Linking.openURL(url).catch(() => {
+      Alert.alert('Unable to open maps', 'Please open your maps app manually.');
+    });
+  };
+
+  const handleMarkCompleted = async (deliveryId) => {
+    if (!driverProfile?.id) {
+      Alert.alert('Not Authorized', 'Sign in as a driver to update order status.');
+      return;
+    }
+    try {
+      await driverAPI.updateOrderStatus(driverProfile.id, deliveryId, 'Delivered');
+      Alert.alert('Success', 'Delivery marked as completed!');
+      fetchDeliveries();
+    } catch (error) {
+      console.error('Error updating delivery:', error);
+      const message = error.response?.data?.message || 'Failed to mark delivery as completed.';
+      Alert.alert('Error', message);
+    }
   };
   
   const handleSelectAlternativeRoute = (route) => {
@@ -107,23 +100,31 @@ const RouteOptimizationScreen = () => {
     );
   };
 
+  const formatSlotWindow = (delivery) => {
+    if (delivery.slot_date && delivery.slot_time) {
+      return `${delivery.slot_date} • ${delivery.slot_time}`;
+    }
+    return 'Slot not scheduled';
+  };
+
   const renderDelivery = (delivery, index) => (
-    <View key={delivery.id} style={[styles.deliveryCard, delivery.completed && styles.completedCard]}>
+  const renderDelivery = (delivery, index) => (
+  const renderDelivery = (delivery, index) => (
+    <View key={delivery.id} style={[styles.deliveryCard, delivery.status === 'Delivered' && styles.completedCard]}>
       <View style={styles.deliveryHeader}>
-        <Text style={styles.orderId}>Stop {index + 1}: Order {delivery.orderId}</Text>
-        {delivery.completed ? (
+        <Text style={styles.orderId}>Stop {index + 1}: Order {delivery.order_id}</Text>
+        {delivery.status === 'Delivered' ? (
           <Text style={styles.completedBadge}>Completed</Text>
         ) : (
           <Text style={styles.pendingBadge}>Pending</Text>
         )}
       </View>
       
-      <Text style={styles.customerName}>{delivery.customerName}</Text>
+      <Text style={styles.customerName}>{delivery.customer_name}</Text>
       <Text style={styles.address}>{delivery.address}</Text>
-      <Text style={styles.slot}>Slot: {delivery.slot}</Text>
-      <Text style={styles.distance}>{delivery.distance}</Text>
+      <Text style={styles.slot}>Slot: {formatSlotWindow(delivery)}</Text>
       
-      {!delivery.completed && (
+      {delivery.status !== 'Delivered' && (
         <View style={styles.deliveryActions}>
           <TouchableOpacity 
             style={styles.actionButton} 
@@ -142,6 +143,21 @@ const RouteOptimizationScreen = () => {
       )}
     </View>
   );
+
+  if (!driverProfile) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Route Optimization</Text>
+        </View>
+        <View style={styles.section}>
+          <Text style={styles.routeText}>
+            Sign in as a driver to view optimized routes.
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -175,7 +191,13 @@ const RouteOptimizationScreen = () => {
           <Text style={styles.routeTime}>Estimated completion: {routeProgress.estimatedTime}</Text>
         </View>
         
-        {deliveries.map((delivery, index) => renderDelivery(delivery, index))}
+        {loading ? (
+          <ActivityIndicator color={COLORS.primary} style={{ marginVertical: SPACING.m }} />
+        ) : deliveries.length > 0 ? (
+          deliveries.map((delivery, index) => renderDelivery(delivery, index))
+        ) : (
+          <Text style={styles.routeText}>No deliveries available for routing.</Text>
+        )}
       </View>
       
       {/* Alternative Routes */}

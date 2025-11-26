@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { Op } = require('sequelize');
 const { Driver, Order } = require('../models');
 const { validateStatusTransition, logStatusChange, sendStatusNotification } = require('../utils/statusManagement');
 const { sendCourierCallback } = require('../utils/courierIntegration');
@@ -77,11 +78,21 @@ const getDriverDeliveries = async (req, res) => {
     const driver = req.driver;
 
     // Query deliveries assigned to driver
+    const activeStatuses = [
+      'Assigned to Driver',
+      'Out for Delivery',
+      'Customer Not Available',
+      'Rescheduled'
+    ];
+
     const deliveries = await Order.findAll({
       where: {
-        assigned_driver_id: id
+        assigned_driver_id: id,
+        status: {
+          [Op.in]: activeStatuses
+        }
       },
-      order: [['slot_date', 'ASC'], ['slot_time', 'ASC']] // Sort by slot date and time
+      order: [['slot_date', 'ASC'], ['slot_time', 'ASC']]
     });
 
     // Sort deliveries by optimal route (placeholder - in a real implementation, this would use a routing algorithm)
@@ -94,10 +105,27 @@ const getDriverDeliveries = async (req, res) => {
     });
 
     // Return formatted delivery list
+    const formattedDeliveries = sortedDeliveries.map((order) => ({
+      id: order.id,
+      order_id: order.order_id,
+      customer_name: order.customer_name,
+      phone: order.phone,
+      address: order.address,
+      pincode: order.pincode,
+      slot_date: order.slot_date,
+      slot_time: order.slot_time,
+      slot_display: order.slot_date && order.slot_time
+        ? `${order.slot_date} • ${order.slot_time}`
+        : 'Slot not scheduled',
+      status: order.status,
+      lat: Number(order.lat),
+      lng: Number(order.lng)
+    }));
+
     return res.status(200).json({
       success: true,
-      data: sortedDeliveries,
-      count: sortedDeliveries.length
+      data: formattedDeliveries,
+      count: formattedDeliveries.length
     });
   } catch (error) {
     console.error('Error retrieving driver deliveries:', error);
@@ -180,7 +208,6 @@ const updateOrderStatus = async (req, res) => {
       });
     }
     
-    // Update order status
     order.status = status;
     await order.save();
     

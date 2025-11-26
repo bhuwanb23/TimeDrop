@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
+import { customerAPI } from '../services/api';
 
 const SlotSelectionScreen = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [dates, setDates] = useState([]);
+  const [confirming, setConfirming] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { orderId } = route.params || {};
+  const { orderId, orderCode } = route.params || {};
 
   // Generate dates for the next 7 days
   useEffect(() => {
@@ -65,27 +67,40 @@ const SlotSelectionScreen = () => {
     setSelectedSlot(slot);
   };
 
-  const handleConfirmSlot = () => {
+  const handleConfirmSlot = async () => {
     if (!selectedSlot) {
       Alert.alert('No Slot Selected', 'Please select a delivery time slot before confirming.');
       return;
     }
 
-    // Here we would normally make an API call to confirm the slot
-    // For now, we'll just show a success message and navigate back
-    Alert.alert(
-      'Slot Confirmed',
-      `Your delivery slot has been confirmed for ${selectedDate.display}, ${selectedSlot.time}`,
-      [
-        { 
-          text: 'OK', 
-          onPress: () => {
-            // In a real app, we would update the order status
-            navigation.navigate('OrderTracking', { orderId });
+    if (!orderId) {
+      Alert.alert('Missing Order', 'Unable to update slot because order information is missing.');
+      return;
+    }
+
+    try {
+      setConfirming(true);
+      await customerAPI.selectSlot(orderId, {
+        slot_date: selectedDate.dateString,
+        slot_time: selectedSlot.time,
+      });
+      Alert.alert(
+        'Slot Confirmed',
+        `Your delivery slot has been confirmed for ${selectedDate.display}, ${selectedSlot.time}`,
+        [
+          { 
+            text: 'OK', 
+            onPress: () => navigation.goBack()
           }
-        }
-      ]
-    );
+        ]
+      );
+    } catch (error) {
+      console.error('Error confirming slot:', error);
+      const message = error.response?.data?.message || 'Failed to confirm slot. Please try again.';
+      Alert.alert('Error', message);
+    } finally {
+      setConfirming(false);
+    }
   };
 
   const handleCancel = () => {
@@ -167,7 +182,7 @@ const SlotSelectionScreen = () => {
           <Text style={styles.title}>Delivery Slots</Text>
           <View style={styles.placeholder} />
         </View>
-        {orderId && <Text style={styles.orderId}>Order: {orderId}</Text>}
+        {(orderId || orderCode) && <Text style={styles.orderId}>Order: {orderCode || orderId}</Text>}
       </View>
       
       <View style={styles.content}>
@@ -240,14 +255,20 @@ const SlotSelectionScreen = () => {
           )}
           
           <TouchableOpacity 
-            style={[styles.button, styles.confirmButton, !selectedSlot ? styles.disabledButton : null]} 
+            style={[styles.button, styles.confirmButton, (!selectedSlot || confirming) ? styles.disabledButton : null]} 
             onPress={handleConfirmSlot}
-            disabled={!selectedSlot}
+            disabled={!selectedSlot || confirming}
           >
-            <Icon name="checkmark-outline" size={20} color={COLORS.textInverted} />
-            <Text style={styles.buttonText}>
-              {orderId ? 'Confirm' : 'Select'}
-            </Text>
+            {confirming ? (
+              <ActivityIndicator color={COLORS.textInverted} />
+            ) : (
+              <>
+                <Icon name="checkmark-outline" size={20} color={COLORS.textInverted} />
+                <Text style={styles.buttonText}>
+                  {orderId ? 'Confirm' : 'Select'}
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
       </View>
