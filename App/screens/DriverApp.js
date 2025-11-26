@@ -35,14 +35,6 @@ const DeliveryStack = () => (
         headerShown: false
       }} 
     />
-    <Stack.Screen 
-      name="RouteOptimization" 
-      component={RouteOptimizationScreen} 
-      options={{ 
-        title: 'Optimize Route',
-        headerShown: false
-      }} 
-    />
   </Stack.Navigator>
 );
 
