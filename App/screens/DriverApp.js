@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Modal } from 'react-native';
+import { Modal, View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { COLORS, TYPOGRAPHY } from '../styles/DesignSystem';
+import { COLORS, TYPOGRAPHY, SPACING } from '../styles/DesignSystem';
+import { useAuth } from '../context/AuthContext';
 
 // Import screens
 import DriverDashboardScreen from './DriverDashboardScreen';
@@ -16,17 +17,10 @@ import NotificationCenter from '../components/NotificationCenter';
 // Create navigators
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
 // Delivery Stack Navigator
 const DeliveryStack = () => (
   <Stack.Navigator>
-    <Stack.Screen 
-      name="Dashboard" 
-      component={DriverDashboardScreen} 
-      options={{ 
-        title: 'Dashboard',
-        headerShown: false
-      }} 
-    />
     <Stack.Screen 
       name="RouteOptimization" 
       component={RouteOptimizationScreen} 
@@ -41,6 +35,8 @@ const DeliveryStack = () => (
 // Main Tab Navigator
 const MainTabs = () => {
   const [showNotifications, setShowNotifications] = useState(false);
+  const { session } = useAuth();
+  const driverProfile = session?.type === 'driver' ? session.profile : null;
   
   return (
     <>
@@ -70,20 +66,48 @@ const MainTabs = () => {
             fontSize: TYPOGRAPHY.h3,
           },
           headerTintColor: COLORS.primary,
+          headerStyle: {
+            backgroundColor: COLORS.cardBackground,
+            elevation: 0,
+            shadowOpacity: 0,
+          },
           headerRight: () => (
-            <Icon 
-              name="notifications-outline" 
-              size={24} 
-              color={COLORS.primary} 
-              style={{ marginRight: 15 }}
-              onPress={() => setShowNotifications(true)}
-            />
+            <View style={styles.headerRightContainer}>
+              <Icon 
+                name="notifications-outline" 
+                size={24} 
+                color={COLORS.primary} 
+                style={styles.notificationIcon}
+                onPress={() => setShowNotifications(true)}
+              />
+            </View>
           ),
         })}
       >
-        <Tab.Screen name="Dashboard" component={DriverDashboardScreen} />
-        <Tab.Screen name="Route" component={DeliveryStack} />
-        <Tab.Screen name="Profile" component={DriverProfileScreen} />
+        <Tab.Screen 
+          name="Dashboard" 
+          component={DriverDashboardScreen} 
+          options={{ 
+            title: 'Dashboard',
+            headerShown: false
+          }} 
+        />
+        <Tab.Screen 
+          name="Route" 
+          component={DeliveryStack} 
+          options={{ 
+            title: 'Route',
+            headerShown: false
+          }} 
+        />
+        <Tab.Screen 
+          name="Profile" 
+          component={DriverProfileScreen} 
+          options={{ 
+            title: 'Profile',
+            headerShown: false
+          }} 
+        />
       </Tab.Navigator>
       
       {/* Notification Center Modal */}
@@ -98,6 +122,17 @@ const MainTabs = () => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  headerRightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: SPACING.m,
+  },
+  notificationIcon: {
+    padding: SPACING.xs,
+  },
+});
 
 const DriverApp = () => <MainTabs />;
 

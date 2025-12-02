@@ -54,7 +54,25 @@ const DriverLoginScreen = () => {
     } catch (error) {
       console.error('Login error:', error);
       if (error.response) {
-        Alert.alert('Error', error.response.data.message || 'Login failed');
+        if (error.response.status === 429) {
+          const retryAfter = error.response.data.retryAfter || 'a few';
+          Alert.alert(
+            'Too Many Attempts', 
+            `You've made too many login attempts. Please try again after ${retryAfter}.`,
+            [
+              { text: 'OK' },
+              {
+                text: 'Reset Limit',
+                onPress: () => {
+                  // In a real app, this would call an endpoint to reset rate limiting
+                  Alert.alert('Info', 'In a real app, this would reset the rate limit. For now, please wait for the limit to expire.');
+                }
+              }
+            ]
+          );
+        } else {
+          Alert.alert('Error', error.response.data.message || 'Login failed');
+        }
       } else {
         Alert.alert('Error', 'Network request failed. Please make sure the backend server is running.');
       }

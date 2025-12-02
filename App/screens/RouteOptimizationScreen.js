@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, Linking, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, Linking, Platform, Switch } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
 import { driverAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const RouteOptimizationScreen = () => {
   const { session } = useAuth();
   const driverProfile = session?.type === 'driver' ? session.profile : null;
   const [deliveries, setDeliveries] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [alternativeRoutes, setAlternativeRoutes] = useState([
-    { id: 1, name: 'Fastest Route', time: '40 mins', distance: '7.2 km' },
-    { id: 2, name: 'Shortest Route', time: '45 mins', distance: '6.8 km' },
-    { id: 3, name: 'Eco-Friendly Route', time: '50 mins', distance: '7.0 km' }
-  ]);
+  const [routeOptimization, setRouteOptimization] = useState({
+    enabled: true,
+    mode: 'fastest', // fastest, shortest, eco
+  });
   
   const navigation = useNavigation();
 
@@ -42,15 +42,16 @@ const RouteOptimizationScreen = () => {
     }, [fetchDeliveries])
   );
 
-  const remainingStops = deliveries.filter(d => d.status !== 'Delivered').length;
-  const completedStops = deliveries.filter(d => d.status === 'Delivered').length;
-  const totalStops = deliveries.length || 1;
+  const pendingDeliveries = deliveries.filter(d => d.status !== 'Delivered');
+  const completedDeliveries = deliveries.filter(d => d.status === 'Delivered');
+  const totalStops = pendingDeliveries.length || 1;
+  
   const routeProgress = {
     totalStops,
-    completedStops,
-    currentStop: completedStops + 1,
-    estimatedTime: `${Math.max(remainingStops, 1) * 15} mins`,
-    distanceRemaining: `${Math.max(remainingStops, 1) * 2.5} km`
+    completedStops: completedDeliveries.length,
+    currentStop: completedDeliveries.length + 1,
+    estimatedTime: `${Math.max(pendingDeliveries.length, 1) * 15} mins`,
+    distanceRemaining: `${Math.max(pendingDeliveries.length, 1) * 2.5} km`
   };
 
   const handleStartNavigation = (delivery) => {
@@ -85,15 +86,23 @@ const RouteOptimizationScreen = () => {
     }
   };
   
-  const handleSelectAlternativeRoute = (route) => {
+  const handleReorderDeliveries = (fromIndex, toIndex) => {
+    const updatedDeliveries = [...pendingDeliveries];
+    const [movedItem] = updatedDeliveries.splice(fromIndex, 1);
+    updatedDeliveries.splice(toIndex, 0, movedItem);
+    // In a real app, this would update the backend
+    Alert.alert('Route Updated', 'Delivery order has been updated.');
+  };
+
+  const handleOptimizeRoute = () => {
     Alert.alert(
-      'Change Route', 
-      `Switch to ${route.name}? This will update your navigation.`,
+      'Optimize Route', 
+      'Would you like to automatically optimize your delivery route?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Switch', onPress: () => {
-            // In a real app, this would update the navigation route
-            Alert.alert('Route Updated', `Navigation updated to ${route.name}.`);
+        { text: 'Optimize', onPress: () => {
+            // In a real app, this would call a routing algorithm
+            Alert.alert('Route Optimized', 'Your delivery route has been optimized for efficiency.');
           }
         }
       ]
@@ -110,11 +119,20 @@ const RouteOptimizationScreen = () => {
   const renderDelivery = (delivery, index) => (
     <View key={delivery.id} style={[styles.deliveryCard, delivery.status === 'Delivered' && styles.completedCard]}>
       <View style={styles.deliveryHeader}>
-        <Text style={styles.orderId}>Stop {index + 1}: Order {delivery.order_id}</Text>
+        <View style={styles.deliveryInfo}>
+          <Text style={styles.stopNumber}>Stop {index + 1}</Text>
+          <Text style={styles.orderId}>Order {delivery.order_id}</Text>
+        </View>
         {delivery.status === 'Delivered' ? (
-          <Text style={styles.completedBadge}>Completed</Text>
+          <View style={styles.statusContainer}>
+            <Icon name="checkmark-circle" size={20} color={COLORS.success} />
+            <Text style={styles.completedBadge}>Completed</Text>
+          </View>
         ) : (
-          <Text style={styles.pendingBadge}>Pending</Text>
+          <View style={styles.statusContainer}>
+            <Icon name="time-outline" size={20} color={COLORS.warning} />
+            <Text style={styles.pendingBadge}>Pending</Text>
+          </View>
         )}
       </View>
       
@@ -128,6 +146,7 @@ const RouteOptimizationScreen = () => {
             style={styles.actionButton} 
             onPress={() => handleStartNavigation(delivery)}
           >
+            <Icon name="navigate-outline" size={16} color={COLORS.textInverted} style={styles.actionIcon} />
             <Text style={styles.actionButtonText}>Navigate</Text>
           </TouchableOpacity>
           
@@ -135,6 +154,7 @@ const RouteOptimizationScreen = () => {
             style={[styles.actionButton, styles.completeButton]} 
             onPress={() => handleMarkCompleted(delivery.id)}
           >
+            <Icon name="checkmark-circle-outline" size={16} color={COLORS.textInverted} style={styles.actionIcon} />
             <Text style={styles.actionButtonText}>Mark Completed</Text>
           </TouchableOpacity>
         </View>
@@ -161,6 +181,55 @@ const RouteOptimizationScreen = () => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Route Optimization</Text>
+        <TouchableOpacity 
+          style={styles.optimizeButton}
+          onPress={handleOptimizeRoute}
+        >
+          <Icon name="sparkles-outline" size={20} color={COLORS.textInverted} />
+          <Text style={styles.optimizeButtonText}>Optimize</Text>
+        </TouchableOpacity>
+      </View>
+      
+      {/* Route Settings */}
+      <View style={styles.section}>
+        <View style={styles.settingsHeader}>
+          <Text style={styles.sectionTitle}>Route Settings</Text>
+          <View style={styles.toggleContainer}>
+            <Text style={styles.toggleLabel}>Auto-Optimize</Text>
+            <Switch
+              trackColor={{ false: COLORS.grayLight, true: COLORS.primaryLight }}
+              thumbColor={routeOptimization.enabled ? COLORS.primary : COLORS.textLight}
+              onValueChange={(value) => setRouteOptimization({...routeOptimization, enabled: value})}
+              value={routeOptimization.enabled}
+            />
+          </View>
+        </View>
+        
+        <View style={styles.modeSelector}>
+          <TouchableOpacity 
+            style={[styles.modeButton, routeOptimization.mode === 'fastest' && styles.activeModeButton]}
+            onPress={() => setRouteOptimization({...routeOptimization, mode: 'fastest'})}
+          >
+            <Icon name="speedometer-outline" size={24} color={routeOptimization.mode === 'fastest' ? COLORS.textInverted : COLORS.textSecondary} />
+            <Text style={[styles.modeText, routeOptimization.mode === 'fastest' && styles.activeModeText]}>Fastest</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.modeButton, routeOptimization.mode === 'shortest' && styles.activeModeButton]}
+            onPress={() => setRouteOptimization({...routeOptimization, mode: 'shortest'})}
+          >
+            <Icon name="trail-sign-outline" size={24} color={routeOptimization.mode === 'shortest' ? COLORS.textInverted : COLORS.textSecondary} />
+            <Text style={[styles.modeText, routeOptimization.mode === 'shortest' && styles.activeModeText]}>Shortest</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.modeButton, routeOptimization.mode === 'eco' && styles.activeModeButton]}
+            onPress={() => setRouteOptimization({...routeOptimization, mode: 'eco'})}
+          >
+            <Icon name="leaf-outline" size={24} color={routeOptimization.mode === 'eco' ? COLORS.textInverted : COLORS.textSecondary} />
+            <Text style={[styles.modeText, routeOptimization.mode === 'eco' && styles.activeModeText]}>Eco</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       
       {/* Route Progress */}
@@ -181,40 +250,37 @@ const RouteOptimizationScreen = () => {
         </View>
       </View>
       
-      {/* Optimized Delivery Route */}
+      {/* Pending Deliveries */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Optimized Delivery Route</Text>
-        <View style={styles.routeInfo}>
-          <Text style={styles.routeText}>Optimized route based on traffic and distance</Text>
-          <Text style={styles.routeTime}>Estimated completion: {routeProgress.estimatedTime}</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Pending Deliveries</Text>
+          <Text style={styles.sectionCount}>{pendingDeliveries.length}</Text>
         </View>
         
         {loading ? (
           <ActivityIndicator color={COLORS.primary} style={{ marginVertical: SPACING.m }} />
-        ) : deliveries.length > 0 ? (
-          deliveries.map((delivery, index) => renderDelivery(delivery, index))
+        ) : pendingDeliveries.length > 0 ? (
+          pendingDeliveries.map((delivery, index) => renderDelivery(delivery, index))
         ) : (
-          <Text style={styles.routeText}>No deliveries available for routing.</Text>
+          <View style={styles.emptyState}>
+            <Icon name="checkmark-circle-outline" size={48} color={COLORS.success} />
+            <Text style={styles.emptyStateText}>All deliveries completed!</Text>
+            <Text style={styles.emptyStateSubtext}>Great job! No more deliveries for today.</Text>
+          </View>
         )}
       </View>
       
-      {/* Alternative Routes */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Alternative Routes</Text>
-        {alternativeRoutes.map(route => (
-          <TouchableOpacity 
-            key={route.id} 
-            style={styles.routeOption} 
-            onPress={() => handleSelectAlternativeRoute(route)}
-          >
-            <View style={styles.routeDetails}>
-              <Text style={styles.routeName}>{route.name}</Text>
-              <Text style={styles.routeStats}>{route.time} • {route.distance}</Text>
-            </View>
-            <Text style={styles.selectText}>Select</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      {/* Completed Today */}
+      {completedDeliveries.length > 0 && (
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Completed Today</Text>
+            <Text style={styles.sectionCount}>{completedDeliveries.length}</Text>
+          </View>
+          
+          {completedDeliveries.slice(0, 3).map((delivery, index) => renderDelivery(delivery, index))}
+        </View>
+      )}
     </ScrollView>
   );
 };
@@ -225,38 +291,107 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    backgroundColor: COLORS.primary,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: SPACING.m,
-    paddingTop: 50,
+    backgroundColor: COLORS.cardBackground,
+    ...SHADOW,
   },
   headerTitle: {
-    color: COLORS.textInverted,
     fontSize: TYPOGRAPHY.h2,
     fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+  },
+  optimizeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.s,
+    borderRadius: BORDER_RADIUS.medium,
+  },
+  optimizeButtonText: {
+    color: COLORS.textInverted,
+    fontSize: TYPOGRAPHY.bodySmall,
+    fontWeight: TYPOGRAPHY.semiBold,
+    marginLeft: SPACING.xs,
   },
   section: {
+    margin: SPACING.m,
     backgroundColor: COLORS.cardBackground,
+    borderRadius: BORDER_RADIUS.large,
     padding: SPACING.m,
-    marginBottom: SPACING.s,
-    borderRadius: BORDER_RADIUS.medium,
     ...SHADOW,
+  },
+  settingsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.m,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.m,
   },
   sectionTitle: {
     fontSize: TYPOGRAPHY.h3,
     fontWeight: TYPOGRAPHY.bold,
-    marginBottom: SPACING.m,
     color: COLORS.textPrimary,
   },
-  progressContainer: {
+  sectionCount: {
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.primary,
     backgroundColor: COLORS.primaryLight,
-    borderRadius: BORDER_RADIUS.small,
+    paddingHorizontal: SPACING.s,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.medium,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  toggleLabel: {
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    marginRight: SPACING.s,
+  },
+  modeSelector: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modeButton: {
+    flex: 1,
+    alignItems: 'center',
     padding: SPACING.m,
+    backgroundColor: COLORS.grayLight,
+    borderRadius: BORDER_RADIUS.medium,
+    marginHorizontal: SPACING.xs,
+  },
+  activeModeButton: {
+    backgroundColor: COLORS.primary,
+  },
+  modeText: {
+    marginTop: SPACING.xs,
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textSecondary,
+    fontWeight: TYPOGRAPHY.medium,
+  },
+  activeModeText: {
+    color: COLORS.textInverted,
+  },
+  progressContainer: {
+    marginBottom: SPACING.m,
   },
   progressBar: {
     height: 10,
-    backgroundColor: COLORS.gray,
+    backgroundColor: COLORS.grayLight,
     borderRadius: 5,
-    marginBottom: SPACING.s,
+    marginBottom: SPACING.m,
+    overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
@@ -264,74 +399,60 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   progressInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   progressText: {
     fontSize: TYPOGRAPHY.bodySmall,
     color: COLORS.textSecondary,
-  },
-  routeInfo: {
-    backgroundColor: COLORS.secondaryLight,
-    borderRadius: BORDER_RADIUS.small,
-    padding: SPACING.m,
-    marginBottom: SPACING.m,
-  },
-  routeText: {
-    fontSize: TYPOGRAPHY.body,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.s,
-  },
-  routeTime: {
-    fontSize: TYPOGRAPHY.bodySmall,
-    color: COLORS.secondary,
-    fontWeight: TYPOGRAPHY.bold,
+    marginBottom: SPACING.xs,
   },
   deliveryCard: {
-    backgroundColor: COLORS.grayLight,
-    borderRadius: BORDER_RADIUS.small,
+    backgroundColor: COLORS.background,
+    borderRadius: BORDER_RADIUS.medium,
     padding: SPACING.m,
     marginBottom: SPACING.s,
-    borderLeftWidth: 4,
-    borderLeftColor: COLORS.primary,
+    ...SHADOW,
   },
   completedCard: {
-    borderLeftColor: COLORS.secondary,
     opacity: 0.7,
   },
   deliveryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: SPACING.s,
+  },
+  deliveryInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  stopNumber: {
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textLight,
+    marginRight: SPACING.s,
   },
   orderId: {
     fontSize: TYPOGRAPHY.body,
     fontWeight: TYPOGRAPHY.bold,
     color: COLORS.textPrimary,
   },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   completedBadge: {
     fontSize: TYPOGRAPHY.caption,
-    fontWeight: TYPOGRAPHY.bold,
-    paddingHorizontal: SPACING.s,
-    paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.small,
-    backgroundColor: COLORS.secondary,
-    color: COLORS.textInverted,
-    overflow: 'hidden',
+    color: COLORS.success,
+    marginLeft: SPACING.xs,
   },
   pendingBadge: {
     fontSize: TYPOGRAPHY.caption,
-    fontWeight: TYPOGRAPHY.bold,
-    paddingHorizontal: SPACING.s,
-    paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.small,
-    backgroundColor: COLORS.primaryLight,
-    color: COLORS.primary,
-    overflow: 'hidden',
+    color: COLORS.warning,
+    marginLeft: SPACING.xs,
   },
   customerName: {
     fontSize: TYPOGRAPHY.body,
-    fontWeight: TYPOGRAPHY.bold,
+    fontWeight: TYPOGRAPHY.semiBold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
@@ -341,12 +462,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   slot: {
-    fontSize: TYPOGRAPHY.bodySmall,
-    color: COLORS.primary,
-    marginBottom: SPACING.xs,
-  },
-  distance: {
-    fontSize: TYPOGRAPHY.bodySmall,
+    fontSize: TYPOGRAPHY.caption,
     color: COLORS.textLight,
     marginBottom: SPACING.m,
   },
@@ -355,44 +471,41 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: COLORS.primary,
-    paddingHorizontal: SPACING.m,
-    paddingVertical: SPACING.s,
-    borderRadius: BORDER_RADIUS.small,
+    padding: SPACING.s,
+    borderRadius: BORDER_RADIUS.medium,
+    marginHorizontal: SPACING.xs,
   },
-  completeButton: {
-    backgroundColor: COLORS.secondary,
+  actionIcon: {
+    marginRight: SPACING.xs,
   },
   actionButtonText: {
     color: COLORS.textInverted,
     fontSize: TYPOGRAPHY.caption,
-    fontWeight: TYPOGRAPHY.bold,
+    fontWeight: TYPOGRAPHY.medium,
   },
-  routeOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  completeButton: {
+    backgroundColor: COLORS.success,
+  },
+  emptyState: {
     alignItems: 'center',
-    padding: SPACING.m,
-    backgroundColor: COLORS.grayLight,
-    borderRadius: BORDER_RADIUS.small,
-    marginBottom: SPACING.s,
+    padding: SPACING.xl,
   },
-  routeDetails: {
-    flex: 1,
-  },
-  routeName: {
+  emptyStateText: {
     fontSize: TYPOGRAPHY.body,
     fontWeight: TYPOGRAPHY.bold,
     color: COLORS.textPrimary,
-    marginBottom: SPACING.s,
+    marginTop: SPACING.m,
   },
-  routeStats: {
-    fontSize: TYPOGRAPHY.bodySmall,
+  emptyStateSubtext: {
+    fontSize: TYPOGRAPHY.caption,
     color: COLORS.textSecondary,
-  },
-  selectText: {
-    color: COLORS.primary,
-    fontWeight: TYPOGRAPHY.bold,
+    textAlign: 'center',
+    marginTop: SPACING.xs,
   },
 });
 

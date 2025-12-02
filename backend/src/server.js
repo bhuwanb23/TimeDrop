@@ -9,7 +9,7 @@ const driversRoutes = require('./routes/driversRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 // Middleware
-const { rateLimiter } = require('./middleware/rateLimiter');
+const { rateLimiter, resetRateLimitStore } = require('./middleware/rateLimiter');
 const { globalErrorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -27,6 +27,14 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/customers', customersRoutes);
 app.use('/api/drivers', driversRoutes);
 app.use('/api/auth', authRoutes);
+
+// Development endpoint to reset rate limiting (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  app.post('/api/reset-rate-limit', (req, res) => {
+    resetRateLimitStore();
+    res.json({ success: true, message: 'Rate limit store reset successfully' });
+  });
+}
 
 // Basic route for testing
 app.get('/', (req, res) => {

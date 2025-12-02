@@ -77,10 +77,17 @@ const rateLimiter = (windowMs = 15 * 60 * 1000, maxRequests = 100) => {
 /**
  * Specific rate limiter for authentication endpoints
  * More restrictive to prevent brute force attacks
+ * Increased limits for development/testing
  */
-const authRateLimiter = rateLimiter(15 * 60 * 1000, 5); // 5 requests per 15 minutes
+const authRateLimiter = rateLimiter(15 * 60 * 1000, 20); // 20 requests per 15 minutes (more reasonable for testing)
+
+// Function to reset rate limit store (useful for testing)
+const resetRateLimitStore = () => {
+  rateLimitStore.clear();
+};
 
 module.exports = {
   rateLimiter,
-  authRateLimiter
+  authRateLimiter,
+  resetRateLimitStore
 };
