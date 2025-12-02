@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, Keyboard } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { authAPI, setAuthToken } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../styles/DesignSystem';
 
 const LoginScreen = () => {
   const [phone, setPhone] = useState('');
@@ -79,12 +79,18 @@ const LoginScreen = () => {
     setSecureTextEntry(!secureTextEntry);
   };
 
+  const handleSubmit = () => {
+    Keyboard.dismiss();
+    handleLogin();
+  };
+
   return (
-    <KeyboardAvoidingView 
+    <ScrollView 
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      contentContainerStyle={styles.contentContainer}
+      keyboardShouldPersistTaps="handled"
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.mainContent}>
         <View style={styles.header}>
           <Icon name="person-circle-outline" size={80} color={COLORS.primary} />
           <Text style={styles.title}>Welcome Back</Text>
@@ -129,6 +135,7 @@ const LoginScreen = () => {
               </TouchableOpacity>
             </View>
           </View>
+          
           <View style={styles.inputContainer}>
             <Icon name="call-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
             <TextInput
@@ -138,6 +145,7 @@ const LoginScreen = () => {
               onChangeText={setPhone}
               keyboardType="phone-pad"
               placeholderTextColor={COLORS.textLight}
+              maxLength={10}
             />
           </View>
           
@@ -156,13 +164,9 @@ const LoginScreen = () => {
             </TouchableOpacity>
           </View>
           
-          <TouchableOpacity style={styles.forgotPassword}>
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity 
             style={[styles.button, loading && styles.buttonDisabled]} 
-            onPress={handleLogin} 
+            onPress={handleSubmit} 
             disabled={loading}
           >
             {loading ? (
@@ -180,12 +184,9 @@ const LoginScreen = () => {
             <Text style={styles.footerText}>Don't have an account? </Text>
             <Text style={styles.footerLink}>Register</Text>
           </TouchableOpacity>
-          <Text style={styles.helperText}>
-            Need to switch roles later? Use the selector above before signing in.
-          </Text>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </ScrollView>
   );
 };
 
@@ -194,8 +195,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  scrollContainer: {
+  contentContainer: {
     flexGrow: 1,
+  },
+  mainContent: {
+    flex: 1,
     justifyContent: 'center',
     padding: SPACING.m,
   },
@@ -218,7 +222,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.cardBackground,
     borderRadius: BORDER_RADIUS.large,
     padding: SPACING.m,
-    ...SHADOW,
   },
   userTypeContainer: {
     marginBottom: SPACING.m,
@@ -270,22 +273,13 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: SPACING.xs,
   },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: SPACING.m,
-  },
-  forgotPasswordText: {
-    color: COLORS.primary,
-    fontSize: TYPOGRAPHY.bodySmall,
-    fontWeight: TYPOGRAPHY.medium,
-  },
   button: {
     backgroundColor: COLORS.primary,
     padding: SPACING.m,
     borderRadius: BORDER_RADIUS.medium,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.m,
+    marginTop: SPACING.m,
   },
   buttonDisabled: {
     backgroundColor: COLORS.primaryLight,
@@ -311,11 +305,6 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontSize: TYPOGRAPHY.bodySmall,
     fontWeight: TYPOGRAPHY.semiBold,
-  },
-  helperText: {
-    color: COLORS.textLight,
-    fontSize: TYPOGRAPHY.caption,
-    textAlign: 'center',
   },
 });
 

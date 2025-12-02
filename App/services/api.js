@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Create axios instance with default configuration
 const api = axios.create({
-  baseURL: 'http://192.168.31.67:3000/api', // Replace with your backend URL
+  baseURL: 'http://192.168.31.67:3000/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

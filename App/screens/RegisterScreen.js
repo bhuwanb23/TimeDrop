@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Keyboard } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../styles/DesignSystem';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -53,12 +53,18 @@ const RegisterScreen = () => {
     setConfirmSecureTextEntry(!confirmSecureTextEntry);
   };
 
+  const handleSubmit = () => {
+    Keyboard.dismiss();
+    handleRegister();
+  };
+
   return (
-    <KeyboardAvoidingView 
+    <ScrollView 
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      contentContainerStyle={styles.contentContainer}
+      keyboardShouldPersistTaps="handled"
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.mainContent}>
         <View style={styles.header}>
           <Icon name="person-add-outline" size={80} color={COLORS.secondary} />
           <Text style={styles.title}>Create Account</Text>
@@ -86,6 +92,7 @@ const RegisterScreen = () => {
               onChangeText={setPhone}
               keyboardType="phone-pad"
               placeholderTextColor={COLORS.textLight}
+              maxLength={10}
             />
           </View>
           
@@ -119,7 +126,7 @@ const RegisterScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+          <TouchableOpacity style={styles.registerButton} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Create Account</Text>
           </TouchableOpacity>
         </View>
@@ -130,8 +137,8 @@ const RegisterScreen = () => {
             <Text style={styles.footerLink}>Sign In</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </ScrollView>
   );
 };
 
@@ -140,8 +147,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  scrollContainer: {
+  contentContainer: {
     flexGrow: 1,
+  },
+  mainContent: {
+    flex: 1,
     justifyContent: 'center',
     padding: SPACING.m,
   },
@@ -164,7 +174,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.cardBackground,
     borderRadius: BORDER_RADIUS.large,
     padding: SPACING.m,
-    ...SHADOW,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -204,13 +213,14 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     flexDirection: 'row',
+    marginBottom: SPACING.s,
   },
   footerText: {
     color: COLORS.textSecondary,
     fontSize: TYPOGRAPHY.bodySmall,
   },
   footerLink: {
-    color: COLORS.secondary,
+    color: COLORS.primary,
     fontSize: TYPOGRAPHY.bodySmall,
     fontWeight: TYPOGRAPHY.semiBold,
   },

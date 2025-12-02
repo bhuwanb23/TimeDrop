@@ -108,8 +108,6 @@ const RouteOptimizationScreen = () => {
   };
 
   const renderDelivery = (delivery, index) => (
-  const renderDelivery = (delivery, index) => (
-  const renderDelivery = (delivery, index) => (
     <View key={delivery.id} style={[styles.deliveryCard, delivery.status === 'Delivered' && styles.completedCard]}>
       <View style={styles.deliveryHeader}>
         <Text style={styles.orderId}>Stop {index + 1}: Order {delivery.order_id}</Text>
