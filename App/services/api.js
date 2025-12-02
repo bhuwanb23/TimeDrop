@@ -105,10 +105,22 @@ export const customerAPI = {
   // Select delivery slot
   selectSlot: (orderId, slotData) => 
     api.put(`/orders/${orderId}/select-slot`, slotData),
+  
+  // Customer login (using authAPI)
+  login: (credentials) => 
+    authAPI.customerLogin(credentials.phone, credentials.password),
+  
+  // Customer registration
+  register: (userData) => 
+    api.post('/customers/register', userData),
 };
 
 // Driver API calls
 export const driverAPI = {
+  // Driver login
+  login: (credentials) => 
+    authAPI.driverLogin(credentials.phone, credentials.password),
+  
   // Get driver deliveries
   getDeliveries: (driverId) => 
     api.get(`/drivers/${driverId}/deliveries`),

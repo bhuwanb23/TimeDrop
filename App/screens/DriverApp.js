@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Modal, View, Text, StyleSheet } from 'react-native';
+import { Modal, View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS, TYPOGRAPHY, SPACING } from '../styles/DesignSystem';
 import { useAuth } from '../context/AuthContext';
@@ -39,7 +39,7 @@ const MainTabs = () => {
   const driverProfile = session?.type === 'driver' ? session.profile : null;
   
   return (
-    <>
+    <SafeAreaView style={styles.safeArea}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -59,29 +59,12 @@ const MainTabs = () => {
           },
           tabBarActiveTintColor: COLORS.primary,
           tabBarInactiveTintColor: COLORS.textLight,
-          headerShown: true,
-          headerTitle: 'Driver App',
-          headerTitleStyle: {
-            fontWeight: TYPOGRAPHY.bold,
-            fontSize: TYPOGRAPHY.h3,
+          headerShown: false, // Hide header for all tabs
+          tabBarStyle: {
+            paddingBottom: SPACING.xs,
+            paddingTop: SPACING.xs,
+            height: 60,
           },
-          headerTintColor: COLORS.primary,
-          headerStyle: {
-            backgroundColor: COLORS.cardBackground,
-            elevation: 0,
-            shadowOpacity: 0,
-          },
-          headerRight: () => (
-            <View style={styles.headerRightContainer}>
-              <Icon 
-                name="notifications-outline" 
-                size={24} 
-                color={COLORS.primary} 
-                style={styles.notificationIcon}
-                onPress={() => setShowNotifications(true)}
-              />
-            </View>
-          ),
         })}
       >
         <Tab.Screen 
@@ -89,7 +72,6 @@ const MainTabs = () => {
           component={DriverDashboardScreen} 
           options={{ 
             title: 'Dashboard',
-            headerShown: false
           }} 
         />
         <Tab.Screen 
@@ -97,7 +79,6 @@ const MainTabs = () => {
           component={DeliveryStack} 
           options={{ 
             title: 'Route',
-            headerShown: false
           }} 
         />
         <Tab.Screen 
@@ -105,7 +86,6 @@ const MainTabs = () => {
           component={DriverProfileScreen} 
           options={{ 
             title: 'Profile',
-            headerShown: false
           }} 
         />
       </Tab.Navigator>
@@ -119,11 +99,15 @@ const MainTabs = () => {
       >
         <NotificationCenter onClose={() => setShowNotifications(false)} />
       </Modal>
-    </>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
   headerRightContainer: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Modal } from 'react-native';
+import { Modal, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { COLORS, TYPOGRAPHY } from '../styles/DesignSystem';
+import { COLORS, TYPOGRAPHY, SPACING } from '../styles/DesignSystem';
 
 // Import screens
 import CustomerHomeScreen from './CustomerHomeScreen';
@@ -20,6 +21,7 @@ import NotificationCenter from '../components/NotificationCenter';
 // Create navigators
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
 // Order Stack Navigator
 const OrderStack = () => (
   <Stack.Navigator>
@@ -55,7 +57,7 @@ const MainTabs = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   
   return (
-    <>
+    <SafeAreaView style={styles.safeArea}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -77,22 +79,12 @@ const MainTabs = () => {
           },
           tabBarActiveTintColor: COLORS.primary,
           tabBarInactiveTintColor: COLORS.textLight,
-          headerShown: true,
-          headerTitle: 'Delivery App',
-          headerTitleStyle: {
-            fontWeight: TYPOGRAPHY.bold,
-            fontSize: TYPOGRAPHY.h3,
+          headerShown: false,
+          tabBarStyle: {
+            paddingBottom: SPACING.xs,
+            paddingTop: SPACING.xs,
+            height: 60,
           },
-          headerTintColor: COLORS.primary,
-          headerRight: () => (
-            <Icon 
-              name="notifications-outline" 
-              size={24} 
-              color={COLORS.primary} 
-              style={{ marginRight: 15 }}
-              onPress={() => setShowNotifications(true)}
-            />
-          ),
         })}
       >
         <Tab.Screen name="Home" component={CustomerHomeScreen} />
@@ -111,9 +103,16 @@ const MainTabs = () => {
       >
         <NotificationCenter onClose={() => setShowNotifications(false)} />
       </Modal>
-    </>
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+});
 
 const CustomerApp = () => <MainTabs />;
 

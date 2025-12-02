@@ -1,181 +1,160 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { authAPI, setAuthToken } from '../services/api';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../styles/DesignSystem';
+import { driverAPI } from '../services/api';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const DriverLoginScreen = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = async () => {
-    // Validation
     if (!phone || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert('Validation Error', 'Please enter both phone number and password.');
       return;
     }
 
     if (phone.length !== 10 || !/^\d+$/.test(phone)) {
-      Alert.alert('Error', 'Please enter a valid 10-digit phone number');
-      return;
-    }
-
-    if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
+      Alert.alert('Validation Error', 'Please enter a valid 10-digit phone number.');
       return;
     }
 
     setLoading(true);
-    
     try {
-      // Make API call to login
-      const response = await authAPI.driverLogin(phone, password);
+      const response = await driverAPI.login({ phone, password });
+      const { token, driver } = response.data;
       
-      if (response.data.success) {
-        // Save the auth token
-        await setAuthToken(response.data.token);
-        
-        Alert.alert('Success', 'Driver login successful!');
-        // Navigate to driver dashboard with driver data
-        navigation.navigate('DriverApp', { 
-          driverData: {
-            id: response.data.data?.id,
-            name: response.data.data?.name,
-            phone: response.data.data?.phone
-          }
-        });
-      } else {
-        Alert.alert('Error', response.data.message || 'Login failed');
-      }
+      // Store token and navigate to driver app
+      // In a real app, you would store the token securely
+      console.log('Driver login successful', { token, driver });
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'DriverApp' }],
+      });
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Driver login error:', error);
+      let errorMessage = 'Login failed. Please check your credentials.';
+      
       if (error.response) {
         if (error.response.status === 429) {
-          const retryAfter = error.response.data.retryAfter || 'a few';
-          Alert.alert(
-            'Too Many Attempts', 
-            `You've made too many login attempts. Please try again after ${retryAfter}.`,
-            [
-              { text: 'OK' },
-              {
-                text: 'Reset Limit',
-                onPress: () => {
-                  // In a real app, this would call an endpoint to reset rate limiting
-                  Alert.alert('Info', 'In a real app, this would reset the rate limit. For now, please wait for the limit to expire.');
-                }
-              }
-            ]
-          );
+          errorMessage = 'Too many login attempts. Please try again later.';
         } else {
-          Alert.alert('Error', error.response.data.message || 'Login failed');
+          errorMessage = error.response.data?.message || errorMessage;
         }
-      } else {
-        Alert.alert('Error', 'Network request failed. Please make sure the backend server is running.');
+      } else if (error.request) {
+        // Network error
+        errorMessage = 'Unable to connect to server. Please check your internet connection and try again.';
       }
+      
+      Alert.alert('Login Failed', errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCustomerLogin = () => {
-    navigation.navigate('Login');
-  };
-
-  const toggleSecureEntry = () => {
-    setSecureTextEntry(!secureTextEntry);
-  };
-
-  const handleSubmit = () => {
-    Keyboard.dismiss();
-    handleLogin();
-  };
-
   return (
-    <ScrollView 
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      keyboardShouldPersistTaps="handled"
-    >
-      <View style={styles.mainContent}>
-        <View style={styles.header}>
-          <Icon name="car-outline" size={80} color={COLORS.primary} />
-          <Text style={styles.title}>Driver Login</Text>
-          <Text style={styles.subtitle}>Sign in to your driver account</Text>
-        </View>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView 
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.content}>
+            <View style={styles.header}>
+              <Icon name="bicycle-outline" size={60} color={COLORS.primary} />
+              <Text style={styles.title}>Driver Login</Text>
+              <Text style={styles.subtitle}>Sign in to your driver account</Text>
+            </View>
 
-        <View style={styles.formContainer}>
-          <View style={styles.inputContainer}>
-            <Icon name="call-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Phone Number"
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-              placeholderTextColor={COLORS.textLight}
-              maxLength={10}
-            />
-          </View>
-          
-          <View style={styles.inputContainer}>
-            <Icon name="lock-closed-outline" size={20} color={COLORS.textSecondary} style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={secureTextEntry}
-              placeholderTextColor={COLORS.textLight}
-            />
-            <TouchableOpacity onPress={toggleSecureEntry} style={styles.eyeIcon}>
-              <Icon name={secureTextEntry ? "eye-outline" : "eye-off-outline"} size={20} color={COLORS.textSecondary} />
-            </TouchableOpacity>
-          </View>
-          
-          <TouchableOpacity 
-            style={[styles.button, loading && styles.buttonDisabled]} 
-            onPress={handleSubmit} 
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color={COLORS.textInverted} />
-            ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
-            )}
-          </TouchableOpacity>
-        </View>
+            <View style={styles.form}>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Phone Number</Text>
+                <View style={styles.inputWrapper}>
+                  <Icon name="call-outline" size={20} color={COLORS.textLight} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your phone number"
+                    value={phone}
+                    onChangeText={setPhone}
+                    keyboardType="phone-pad"
+                    maxLength={10}
+                    autoCapitalize="none"
+                  />
+                </View>
+              </View>
 
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={handleCustomerLogin} style={styles.footerButton}>
-            <Text style={styles.footerText}>Are you a customer? </Text>
-            <Text style={styles.footerLink}>Customer Login</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Password</Text>
+                <View style={styles.inputWrapper}>
+                  <Icon name="lock-closed-outline" size={20} color={COLORS.textLight} style={styles.inputIcon} />
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!passwordVisible}
+                    autoCapitalize="none"
+                  />
+                  <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
+                    <Icon 
+                      name={passwordVisible ? "eye-off-outline" : "eye-outline"} 
+                      size={20} 
+                      color={COLORS.textLight} 
+                      style={styles.eyeIcon}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <TouchableOpacity 
+                style={[styles.button, loading && styles.buttonDisabled]} 
+                onPress={handleLogin}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color={COLORS.textInverted} />
+                ) : (
+                  <Text style={styles.buttonText}>Sign In</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.footer}>
+              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.linkText}>Customer Login</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  contentContainer: {
+  container: {
+    flex: 1,
+  },
+  scrollContainer: {
     flexGrow: 1,
   },
-  mainContent: {
+  content: {
     flex: 1,
+    padding: SPACING.l,
     justifyContent: 'center',
-    padding: SPACING.m,
   },
   header: {
     alignItems: 'center',
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.xxl,
   },
   title: {
     fontSize: TYPOGRAPHY.h1,
@@ -188,63 +167,60 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginTop: SPACING.s,
   },
-  formContainer: {
-    backgroundColor: COLORS.cardBackground,
-    borderRadius: BORDER_RADIUS.large,
-    padding: SPACING.m,
+  form: {
+    width: '100%',
   },
   inputContainer: {
+    marginBottom: SPACING.l,
+  },
+  label: {
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.semiBold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.s,
+  },
+  inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.grayLight,
-    borderRadius: BORDER_RADIUS.medium,
-    marginBottom: SPACING.m,
+    backgroundColor: COLORS.cardBackground,
+    borderRadius: BORDER_RADIUS.small,
     paddingHorizontal: SPACING.m,
   },
   inputIcon: {
     marginRight: SPACING.s,
   },
+  eyeIcon: {
+    marginLeft: SPACING.s,
+  },
   input: {
-    flex: 1,
     height: 50,
     fontSize: TYPOGRAPHY.body,
     color: COLORS.textPrimary,
   },
-  eyeIcon: {
-    padding: SPACING.xs,
-  },
   button: {
     backgroundColor: COLORS.primary,
     padding: SPACING.m,
-    borderRadius: BORDER_RADIUS.medium,
+    borderRadius: BORDER_RADIUS.small,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: SPACING.m,
+    marginBottom: SPACING.l,
   },
   buttonDisabled: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.gray,
   },
   buttonText: {
     color: COLORS.textInverted,
     fontSize: TYPOGRAPHY.body,
-    fontWeight: TYPOGRAPHY.semiBold,
+    fontWeight: TYPOGRAPHY.bold,
   },
   footer: {
-    marginTop: SPACING.l,
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  footerButton: {
-    flexDirection: 'row',
-    marginBottom: SPACING.s,
-  },
-  footerText: {
-    color: COLORS.textSecondary,
-    fontSize: TYPOGRAPHY.bodySmall,
-  },
-  footerLink: {
+  linkText: {
+    fontSize: TYPOGRAPHY.body,
     color: COLORS.primary,
-    fontSize: TYPOGRAPHY.bodySmall,
-    fontWeight: TYPOGRAPHY.semiBold,
+    fontWeight: TYPOGRAPHY.bold,
   },
 });
 

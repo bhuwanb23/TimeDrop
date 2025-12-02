@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, ActivityIndicator, Linking, Platform, RefreshControl } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import MapComponent from '../components/MapComponent';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
-import { driverAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -11,17 +10,56 @@ const DriverDashboardScreen = () => {
   const { session } = useAuth();
   const driverProfile = session?.type === 'driver' ? session.profile : null;
   const [driverInfo, setDriverInfo] = useState({
-    name: driverProfile?.name || 'Driver',
-    vehicle: driverProfile?.vehicle || 'Vehicle ID',
-    phone: driverProfile?.phone || '—',
+    name: driverProfile?.name || 'John Driver',
+    vehicle: driverProfile?.vehicle || 'DL 01 AB 1234',
+    phone: driverProfile?.phone || '9876543215',
   });
   
-  const [deliveriesState, setDeliveriesState] = useState([]);
+  // Sample data for demonstration
+  const [deliveriesState, setDeliveriesState] = useState([
+    {
+      id: 1,
+      order_id: 'ORD-001',
+      customer_name: 'Alice Johnson',
+      address: '123 Main St, Bangalore',
+      lat: 12.9716,
+      lng: 77.5946,
+      phone: '9876543210',
+      status: 'Assigned to Driver',
+      slot_date: '2023-06-15',
+      slot_time: '10:00 AM - 12:00 PM'
+    },
+    {
+      id: 2,
+      order_id: 'ORD-002',
+      customer_name: 'Bob Smith',
+      address: '456 Park Ave, Bangalore',
+      lat: 12.9716,
+      lng: 77.5946,
+      phone: '9876543211',
+      status: 'Out for Delivery',
+      slot_date: '2023-06-15',
+      slot_time: '2:00 PM - 4:00 PM'
+    },
+    {
+      id: 3,
+      order_id: 'ORD-003',
+      customer_name: 'Charlie Brown',
+      address: '789 Elm St, Bangalore',
+      lat: 12.9716,
+      lng: 77.5946,
+      phone: '9876543212',
+      status: 'Delivered',
+      slot_date: '2023-06-15',
+      slot_time: '6:00 PM - 8:00 PM'
+    }
+  ]);
+  
   const [loadingDeliveries, setLoadingDeliveries] = useState(false);
   const [deliveriesError, setDeliveriesError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   
-  // Performance metrics
+  // Performance metrics with sample data
   const [performanceMetrics, setPerformanceMetrics] = useState({
     onTimeDeliveries: 24,
     totalDeliveries: 30,
@@ -29,7 +67,7 @@ const DriverDashboardScreen = () => {
     completedToday: 2
   });
   
-  // Earnings summary
+  // Earnings summary with sample data
   const [earnings, setEarnings] = useState({
     today: 1200,
     week: 6500,
@@ -37,50 +75,6 @@ const DriverDashboardScreen = () => {
   });
   
   const navigation = useNavigation();
-  const fetchDeliveries = useCallback(async () => {
-    if (!driverProfile?.id) {
-      return;
-    }
-    try {
-      setLoadingDeliveries(true);
-      const response = await driverAPI.getDeliveries(driverProfile.id);
-      const list = response.data?.data || [];
-      setDeliveriesState(list);
-      setDeliveriesError(null);
-    } catch (error) {
-      console.error('Error fetching driver deliveries:', error);
-      const message = error.response?.data?.message || 'Unable to load deliveries';
-      setDeliveriesError(message);
-      Alert.alert('Error', message);
-    } finally {
-      setLoadingDeliveries(false);
-      setRefreshing(false);
-    }
-  }, [driverProfile?.id]);
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchDeliveries();
-  }, [fetchDeliveries]);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (driverProfile?.id) {
-        fetchDeliveries();
-      }
-    }, [driverProfile?.id, fetchDeliveries])
-  );
-
-  useEffect(() => {
-    if (driverProfile) {
-      setDriverInfo((prev) => ({
-        ...prev,
-        name: driverProfile.name || prev.name,
-        phone: driverProfile.phone || prev.phone,
-        vehicle: driverProfile.vehicle || prev.vehicle,
-      }));
-    }
-  }, [driverProfile]);
 
   const handleUpdateStatus = async (deliveryId, newStatus) => {
     if (!driverProfile?.id) {
@@ -88,13 +82,16 @@ const DriverDashboardScreen = () => {
       return;
     }
     try {
-      await driverAPI.updateOrderStatus(driverProfile.id, deliveryId, newStatus);
+      // Update local state instead of making API call for demo
+      setDeliveriesState(prevDeliveries => 
+        prevDeliveries.map(delivery => 
+          delivery.id === deliveryId ? { ...delivery, status: newStatus } : delivery
+        )
+      );
       Alert.alert('Status Updated', `Order updated to ${newStatus}`);
-      fetchDeliveries();
     } catch (error) {
       console.error('Error updating status:', error);
-      const message = error.response?.data?.message || 'Failed to update status';
-      Alert.alert('Error', message);
+      Alert.alert('Error', 'Failed to update status');
     }
   };
 
@@ -134,15 +131,6 @@ const DriverDashboardScreen = () => {
         { text: 'Take Photo', onPress: () => {/* Placeholder */} }
       ]
     );
-  };
-
-  const handleLocationUpdate = async (location) => {
-    if (!driverProfile?.id) return;
-    try {
-      await driverAPI.updateLocation(driverProfile.id, location);
-    } catch (error) {
-      console.log('Unable to update driver location', error);
-    }
   };
 
   const getStatusStyle = (status) => {
@@ -186,7 +174,7 @@ const DriverDashboardScreen = () => {
           style={styles.actionButton} 
           onPress={() => handleNavigate(delivery)}
         >
-          <Icon name="navigate-outline" size={16} color={COLORS.textInverted} style={styles.actionIcon} />
+          <Icon name="navigate-outline" size={14} color={COLORS.textInverted} style={styles.actionIcon} />
           <Text style={styles.actionButtonText}>Navigate</Text>
         </TouchableOpacity>
         
@@ -194,7 +182,7 @@ const DriverDashboardScreen = () => {
           style={styles.actionButton} 
           onPress={() => handleContactCustomer(delivery)}
         >
-          <Icon name="call-outline" size={16} color={COLORS.textInverted} style={styles.actionIcon} />
+          <Icon name="call-outline" size={14} color={COLORS.textInverted} style={styles.actionIcon} />
           <Text style={styles.actionButtonText}>Contact</Text>
         </TouchableOpacity>
         
@@ -203,8 +191,8 @@ const DriverDashboardScreen = () => {
             style={[styles.actionButton, styles.updateButton]} 
             onPress={() => handleUpdateStatus(delivery.id, 'Out for Delivery')}
           >
-            <Icon name="bicycle-outline" size={16} color={COLORS.textInverted} style={styles.actionIcon} />
-            <Text style={styles.actionButtonText}>Start Delivery</Text>
+            <Icon name="bicycle-outline" size={14} color={COLORS.textInverted} style={styles.actionIcon} />
+            <Text style={styles.actionButtonText}>Start</Text>
           </TouchableOpacity>
         )}
         
@@ -213,8 +201,8 @@ const DriverDashboardScreen = () => {
             style={[styles.actionButton, styles.completeButton]} 
             onPress={() => handleUpdateStatus(delivery.id, 'Delivered')}
           >
-            <Icon name="checkmark-circle-outline" size={16} color={COLORS.textInverted} style={styles.actionIcon} />
-            <Text style={styles.actionButtonText}>Mark Delivered</Text>
+            <Icon name="checkmark-circle-outline" size={14} color={COLORS.textInverted} style={styles.actionIcon} />
+            <Text style={styles.actionButtonText}>Deliver</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -225,116 +213,120 @@ const DriverDashboardScreen = () => {
   const completedDeliveries = deliveriesState.filter(d => d.status === 'Delivered');
 
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      {/* Header with driver info */}
-      <View style={styles.header}>
-        <View style={styles.driverInfo}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{driverInfo.name.charAt(0)}</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView 
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => setRefreshing(false)} />
+        }
+      >
+        {/* Header with driver info */}
+        <View style={styles.header}>
+          <View style={styles.driverInfo}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{driverInfo.name.charAt(0)}</Text>
+            </View>
+            <View style={styles.driverDetails}>
+              <Text style={styles.driverName}>{driverInfo.name}</Text>
+              <Text style={styles.driverVehicle}>{driverInfo.vehicle}</Text>
+            </View>
           </View>
-          <View style={styles.driverDetails}>
-            <Text style={styles.driverName}>{driverInfo.name}</Text>
-            <Text style={styles.driverVehicle}>{driverInfo.vehicle}</Text>
-          </View>
-        </View>
-        
-        <TouchableOpacity 
-          style={styles.profileButton}
-          onPress={() => navigation.navigate('Profile')}
-        >
-          <Icon name="person-outline" size={24} color={COLORS.primary} />
-        </TouchableOpacity>
-      </View>
-      
-      {/* Performance Summary Cards */}
-      <View style={styles.summaryContainer}>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryValue}>₹{earnings.today}</Text>
-          <Text style={styles.summaryLabel}>Today's Earnings</Text>
-        </View>
-        
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryValue}>{performanceMetrics.completedToday}</Text>
-          <Text style={styles.summaryLabel}>Deliveries</Text>
-        </View>
-        
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryValue}>{performanceMetrics.rating}</Text>
-          <Text style={styles.summaryLabel}>Rating</Text>
-        </View>
-      </View>
-      
-      {/* Quick Actions */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.quickActionsContainer}>
-          <TouchableOpacity style={styles.quickActionButton}>
-            <Icon name="location-outline" size={24} color={COLORS.primary} />
-            <Text style={styles.quickActionText}>Update Location</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.quickActionButton}>
-            <Icon name="call-outline" size={24} color={COLORS.primary} />
-            <Text style={styles.quickActionText}>Support</Text>
-          </TouchableOpacity>
           
           <TouchableOpacity 
-            style={styles.quickActionButton}
-            onPress={() => navigation.navigate('Route')}
+            style={styles.profileButton}
+            onPress={() => navigation.navigate('Profile')}
           >
-            <Icon name="navigate-outline" size={24} color={COLORS.primary} />
-            <Text style={styles.quickActionText}>Optimize Route</Text>
+            <Icon name="person-outline" size={20} color={COLORS.primary} />
           </TouchableOpacity>
         </View>
-      </View>
-      
-      {/* Pending Deliveries */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Pending Deliveries</Text>
-          <Text style={styles.sectionCount}>{pendingDeliveries.length}</Text>
+        
+        {/* Performance Summary Cards - Smaller size */}
+        <View style={styles.summaryContainer}>
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryValue}>₹{earnings.today}</Text>
+            <Text style={styles.summaryLabel}>Today</Text>
+          </View>
+          
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryValue}>{performanceMetrics.completedToday}</Text>
+            <Text style={styles.summaryLabel}>Delivered</Text>
+          </View>
+          
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryValue}>{performanceMetrics.rating}</Text>
+            <Text style={styles.summaryLabel}>Rating</Text>
+          </View>
         </View>
         
-        {loadingDeliveries ? (
-          <ActivityIndicator color={COLORS.primary} style={styles.loadingIndicator} />
-        ) : pendingDeliveries.length > 0 ? (
-          pendingDeliveries.map(renderDelivery)
-        ) : (
-          <View style={styles.emptyState}>
-            <Icon name="checkmark-circle-outline" size={48} color={COLORS.success} />
-            <Text style={styles.emptyStateText}>No pending deliveries</Text>
-            <Text style={styles.emptyStateSubtext}>Great job! You've completed all deliveries for now.</Text>
+        {/* Quick Actions - Smaller size */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.quickActionsContainer}>
+            <TouchableOpacity style={styles.quickActionButton}>
+              <Icon name="location-outline" size={20} color={COLORS.primary} />
+              <Text style={styles.quickActionText}>Update</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.quickActionButton}>
+              <Icon name="call-outline" size={20} color={COLORS.primary} />
+              <Text style={styles.quickActionText}>Support</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.quickActionButton}
+              onPress={() => navigation.navigate('Route')}
+            >
+              <Icon name="navigate-outline" size={20} color={COLORS.primary} />
+              <Text style={styles.quickActionText}>Route</Text>
+            </TouchableOpacity>
           </View>
-        )}
-      </View>
-      
-      {/* Completed Today */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Completed Today</Text>
-          <Text style={styles.sectionCount}>{completedDeliveries.length}</Text>
         </View>
         
-        {completedDeliveries.length > 0 ? (
-          completedDeliveries.slice(0, 3).map(renderDelivery)
-        ) : (
-          <View style={styles.emptyState}>
-            <Icon name="time-outline" size={48} color={COLORS.textLight} />
-            <Text style={styles.emptyStateText}>No deliveries completed yet</Text>
-            <Text style={styles.emptyStateSubtext}>Start delivering to see completed orders here.</Text>
+        {/* Pending Deliveries */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Pending Deliveries</Text>
+            <Text style={styles.sectionCount}>{pendingDeliveries.length}</Text>
           </View>
-        )}
-      </View>
-    </ScrollView>
+          
+          {pendingDeliveries.length > 0 ? (
+            pendingDeliveries.map(renderDelivery)
+          ) : (
+            <View style={styles.emptyState}>
+              <Icon name="checkmark-circle-outline" size={36} color={COLORS.success} />
+              <Text style={styles.emptyStateText}>No pending deliveries</Text>
+              <Text style={styles.emptyStateSubtext}>Great job!</Text>
+            </View>
+          )}
+        </View>
+        
+        {/* Completed Today */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Completed Today</Text>
+            <Text style={styles.sectionCount}>{completedDeliveries.length}</Text>
+          </View>
+          
+          {completedDeliveries.length > 0 ? (
+            completedDeliveries.slice(0, 2).map(renderDelivery)
+          ) : (
+            <View style={styles.emptyState}>
+              <Icon name="time-outline" size={36} color={COLORS.textLight} />
+              <Text style={styles.emptyStateText}>No deliveries completed</Text>
+              <Text style={styles.emptyStateSubtext}>Start delivering</Text>
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
@@ -343,7 +335,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: SPACING.m,
+    padding: SPACING.s,
     backgroundColor: COLORS.cardBackground,
     ...SHADOW,
   },
@@ -352,17 +344,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: SPACING.m,
+    marginRight: SPACING.s,
   },
   avatarText: {
     color: COLORS.textInverted,
-    fontSize: TYPOGRAPHY.h3,
+    fontSize: TYPOGRAPHY.body,
     fontWeight: TYPOGRAPHY.bold,
   },
   driverDetails: {
@@ -378,23 +370,25 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   profileButton: {
-    padding: SPACING.s,
+    padding: SPACING.xs,
     backgroundColor: COLORS.grayLight,
-    borderRadius: BORDER_RADIUS.medium,
+    borderRadius: BORDER_RADIUS.small,
   },
   summaryContainer: {
     flexDirection: 'row',
-    padding: SPACING.m,
+    padding: SPACING.s,
     backgroundColor: COLORS.cardBackground,
     ...SHADOW,
+    margin: SPACING.s,
+    borderRadius: BORDER_RADIUS.small,
   },
   summaryCard: {
     flex: 1,
     alignItems: 'center',
-    padding: SPACING.s,
+    padding: SPACING.xs,
   },
   summaryValue: {
-    fontSize: TYPOGRAPHY.h2,
+    fontSize: TYPOGRAPHY.h3,
     fontWeight: TYPOGRAPHY.bold,
     color: COLORS.primary,
   },
@@ -404,31 +398,31 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   section: {
-    margin: SPACING.m,
+    margin: SPACING.s,
     backgroundColor: COLORS.cardBackground,
-    borderRadius: BORDER_RADIUS.large,
-    padding: SPACING.m,
+    borderRadius: BORDER_RADIUS.small,
+    padding: SPACING.s,
     ...SHADOW,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.m,
+    marginBottom: SPACING.s,
   },
   sectionTitle: {
-    fontSize: TYPOGRAPHY.h3,
+    fontSize: TYPOGRAPHY.body,
     fontWeight: TYPOGRAPHY.bold,
     color: COLORS.textPrimary,
   },
   sectionCount: {
-    fontSize: TYPOGRAPHY.body,
+    fontSize: TYPOGRAPHY.caption,
     fontWeight: TYPOGRAPHY.bold,
     color: COLORS.primary,
     backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: SPACING.s,
+    paddingHorizontal: SPACING.xs,
     paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.medium,
+    borderRadius: BORDER_RADIUS.small,
   },
   quickActionsContainer: {
     flexDirection: 'row',
@@ -437,9 +431,9 @@ const styles = StyleSheet.create({
   quickActionButton: {
     flex: 1,
     alignItems: 'center',
-    padding: SPACING.m,
+    padding: SPACING.s,
     backgroundColor: COLORS.grayLight,
-    borderRadius: BORDER_RADIUS.medium,
+    borderRadius: BORDER_RADIUS.small,
     marginHorizontal: SPACING.xs,
   },
   quickActionText: {
@@ -450,26 +444,26 @@ const styles = StyleSheet.create({
   },
   deliveryCard: {
     backgroundColor: COLORS.background,
-    borderRadius: BORDER_RADIUS.medium,
-    padding: SPACING.m,
-    marginBottom: SPACING.s,
+    borderRadius: BORDER_RADIUS.small,
+    padding: SPACING.s,
+    marginBottom: SPACING.xs,
     ...SHADOW,
   },
   deliveryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.s,
+    marginBottom: SPACING.xs,
   },
   orderId: {
-    fontSize: TYPOGRAPHY.body,
+    fontSize: TYPOGRAPHY.bodySmall,
     fontWeight: TYPOGRAPHY.bold,
     color: COLORS.textPrimary,
   },
   statusBadge: {
-    paddingHorizontal: SPACING.s,
+    paddingHorizontal: SPACING.xs,
     paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.medium,
+    borderRadius: BORDER_RADIUS.small,
     fontSize: TYPOGRAPHY.caption,
     fontWeight: TYPOGRAPHY.medium,
   },
@@ -494,20 +488,20 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   customerName: {
-    fontSize: TYPOGRAPHY.body,
+    fontSize: TYPOGRAPHY.bodySmall,
     fontWeight: TYPOGRAPHY.semiBold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   address: {
-    fontSize: TYPOGRAPHY.bodySmall,
+    fontSize: TYPOGRAPHY.caption,
     color: COLORS.textSecondary,
     marginBottom: SPACING.xs,
   },
   slot: {
     fontSize: TYPOGRAPHY.caption,
     color: COLORS.textLight,
-    marginBottom: SPACING.m,
+    marginBottom: SPACING.s,
   },
   deliveryActions: {
     flexDirection: 'row',
@@ -519,8 +513,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.primary,
-    padding: SPACING.s,
-    borderRadius: BORDER_RADIUS.medium,
+    padding: SPACING.xs,
+    borderRadius: BORDER_RADIUS.small,
     marginHorizontal: SPACING.xs,
   },
   actionIcon: {
@@ -537,18 +531,15 @@ const styles = StyleSheet.create({
   completeButton: {
     backgroundColor: COLORS.success,
   },
-  loadingIndicator: {
-    padding: SPACING.xl,
-  },
   emptyState: {
     alignItems: 'center',
-    padding: SPACING.xl,
+    padding: SPACING.m,
   },
   emptyStateText: {
-    fontSize: TYPOGRAPHY.body,
+    fontSize: TYPOGRAPHY.bodySmall,
     fontWeight: TYPOGRAPHY.bold,
     color: COLORS.textPrimary,
-    marginTop: SPACING.m,
+    marginTop: SPACING.s,
   },
   emptyStateSubtext: {
     fontSize: TYPOGRAPHY.caption,

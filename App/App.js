@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Import screens
 import LoginScreen from './screens/LoginScreen';
@@ -29,20 +30,22 @@ const AuthStack = () => (
 // Main App Component
 export default function App() {
   return (
-    <AuthProvider>
-      <CacheProvider>
-        <OrderProvider>
-          <DeliveryProvider>
-            <NavigationContainer>
-              <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Auth" component={AuthStack} />
-                <Stack.Screen name="CustomerApp" component={CustomerApp} />
-                <Stack.Screen name="DriverApp" component={DriverApp} />
-              </Stack.Navigator>
-            </NavigationContainer>
-          </DeliveryProvider>
-        </OrderProvider>
-      </CacheProvider>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <CacheProvider>
+          <OrderProvider>
+            <DeliveryProvider>
+              <NavigationContainer>
+                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="Auth" component={AuthStack} />
+                  <Stack.Screen name="CustomerApp" component={CustomerApp} />
+                  <Stack.Screen name="DriverApp" component={DriverApp} />
+                </Stack.Navigator>
+              </NavigationContainer>
+            </DeliveryProvider>
+          </OrderProvider>
+        </CacheProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }
