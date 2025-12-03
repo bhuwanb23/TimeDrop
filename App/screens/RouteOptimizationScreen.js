@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Switch, Linking, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOW } from '../styles/DesignSystem';
@@ -66,7 +66,19 @@ const RouteOptimizationScreen = () => {
   };
 
   const handleStartNavigation = (delivery) => {
-    Alert.alert('Navigation', `Starting navigation to ${delivery.customer_name}`);
+    if (!delivery.lat || !delivery.lng) {
+      Alert.alert('Location unavailable', 'No coordinates available for this delivery.');
+      return;
+    }
+    const latLng = `${delivery.lat},${delivery.lng}`;
+    const url = Platform.select({
+      ios: `http://maps.apple.com/?daddr=${latLng}`,
+      android: `geo:${latLng}?q=${latLng}`,
+      default: `https://www.google.com/maps/dir/?api=1&destination=${latLng}`
+    });
+    Linking.openURL(url).catch(() => {
+      Alert.alert('Unable to open maps', 'Please open your maps app manually.');
+    });
   };
 
   const handleMarkCompleted = (deliveryId) => {
@@ -75,6 +87,16 @@ const RouteOptimizationScreen = () => {
   
   const handleOptimizeRoute = () => {
     Alert.alert('Route Optimized', 'Your delivery route has been optimized for efficiency.');
+  };
+
+  const handleContactCustomer = (delivery) => {
+    if (!delivery.phone) {
+      Alert.alert('No phone number', 'Customer phone number unavailable.');
+      return;
+    }
+    Linking.openURL(`tel:${delivery.phone}`).catch(() => {
+      Alert.alert('Unable to place call', 'Please dial the number manually.');
+    });
   };
 
   const formatSlotWindow = (delivery) => {
@@ -116,6 +138,14 @@ const RouteOptimizationScreen = () => {
           >
             <Icon name="navigate-outline" size={14} color={COLORS.textInverted} style={styles.actionIcon} />
             <Text style={styles.actionButtonText}>Navigate</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.actionButton} 
+            onPress={() => handleContactCustomer(delivery)}
+          >
+            <Icon name="call-outline" size={14} color={COLORS.textInverted} style={styles.actionIcon} />
+            <Text style={styles.actionButtonText}>Contact</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
