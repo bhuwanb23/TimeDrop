@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Modal, View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { COLORS, TYPOGRAPHY, SPACING } from '../styles/DesignSystem';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../styles/DesignSystem';
 import { useAuth } from '../context/AuthContext';
 
 // Import screens
@@ -47,8 +47,6 @@ const MainTabs = () => {
             
             if (route.name === 'Dashboard') {
               iconName = focused ? 'speedometer' : 'speedometer-outline';
-            } else if (route.name === 'Deliveries') {
-              iconName = focused ? 'cube' : 'cube-outline';
             } else if (route.name === 'Route') {
               iconName = focused ? 'navigate' : 'navigate-outline';
             } else if (route.name === 'Profile') {
@@ -59,11 +57,18 @@ const MainTabs = () => {
           },
           tabBarActiveTintColor: COLORS.primary,
           tabBarInactiveTintColor: COLORS.textLight,
-          headerShown: false, // Hide header for all tabs
+          headerShown: false,
           tabBarStyle: {
             paddingBottom: SPACING.xs,
             paddingTop: SPACING.xs,
             height: 60,
+            backgroundColor: COLORS.cardBackground,
+            borderTopWidth: 1,
+            borderTopColor: COLORS.grayLight,
+          },
+          tabBarLabelStyle: {
+            fontSize: TYPOGRAPHY.caption,
+            fontWeight: TYPOGRAPHY.medium,
           },
         })}
       >
@@ -107,14 +112,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: COLORS.background,
-  },
-  headerRightContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: SPACING.m,
-  },
-  notificationIcon: {
-    padding: SPACING.xs,
   },
 });
 

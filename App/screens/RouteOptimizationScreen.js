@@ -324,12 +324,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: SPACING.s,
-    backgroundColor: COLORS.grayLight,
+    backgroundColor: COLORS.background,
     borderRadius: BORDER_RADIUS.small,
     marginHorizontal: SPACING.xs,
+    borderWidth: 1,
+    borderColor: COLORS.grayLight,
   },
   activeModeButton: {
     backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
   modeText: {
     marginTop: SPACING.xs,
@@ -369,6 +372,8 @@ const styles = StyleSheet.create({
     padding: SPACING.s,
     marginBottom: SPACING.xs,
     ...SHADOW,
+    borderWidth: 1,
+    borderColor: COLORS.grayLight,
   },
   completedCard: {
     opacity: 0.7,

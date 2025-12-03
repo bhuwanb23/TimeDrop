@@ -112,34 +112,43 @@ const DriverProfileScreen = () => {
           <Text style={styles.sectionTitle}>Personal Information</Text>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Full Name</Text>
-            <TextInput
-              style={styles.input}
-              value={driverInfo.name}
-              onChangeText={(text) => setDriverInfo({...driverInfo, name: text})}
-              placeholder="Enter your full name"
-            />
+            <View style={styles.inputContainer}>
+              <Icon name="person-outline" size={20} color={COLORS.textLight} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={driverInfo.name}
+                onChangeText={(text) => setDriverInfo({...driverInfo, name: text})}
+                placeholder="Enter your full name"
+              />
+            </View>
           </View>
           
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Phone Number</Text>
-            <TextInput
-              style={styles.input}
-              value={driverInfo.phone}
-              onChangeText={(text) => setDriverInfo({...driverInfo, phone: text})}
-              keyboardType="phone-pad"
-              placeholder="Enter phone number"
-            />
+            <View style={styles.inputContainer}>
+              <Icon name="call-outline" size={20} color={COLORS.textLight} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={driverInfo.phone}
+                onChangeText={(text) => setDriverInfo({...driverInfo, phone: text})}
+                keyboardType="phone-pad"
+                placeholder="Enter phone number"
+              />
+            </View>
           </View>
           
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              value={driverInfo.email}
-              onChangeText={(text) => setDriverInfo({...driverInfo, email: text})}
-              keyboardType="email-address"
-              placeholder="Enter email address"
-            />
+            <View style={styles.inputContainer}>
+              <Icon name="mail-outline" size={20} color={COLORS.textLight} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={driverInfo.email}
+                onChangeText={(text) => setDriverInfo({...driverInfo, email: text})}
+                keyboardType="email-address"
+                placeholder="Enter email address"
+              />
+            </View>
           </View>
         </View>
         
@@ -148,32 +157,41 @@ const DriverProfileScreen = () => {
           <Text style={styles.sectionTitle}>Vehicle Details</Text>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Vehicle Number</Text>
-            <TextInput
-              style={styles.input}
-              value={driverInfo.vehicleNumber}
-              onChangeText={(text) => setDriverInfo({...driverInfo, vehicleNumber: text})}
-              placeholder="Enter vehicle number"
-            />
+            <View style={styles.inputContainer}>
+              <Icon name="car-outline" size={20} color={COLORS.textLight} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={driverInfo.vehicleNumber}
+                onChangeText={(text) => setDriverInfo({...driverInfo, vehicleNumber: text})}
+                placeholder="Enter vehicle number"
+              />
+            </View>
           </View>
           
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Vehicle Type</Text>
-            <TextInput
-              style={styles.input}
-              value={driverInfo.vehicleType}
-              onChangeText={(text) => setDriverInfo({...driverInfo, vehicleType: text})}
-              placeholder="Enter vehicle type"
-            />
+            <View style={styles.inputContainer}>
+              <Icon name="bicycle-outline" size={20} color={COLORS.textLight} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={driverInfo.vehicleType}
+                onChangeText={(text) => setDriverInfo({...driverInfo, vehicleType: text})}
+                placeholder="Enter vehicle type"
+              />
+            </View>
           </View>
           
           <View style={styles.inputGroup}>
             <Text style={styles.label}>License Number</Text>
-            <TextInput
-              style={styles.input}
-              value={driverInfo.licenseNumber}
-              onChangeText={(text) => setDriverInfo({...driverInfo, licenseNumber: text})}
-              placeholder="Enter license number"
-            />
+            <View style={styles.inputContainer}>
+              <Icon name="card-outline" size={20} color={COLORS.textLight} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={driverInfo.licenseNumber}
+                onChangeText={(text) => setDriverInfo({...driverInfo, licenseNumber: text})}
+                placeholder="Enter license number"
+              />
+            </View>
           </View>
         </View>
         
@@ -196,22 +214,28 @@ const DriverProfileScreen = () => {
           <View style={styles.availabilityRow}>
             <View style={styles.timeInputContainer}>
               <Text style={styles.label}>Start Time</Text>
-              <TextInput
-                style={styles.timeInput}
-                value={availability.startTime}
-                onChangeText={(text) => setAvailability({...availability, startTime: text})}
-                placeholder="HH:MM"
-              />
+              <View style={styles.inputContainer}>
+                <Icon name="time-outline" size={20} color={COLORS.textLight} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.timeInput}
+                  value={availability.startTime}
+                  onChangeText={(text) => setAvailability({...availability, startTime: text})}
+                  placeholder="HH:MM"
+                />
+              </View>
             </View>
             
             <View style={styles.timeInputContainer}>
               <Text style={styles.label}>End Time</Text>
-              <TextInput
-                style={styles.timeInput}
-                value={availability.endTime}
-                onChangeText={(text) => setAvailability({...availability, endTime: text})}
-                placeholder="HH:MM"
-              />
+              <View style={styles.inputContainer}>
+                <Icon name="time-outline" size={20} color={COLORS.textLight} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.timeInput}
+                  value={availability.endTime}
+                  onChangeText={(text) => setAvailability({...availability, endTime: text})}
+                  placeholder="HH:MM"
+                />
+              </View>
             </View>
           </View>
           
@@ -224,7 +248,13 @@ const DriverProfileScreen = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Notification Preferences</Text>
           <View style={styles.notificationOption}>
-            <Text style={styles.notificationLabel}>Push Notifications</Text>
+            <View style={styles.notificationInfo}>
+              <Icon name="notifications-outline" size={20} color={COLORS.primary} style={styles.notificationIcon} />
+              <View>
+                <Text style={styles.notificationLabel}>Push Notifications</Text>
+                <Text style={styles.notificationDescription}>Receive push notifications on your device</Text>
+              </View>
+            </View>
             <Switch
               trackColor={{ false: COLORS.grayLight, true: COLORS.primaryLight }}
               thumbColor={notifications.pushEnabled ? COLORS.primary : COLORS.textLight}
@@ -234,7 +264,13 @@ const DriverProfileScreen = () => {
           </View>
           
           <View style={styles.notificationOption}>
-            <Text style={styles.notificationLabel}>Email Notifications</Text>
+            <View style={styles.notificationInfo}>
+              <Icon name="mail-outline" size={20} color={COLORS.info} style={styles.notificationIcon} />
+              <View>
+                <Text style={styles.notificationLabel}>Email Notifications</Text>
+                <Text style={styles.notificationDescription}>Receive email notifications</Text>
+              </View>
+            </View>
             <Switch
               trackColor={{ false: COLORS.grayLight, true: COLORS.primaryLight }}
               thumbColor={notifications.emailEnabled ? COLORS.primary : COLORS.textLight}
@@ -244,7 +280,13 @@ const DriverProfileScreen = () => {
           </View>
           
           <View style={styles.notificationOption}>
-            <Text style={styles.notificationLabel}>SMS Notifications</Text>
+            <View style={styles.notificationInfo}>
+              <Icon name="chatbubble-ellipses-outline" size={20} color={COLORS.success} style={styles.notificationIcon} />
+              <View>
+                <Text style={styles.notificationLabel}>SMS Notifications</Text>
+                <Text style={styles.notificationDescription}>Receive SMS notifications</Text>
+              </View>
+            </View>
             <Switch
               trackColor={{ false: COLORS.grayLight, true: COLORS.primaryLight }}
               thumbColor={notifications.smsEnabled ? COLORS.primary : COLORS.textLight}
@@ -391,6 +433,8 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.small,
     padding: SPACING.xs,
     marginHorizontal: SPACING.xs,
+    borderWidth: 1,
+    borderColor: COLORS.grayLight,
   },
   statIconContainer: {
     width: 32,
@@ -415,6 +459,18 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: SPACING.s,
   },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.background,
+    borderRadius: BORDER_RADIUS.small,
+    paddingHorizontal: SPACING.s,
+    borderWidth: 1,
+    borderColor: COLORS.grayLight,
+  },
+  inputIcon: {
+    marginRight: SPACING.s,
+  },
   label: {
     fontSize: TYPOGRAPHY.caption,
     color: COLORS.textSecondary,
@@ -422,10 +478,14 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.medium,
   },
   input: {
+    flex: 1,
     height: 40,
-    backgroundColor: COLORS.grayLight,
-    borderRadius: BORDER_RADIUS.small,
-    paddingHorizontal: SPACING.s,
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textPrimary,
+  },
+  timeInput: {
+    flex: 1,
+    height: 40,
     fontSize: TYPOGRAPHY.caption,
     color: COLORS.textPrimary,
   },
@@ -435,21 +495,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SPACING.s,
   },
-  statusToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   timeInputContainer: {
     flex: 1,
     marginRight: SPACING.xs,
-  },
-  timeInput: {
-    height: 40,
-    backgroundColor: COLORS.grayLight,
-    borderRadius: BORDER_RADIUS.small,
-    paddingHorizontal: SPACING.s,
-    fontSize: TYPOGRAPHY.caption,
-    color: COLORS.textPrimary,
   },
   saveButton: {
     backgroundColor: COLORS.primary,
@@ -467,13 +515,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: SPACING.xs,
+    paddingVertical: SPACING.s,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.grayLight,
+  },
+  notificationInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  notificationIcon: {
+    marginRight: SPACING.s,
   },
   notificationLabel: {
     fontSize: TYPOGRAPHY.caption,
     color: COLORS.textPrimary,
+    fontWeight: TYPOGRAPHY.medium,
+  },
+  notificationDescription: {
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.xs,
   },
   actionButton: {
     flexDirection: 'row',
@@ -482,6 +544,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     borderRadius: BORDER_RADIUS.small,
     marginBottom: SPACING.xs,
+    borderWidth: 1,
+    borderColor: COLORS.grayLight,
   },
   actionButtonText: {
     fontSize: TYPOGRAPHY.caption,
@@ -491,6 +555,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     backgroundColor: COLORS.errorLight,
+    borderColor: COLORS.errorLight,
   },
   logoutText: {
     color: COLORS.error,

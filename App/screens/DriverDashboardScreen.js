@@ -240,35 +240,48 @@ const DriverDashboardScreen = () => {
           </TouchableOpacity>
         </View>
         
-        {/* Performance Summary Cards - Smaller size */}
+        {/* Performance Summary Cards - Enhanced design */}
         <View style={styles.summaryContainer}>
           <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>₹{earnings.today}</Text>
-            <Text style={styles.summaryLabel}>Today</Text>
+            <Icon name="cash-outline" size={24} color={COLORS.primary} style={styles.summaryIcon} />
+            <View style={styles.summaryTextContainer}>
+              <Text style={styles.summaryValue}>₹{earnings.today}</Text>
+              <Text style={styles.summaryLabel}>Today</Text>
+            </View>
           </View>
           
           <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>{performanceMetrics.completedToday}</Text>
-            <Text style={styles.summaryLabel}>Delivered</Text>
+            <Icon name="cube-outline" size={24} color={COLORS.success} style={styles.summaryIcon} />
+            <View style={styles.summaryTextContainer}>
+              <Text style={styles.summaryValue}>{performanceMetrics.completedToday}</Text>
+              <Text style={styles.summaryLabel}>Delivered</Text>
+            </View>
           </View>
           
           <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>{performanceMetrics.rating}</Text>
-            <Text style={styles.summaryLabel}>Rating</Text>
+            <Icon name="star-outline" size={24} color={COLORS.warning} style={styles.summaryIcon} />
+            <View style={styles.summaryTextContainer}>
+              <Text style={styles.summaryValue}>{performanceMetrics.rating}</Text>
+              <Text style={styles.summaryLabel}>Rating</Text>
+            </View>
           </View>
         </View>
         
-        {/* Quick Actions - Smaller size */}
+        {/* Quick Actions - Enhanced design */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.quickActionsContainer}>
             <TouchableOpacity style={styles.quickActionButton}>
-              <Icon name="location-outline" size={20} color={COLORS.primary} />
-              <Text style={styles.quickActionText}>Update</Text>
+              <View style={styles.quickActionIconContainer}>
+                <Icon name="location-outline" size={24} color={COLORS.primary} />
+              </View>
+              <Text style={styles.quickActionText}>Update Location</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.quickActionButton}>
-              <Icon name="call-outline" size={20} color={COLORS.primary} />
+              <View style={styles.quickActionIconContainer}>
+                <Icon name="call-outline" size={24} color={COLORS.primary} />
+              </View>
               <Text style={styles.quickActionText}>Support</Text>
             </TouchableOpacity>
             
@@ -276,7 +289,9 @@ const DriverDashboardScreen = () => {
               style={styles.quickActionButton}
               onPress={() => navigation.navigate('Route')}
             >
-              <Icon name="navigate-outline" size={20} color={COLORS.primary} />
+              <View style={styles.quickActionIconContainer}>
+                <Icon name="navigate-outline" size={24} color={COLORS.primary} />
+              </View>
               <Text style={styles.quickActionText}>Route</Text>
             </TouchableOpacity>
           </View>
@@ -386,16 +401,23 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: SPACING.xs,
+    flexDirection: 'row',
+  },
+  summaryIcon: {
+    marginRight: SPACING.s,
+  },
+  summaryTextContainer: {
+    flex: 1,
   },
   summaryValue: {
     fontSize: TYPOGRAPHY.h3,
     fontWeight: TYPOGRAPHY.bold,
-    color: COLORS.primary,
+    color: COLORS.textPrimary,
   },
   summaryLabel: {
     fontSize: TYPOGRAPHY.caption,
     color: COLORS.textSecondary,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   section: {
     margin: SPACING.s,
@@ -432,15 +454,26 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: SPACING.s,
-    backgroundColor: COLORS.grayLight,
+    backgroundColor: COLORS.background,
     borderRadius: BORDER_RADIUS.small,
     marginHorizontal: SPACING.xs,
+    borderWidth: 1,
+    borderColor: COLORS.grayLight,
+  },
+  quickActionIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.xs,
   },
   quickActionText: {
-    marginTop: SPACING.xs,
     fontSize: TYPOGRAPHY.caption,
     color: COLORS.textPrimary,
     fontWeight: TYPOGRAPHY.medium,
+    textAlign: 'center',
   },
   deliveryCard: {
     backgroundColor: COLORS.background,
@@ -448,6 +481,8 @@ const styles = StyleSheet.create({
     padding: SPACING.s,
     marginBottom: SPACING.xs,
     ...SHADOW,
+    borderWidth: 1,
+    borderColor: COLORS.grayLight,
   },
   deliveryHeader: {
     flexDirection: 'row',
