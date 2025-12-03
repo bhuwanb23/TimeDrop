@@ -220,117 +220,204 @@ const DriverDashboardScreen = () => {
           <RefreshControl refreshing={refreshing} onRefresh={() => setRefreshing(false)} />
         }
       >
-        {/* Header with driver info */}
-        <View style={styles.header}>
-          <View style={styles.driverInfo}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{driverInfo.name.charAt(0)}</Text>
+        {/* Enhanced Dashboard Header */}
+        <View style={styles.dashboardHeader}>
+          <View style={styles.driverProfileContainer}>
+            <View style={styles.avatarContainer}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{driverInfo.name.charAt(0)}</Text>
+              </View>
+              <View style={styles.driverStatusIndicator} />
             </View>
-            <View style={styles.driverDetails}>
-              <Text style={styles.driverName}>{driverInfo.name}</Text>
+            <View style={styles.driverInfoContainer}>
+              <View style={styles.driverNameRow}>
+                <Text style={styles.driverName}>{driverInfo.name}</Text>
+                <View style={styles.onlineBadge}>
+                  <View style={styles.onlineIndicator} />
+                  <Text style={styles.onlineText}>Online</Text>
+                </View>
+              </View>
               <Text style={styles.driverVehicle}>{driverInfo.vehicle}</Text>
+              <Text style={styles.driverId}>ID: DRV-{driverProfile?.id || '001'}</Text>
             </View>
           </View>
           
-          <TouchableOpacity 
-            style={styles.profileButton}
-            onPress={() => navigation.navigate('Profile')}
-          >
-            <Icon name="person-outline" size={20} color={COLORS.primary} />
-          </TouchableOpacity>
-        </View>
-        
-        {/* Performance Summary Cards - Enhanced design */}
-        <View style={styles.summaryContainer}>
-          <View style={styles.summaryCard}>
-            <Icon name="cash-outline" size={24} color={COLORS.primary} style={styles.summaryIcon} />
-            <View style={styles.summaryTextContainer}>
-              <Text style={styles.summaryValue}>₹{earnings.today}</Text>
-              <Text style={styles.summaryLabel}>Today</Text>
-            </View>
-          </View>
-          
-          <View style={styles.summaryCard}>
-            <Icon name="cube-outline" size={24} color={COLORS.success} style={styles.summaryIcon} />
-            <View style={styles.summaryTextContainer}>
-              <Text style={styles.summaryValue}>{performanceMetrics.completedToday}</Text>
-              <Text style={styles.summaryLabel}>Delivered</Text>
-            </View>
-          </View>
-          
-          <View style={styles.summaryCard}>
-            <Icon name="star-outline" size={24} color={COLORS.warning} style={styles.summaryIcon} />
-            <View style={styles.summaryTextContainer}>
-              <Text style={styles.summaryValue}>{performanceMetrics.rating}</Text>
-              <Text style={styles.summaryLabel}>Rating</Text>
-            </View>
-          </View>
-        </View>
-        
-        {/* Quick Actions - Enhanced design */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.quickActionsContainer}>
-            <TouchableOpacity style={styles.quickActionButton}>
-              <View style={styles.quickActionIconContainer}>
-                <Icon name="location-outline" size={24} color={COLORS.primary} />
+          <View style={styles.headerActions}>
+            <TouchableOpacity 
+              style={styles.notificationButton}
+              onPress={() => navigation.navigate('Notifications')}
+            >
+              <Icon name="notifications-outline" size={24} color={COLORS.textPrimary} />
+              <View style={styles.notificationBadge}>
+                <Text style={styles.notificationBadgeText}>3</Text>
               </View>
-              <Text style={styles.quickActionText}>Update Location</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.quickActionButton}>
-              <View style={styles.quickActionIconContainer}>
-                <Icon name="call-outline" size={24} color={COLORS.primary} />
-              </View>
-              <Text style={styles.quickActionText}>Support</Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
-              style={styles.quickActionButton}
-              onPress={() => navigation.navigate('Route')}
+              style={styles.profileActionButton}
+              onPress={() => navigation.navigate('Profile')}
             >
-              <View style={styles.quickActionIconContainer}>
-                <Icon name="navigate-outline" size={24} color={COLORS.primary} />
-              </View>
-              <Text style={styles.quickActionText}>Route</Text>
+              <Icon name="person-outline" size={24} color={COLORS.textPrimary} />
             </TouchableOpacity>
           </View>
         </View>
         
-        {/* Pending Deliveries */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Pending Deliveries</Text>
-            <Text style={styles.sectionCount}>{pendingDeliveries.length}</Text>
+        {/* Dashboard Stats Grid */}
+        <View style={styles.statsGrid}>
+          <View style={styles.statCard}>
+            <View style={styles.statHeader}>
+              <Icon name="cash-outline" size={24} color={COLORS.primary} />
+              <Text style={styles.statTitle}>Earnings</Text>
+            </View>
+            <Text style={styles.statValueLarge}>₹{earnings.today}</Text>
+            <Text style={styles.statSubtitle}>Today</Text>
+            <View style={styles.statTrend}>
+              <Icon name="trending-up-outline" size={16} color={COLORS.success} />
+              <Text style={styles.statTrendText}>+12%</Text>
+            </View>
           </View>
           
-          {pendingDeliveries.length > 0 ? (
-            pendingDeliveries.map(renderDelivery)
-          ) : (
-            <View style={styles.emptyState}>
-              <Icon name="checkmark-circle-outline" size={36} color={COLORS.success} />
-              <Text style={styles.emptyStateText}>No pending deliveries</Text>
-              <Text style={styles.emptyStateSubtext}>Great job!</Text>
+          <View style={styles.statCard}>
+            <View style={styles.statHeader}>
+              <Icon name="cube-outline" size={24} color={COLORS.success} />
+              <Text style={styles.statTitle}>Deliveries</Text>
             </View>
-          )}
+            <Text style={styles.statValueLarge}>{performanceMetrics.completedToday}</Text>
+            <Text style={styles.statSubtitle}>Completed Today</Text>
+            <View style={styles.statTrend}>
+              <Icon name="checkmark-circle-outline" size={16} color={COLORS.success} />
+              <Text style={styles.statTrendText}>{performanceMetrics.onTimeDeliveries}/{performanceMetrics.totalDeliveries} On-Time</Text>
+            </View>
+          </View>
+          
+          <View style={styles.statCard}>
+            <View style={styles.statHeader}>
+              <Icon name="star-outline" size={24} color={COLORS.warning} />
+              <Text style={styles.statTitle}>Rating</Text>
+            </View>
+            <Text style={styles.statValueLarge}>{performanceMetrics.rating}</Text>
+            <Text style={styles.statSubtitle}>Average Rating</Text>
+            <View style={styles.statTrend}>
+              <Icon name="trophy-outline" size={16} color={COLORS.warning} />
+              <Text style={styles.statTrendText}>Top 15%</Text>
+            </View>
+          </View>
+          
+          <View style={styles.statCard}>
+            <View style={styles.statHeader}>
+              <Icon name="time-outline" size={24} color={COLORS.info} />
+              <Text style={styles.statTitle}>Efficiency</Text>
+            </View>
+            <Text style={styles.statValueLarge}>92%</Text>
+            <Text style={styles.statSubtitle}>On-Time Rate</Text>
+            <View style={styles.statTrend}>
+              <Icon name="speedometer-outline" size={16} color={COLORS.info} />
+              <Text style={styles.statTrendText}>Excellent</Text>
+            </View>
+          </View>
         </View>
         
-        {/* Completed Today */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Completed Today</Text>
-            <Text style={styles.sectionCount}>{completedDeliveries.length}</Text>
+        {/* Quick Action Dashboard */}
+        <View style={styles.dashboardSection}>
+          <View style={styles.sectionHeaderWithAction}>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <TouchableOpacity>
+              <Text style={styles.sectionActionText}>See All</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.quickActionsGrid}>
+            <TouchableOpacity style={styles.actionTile}>
+              <View style={styles.actionIconWrapper}>
+                <Icon name="location-outline" size={28} color={COLORS.primary} />
+              </View>
+              <Text style={styles.actionTileText}>Update Location</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.actionTile}>
+              <View style={styles.actionIconWrapper}>
+                <Icon name="call-outline" size={28} color={COLORS.success} />
+              </View>
+              <Text style={styles.actionTileText}>Support</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.actionTile}
+              onPress={() => navigation.navigate('Route')}
+            >
+              <View style={styles.actionIconWrapper}>
+                <Icon name="navigate-outline" size={28} color={COLORS.accent} />
+              </View>
+              <Text style={styles.actionTileText}>Route</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.actionTile}>
+              <View style={styles.actionIconWrapper}>
+                <Icon name="calendar-outline" size={28} color={COLORS.info} />
+              </View>
+              <Text style={styles.actionTileText}>Schedule</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        {/* Deliveries Dashboard */}
+        <View style={styles.dashboardSection}>
+          <View style={styles.sectionHeaderWithAction}>
+            <Text style={styles.sectionTitle}>Today's Deliveries</Text>
+            <TouchableOpacity>
+              <Text style={styles.sectionActionText}>View All</Text>
+            </TouchableOpacity>
           </View>
           
-          {completedDeliveries.length > 0 ? (
-            completedDeliveries.slice(0, 2).map(renderDelivery)
-          ) : (
-            <View style={styles.emptyState}>
-              <Icon name="time-outline" size={36} color={COLORS.textLight} />
-              <Text style={styles.emptyStateText}>No deliveries completed</Text>
-              <Text style={styles.emptyStateSubtext}>Start delivering</Text>
+          <View style={styles.deliveriesOverview}>
+            <View style={styles.deliveryMetric}>
+              <Text style={styles.deliveryMetricValue}>{pendingDeliveries.length}</Text>
+              <Text style={styles.deliveryMetricLabel}>Pending</Text>
             </View>
-          )}
+            <View style={styles.deliveryMetricDivider} />
+            <View style={styles.deliveryMetric}>
+              <Text style={styles.deliveryMetricValue}>{completedDeliveries.length}</Text>
+              <Text style={styles.deliveryMetricLabel}>Completed</Text>
+            </View>
+            <View style={styles.deliveryMetricDivider} />
+            <View style={styles.deliveryMetric}>
+              <Text style={styles.deliveryMetricValue}>{pendingDeliveries.length + completedDeliveries.length}</Text>
+              <Text style={styles.deliveryMetricLabel}>Total</Text>
+            </View>
+          </View>
+          
+          <View style={styles.deliveryListsContainer}>
+            {/* Pending Deliveries */}
+            <View style={styles.deliveryListSection}>
+              <View style={styles.subSectionHeader}>
+                <Text style={styles.subSectionTitle}>Pending ({pendingDeliveries.length})</Text>
+              </View>
+              
+              {pendingDeliveries.length > 0 ? (
+                pendingDeliveries.map(renderDelivery)
+              ) : (
+                <View style={styles.emptyListState}>
+                  <Icon name="checkmark-circle-outline" size={32} color={COLORS.success} />
+                  <Text style={styles.emptyListStateText}>All caught up!</Text>
+                </View>
+              )}
+            </View>
+            
+            {/* Recently Completed */}
+            <View style={styles.deliveryListSection}>
+              <View style={styles.subSectionHeader}>
+                <Text style={styles.subSectionTitle}>Recently Completed</Text>
+              </View>
+              
+              {completedDeliveries.length > 0 ? (
+                completedDeliveries.slice(0, 2).map(renderDelivery)
+              ) : (
+                <View style={styles.emptyListState}>
+                  <Icon name="time-outline" size={32} color={COLORS.textLight} />
+                  <Text style={styles.emptyListStateText}>No completions yet</Text>
+                </View>
+              )}
+            </View>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -346,140 +433,277 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  header: {
+  
+  // Enhanced Dashboard Header
+  dashboardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: SPACING.s,
+    padding: SPACING.m,
     backgroundColor: COLORS.cardBackground,
     ...SHADOW,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.grayLight,
   },
-  driverInfo: {
+  driverProfileContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+  avatarContainer: {
+    position: 'relative',
+  },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: SPACING.s,
   },
   avatarText: {
     color: COLORS.textInverted,
-    fontSize: TYPOGRAPHY.body,
-    fontWeight: TYPOGRAPHY.bold,
-  },
-  driverDetails: {
-    justifyContent: 'center',
-  },
-  driverName: {
-    fontSize: TYPOGRAPHY.body,
-    fontWeight: TYPOGRAPHY.bold,
-    color: COLORS.textPrimary,
-  },
-  driverVehicle: {
-    fontSize: TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
-  },
-  profileButton: {
-    padding: SPACING.xs,
-    backgroundColor: COLORS.grayLight,
-    borderRadius: BORDER_RADIUS.small,
-  },
-  summaryContainer: {
-    flexDirection: 'row',
-    padding: SPACING.s,
-    backgroundColor: COLORS.cardBackground,
-    ...SHADOW,
-    margin: SPACING.s,
-    borderRadius: BORDER_RADIUS.small,
-  },
-  summaryCard: {
-    flex: 1,
-    alignItems: 'center',
-    padding: SPACING.xs,
-    flexDirection: 'row',
-  },
-  summaryIcon: {
-    marginRight: SPACING.s,
-  },
-  summaryTextContainer: {
-    flex: 1,
-  },
-  summaryValue: {
     fontSize: TYPOGRAPHY.h3,
     fontWeight: TYPOGRAPHY.bold,
-    color: COLORS.textPrimary,
   },
-  summaryLabel: {
-    fontSize: TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
-    textAlign: 'left',
+  driverStatusIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: COLORS.success,
+    borderWidth: 2,
+    borderColor: COLORS.cardBackground,
   },
-  section: {
-    margin: SPACING.s,
-    backgroundColor: COLORS.cardBackground,
-    borderRadius: BORDER_RADIUS.small,
-    padding: SPACING.s,
-    ...SHADOW,
+  driverInfoContainer: {
+    marginLeft: SPACING.m,
   },
-  sectionHeader: {
+  driverNameRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.s,
-  },
-  sectionTitle: {
-    fontSize: TYPOGRAPHY.body,
-    fontWeight: TYPOGRAPHY.bold,
-    color: COLORS.textPrimary,
-  },
-  sectionCount: {
-    fontSize: TYPOGRAPHY.caption,
-    fontWeight: TYPOGRAPHY.bold,
-    color: COLORS.primary,
-    backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: SPACING.xs,
-    paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.small,
-  },
-  quickActionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  quickActionButton: {
-    flex: 1,
-    alignItems: 'center',
-    padding: SPACING.s,
-    backgroundColor: COLORS.background,
-    borderRadius: BORDER_RADIUS.small,
-    marginHorizontal: SPACING.xs,
-    borderWidth: 1,
-    borderColor: COLORS.grayLight,
-  },
-  quickActionIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.primaryLight,
-    justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.xs,
   },
-  quickActionText: {
+  driverName: {
+    fontSize: TYPOGRAPHY.h2,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginRight: SPACING.s,
+  },
+  onlineBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.successLight,
+    paddingHorizontal: SPACING.xs,
+    paddingVertical: SPACING.xs / 2,
+    borderRadius: BORDER_RADIUS.small,
+  },
+  onlineIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.success,
+    marginRight: SPACING.xs,
+  },
+  onlineText: {
     fontSize: TYPOGRAPHY.caption,
+    color: COLORS.success,
+    fontWeight: TYPOGRAPHY.semiBold,
+  },
+  driverVehicle: {
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.xs,
+  },
+  driverId: {
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textLight,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  notificationButton: {
+    position: 'relative',
+    marginRight: SPACING.m,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: COLORS.error,
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  notificationBadgeText: {
+    color: COLORS.textInverted,
+    fontSize: TYPOGRAPHY.caption,
+    fontWeight: TYPOGRAPHY.bold,
+  },
+  profileActionButton: {
+    padding: SPACING.s,
+    backgroundColor: COLORS.grayLight,
+    borderRadius: BORDER_RADIUS.circle,
+  },
+  
+  // Dashboard Stats Grid
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    padding: SPACING.s,
+  },
+  statCard: {
+    width: '48%',
+    backgroundColor: COLORS.cardBackground,
+    borderRadius: BORDER_RADIUS.medium,
+    padding: SPACING.m,
+    margin: SPACING.s,
+    ...SHADOW,
+    minHeight: 120,
+  },
+  statHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.s,
+  },
+  statTitle: {
+    fontSize: TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    marginLeft: SPACING.s,
+    fontWeight: TYPOGRAPHY.medium,
+  },
+  statValueLarge: {
+    fontSize: TYPOGRAPHY.h1,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginVertical: SPACING.xs,
+  },
+  statSubtitle: {
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textLight,
+    marginBottom: SPACING.s,
+  },
+  statTrend: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statTrendText: {
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textSecondary,
+    marginLeft: SPACING.xs,
+  },
+  
+  // Dashboard Section
+  dashboardSection: {
+    margin: SPACING.m,
+    backgroundColor: COLORS.cardBackground,
+    borderRadius: BORDER_RADIUS.medium,
+    padding: SPACING.m,
+    ...SHADOW,
+  },
+  sectionHeaderWithAction: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.m,
+  },
+  sectionActionText: {
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.primary,
+    fontWeight: TYPOGRAPHY.semiBold,
+  },
+  
+  // Quick Actions Grid
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  actionTile: {
+    width: '48%',
+    backgroundColor: COLORS.background,
+    borderRadius: BORDER_RADIUS.medium,
+    padding: SPACING.m,
+    alignItems: 'center',
+    marginBottom: SPACING.m,
+    borderWidth: 1,
+    borderColor: COLORS.grayLight,
+  },
+  actionIconWrapper: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: COLORS.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.s,
+  },
+  actionTileText: {
+    fontSize: TYPOGRAPHY.bodySmall,
     color: COLORS.textPrimary,
     fontWeight: TYPOGRAPHY.medium,
     textAlign: 'center',
   },
+  
+  // Deliveries Overview
+  deliveriesOverview: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: BORDER_RADIUS.medium,
+    padding: SPACING.m,
+    marginBottom: SPACING.m,
+  },
+  deliveryMetric: {
+    alignItems: 'center',
+  },
+  deliveryMetricValue: {
+    fontSize: TYPOGRAPHY.h2,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+  },
+  deliveryMetricLabel: {
+    fontSize: TYPOGRAPHY.caption,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.xs,
+  },
+  deliveryMetricDivider: {
+    width: 1,
+    height: 40,
+    backgroundColor: COLORS.gray,
+  },
+  deliveryListsContainer: {
+    // Container for both lists
+  },
+  deliveryListSection: {
+    marginBottom: SPACING.m,
+  },
+  subSectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.s,
+    paddingBottom: SPACING.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.grayLight,
+  },
+  subSectionTitle: {
+    fontSize: TYPOGRAPHY.body,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+  },
+  
+  // Delivery Card (keeping existing styles)
   deliveryCard: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.cardBackground,
     borderRadius: BORDER_RADIUS.small,
-    padding: SPACING.s,
-    marginBottom: SPACING.xs,
+    padding: SPACING.m,
+    marginBottom: SPACING.s,
     ...SHADOW,
     borderWidth: 1,
     borderColor: COLORS.grayLight,
@@ -488,7 +712,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.xs,
+    marginBottom: SPACING.s,
   },
   orderId: {
     fontSize: TYPOGRAPHY.bodySmall,
@@ -496,7 +720,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   statusBadge: {
-    paddingHorizontal: SPACING.xs,
+    paddingHorizontal: SPACING.s,
     paddingVertical: SPACING.xs,
     borderRadius: BORDER_RADIUS.small,
     fontSize: TYPOGRAPHY.caption,
@@ -523,7 +747,7 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   customerName: {
-    fontSize: TYPOGRAPHY.bodySmall,
+    fontSize: TYPOGRAPHY.body,
     fontWeight: TYPOGRAPHY.semiBold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
@@ -536,7 +760,7 @@ const styles = StyleSheet.create({
   slot: {
     fontSize: TYPOGRAPHY.caption,
     color: COLORS.textLight,
-    marginBottom: SPACING.s,
+    marginBottom: SPACING.m,
   },
   deliveryActions: {
     flexDirection: 'row',
@@ -548,7 +772,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.primary,
-    padding: SPACING.xs,
+    padding: SPACING.s,
     borderRadius: BORDER_RADIUS.small,
     marginHorizontal: SPACING.xs,
   },
@@ -566,21 +790,19 @@ const styles = StyleSheet.create({
   completeButton: {
     backgroundColor: COLORS.success,
   },
-  emptyState: {
+  
+  // Empty States
+  emptyListState: {
     alignItems: 'center',
-    padding: SPACING.m,
+    padding: SPACING.l,
+    backgroundColor: COLORS.background,
+    borderRadius: BORDER_RADIUS.small,
   },
-  emptyStateText: {
+  emptyListStateText: {
     fontSize: TYPOGRAPHY.bodySmall,
-    fontWeight: TYPOGRAPHY.bold,
-    color: COLORS.textPrimary,
-    marginTop: SPACING.s,
-  },
-  emptyStateSubtext: {
-    fontSize: TYPOGRAPHY.caption,
+    fontWeight: TYPOGRAPHY.medium,
     color: COLORS.textSecondary,
-    textAlign: 'center',
-    marginTop: SPACING.xs,
+    marginTop: SPACING.s,
   },
 });
 
