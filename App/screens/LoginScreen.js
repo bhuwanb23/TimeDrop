@@ -5,11 +5,11 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    SafeAreaView,
     ScrollView,
     Alert,
     Image,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -93,6 +93,8 @@ const LoginScreen = () => {
                                     keyboardType="phone-pad"
                                     value={phoneNumber}
                                     onChangeText={setPhoneNumber}
+                                    accessibilityLabel="Phone number input"
+                                    accessibilityHint="Enter your phone number"
                                 />
                             </View>
                         </View>
@@ -108,6 +110,8 @@ const LoginScreen = () => {
                                     secureTextEntry={!isPasswordVisible}
                                     value={password}
                                     onChangeText={setPassword}
+                                    accessibilityLabel="Password input"
+                                    accessibilityHint="Enter your password"
                                 />
                                 <TouchableOpacity
                                     style={styles.eyeButton}
