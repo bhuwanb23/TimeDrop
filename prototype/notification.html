@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Notifications: Minimalist</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dark .glass-effect {
+            background: rgba(16, 22, 34, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111318] dark:text-white">
+    <div
+        class="relative mx-auto flex h-auto min-h-screen max-w-[430px] flex-col bg-white dark:bg-background-dark overflow-x-hidden shadow-2xl">
+        <!-- Sticky Header with Glassmorphism -->
+        <div
+            class="sticky top-0 z-20 flex flex-col gap-2 glass-effect border-b border-gray-100 dark:border-gray-800 p-4 pb-4">
+            <div class="flex items-center h-12 justify-between">
+                <div
+                    class="text-[#111318] dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined">arrow_back_ios_new</span>
+                </div>
+                <div class="flex w-12 items-center justify-end">
+                    <button
+                        class="flex size-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <span class="material-symbols-outlined">more_horiz</span>
+                    </button>
+                </div>
+            </div>
+            <p class="text-[#111318] dark:text-white tracking-tight text-3xl font-bold leading-tight px-1">Notifications
+            </p>
+            <!-- Filters / Chips -->
+            <div class="flex gap-2 mt-2">
+                <div
+                    class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary px-5 text-white shadow-sm transition-all cursor-pointer">
+                    <p class="text-sm font-semibold leading-normal">All</p>
+                </div>
+                <div
+                    class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-100 dark:bg-gray-800 px-5 text-[#111318] dark:text-white transition-all cursor-pointer">
+                    <p class="text-sm font-medium leading-normal">Unread</p>
+                </div>
+                <div
+                    class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-100 dark:bg-gray-800 px-5 text-[#111318] dark:text-white transition-all cursor-pointer">
+                    <p class="text-sm font-medium leading-normal">Updates</p>
+                </div>
+            </div>
+        </div>
+        <!-- Content Area -->
+        <div class="flex flex-col pb-10">
+            <!-- TODAY Section -->
+            <div class="mt-4">
+                <h4
+                    class="text-[#616f89] dark:text-gray-400 text-xs font-bold leading-normal tracking-[0.15em] px-6 py-4 uppercase">
+                    Today</h4>
+                <!-- Unread Notification Item -->
+                <div
+                    class="flex items-center gap-4 bg-white dark:bg-background-dark px-6 min-h-[92px] py-4 justify-between border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="text-primary flex items-center justify-center rounded-2xl bg-primary/10 shrink-0 size-14">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings: 'wght' 300;">package_2</span>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <p class="text-[#111318] dark:text-white text-lg font-bold leading-tight line-clamp-1">New
+                                Route Assigned</p>
+                            <p
+                                class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-relaxed line-clamp-2 mt-1">
+                                12 stops added to your morning route. Tap to view map.</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 pl-2">
+                        <div class="size-2.5 rounded-full bg-primary shadow-[0_0_10px_rgba(17,82,212,0.5)]"></div>
+                    </div>
+                </div>
+                <!-- Another Unread Notification -->
+                <div
+                    class="flex items-center gap-4 bg-white dark:bg-background-dark px-6 min-h-[92px] py-4 justify-between border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="text-primary flex items-center justify-center rounded-2xl bg-primary/10 shrink-0 size-14">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings: 'wght' 300;">emergency_home</span>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <p class="text-[#111318] dark:text-white text-lg font-bold leading-tight line-clamp-1">
+                                Urgent: Address Change</p>
+                            <p
+                                class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-relaxed line-clamp-2 mt-1">
+                                Order #8829 redirected to neighbor's porch.</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 pl-2">
+                        <div class="size-2.5 rounded-full bg-primary shadow-[0_0_10px_rgba(17,82,212,0.5)]"></div>
+                    </div>
+                </div>
+                <!-- Read Notification Item -->
+                <div
+                    class="flex items-center gap-4 bg-white dark:bg-background-dark px-6 min-h-[92px] py-4 justify-between border-b border-gray-50 dark:border-gray-800/50 opacity-80">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="text-[#616f89] dark:text-gray-400 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 shrink-0 size-14">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings: 'wght' 300;">draw</span>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <p class="text-[#111318] dark:text-white text-lg font-medium leading-tight line-clamp-1">
+                                Delivery Confirmed - #4421</p>
+                            <p
+                                class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-relaxed line-clamp-2 mt-1">
+                                Customer signed for package at 10:15 AM.</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 whitespace-nowrap">
+                        <p class="text-[#616f89] dark:text-gray-500 text-xs font-medium">2h ago</p>
+                    </div>
+                </div>
+            </div>
+            <!-- YESTERDAY Section -->
+            <div class="mt-6">
+                <h4
+                    class="text-[#616f89] dark:text-gray-400 text-xs font-bold leading-normal tracking-[0.15em] px-6 py-4 uppercase">
+                    Yesterday</h4>
+                <div
+                    class="flex items-center gap-4 bg-white dark:bg-background-dark px-6 min-h-[92px] py-4 justify-between border-b border-gray-50 dark:border-gray-800/50 opacity-80">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="text-[#616f89] dark:text-gray-400 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 shrink-0 size-14">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings: 'wght' 300;">analytics</span>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <p class="text-[#111318] dark:text-white text-lg font-medium leading-tight line-clamp-1">
+                                Weekly Performance Summary</p>
+                            <p
+                                class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-relaxed line-clamp-2 mt-1">
+                                Your efficiency rating increased by 4% this week.</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 whitespace-nowrap">
+                        <p class="text-[#616f89] dark:text-gray-500 text-xs font-medium">1d ago</p>
+                    </div>
+                </div>
+                <div
+                    class="flex items-center gap-4 bg-white dark:bg-background-dark px-6 min-h-[92px] py-4 justify-between border-b border-gray-50 dark:border-gray-800/50 opacity-80">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="text-[#616f89] dark:text-gray-400 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 shrink-0 size-14">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings: 'wght' 300;">notifications_active</span>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <p class="text-[#111318] dark:text-white text-lg font-medium leading-tight line-clamp-1">
+                                System Update Complete</p>
+                            <p
+                                class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-relaxed line-clamp-2 mt-1">
+                                Routing engine version 4.2.0 is now active.</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 whitespace-nowrap">
+                        <p class="text-[#616f89] dark:text-gray-500 text-xs font-medium">1d ago</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Spacer/Footer -->
+            <div class="flex flex-col items-center justify-center p-12 text-center opacity-40">
+                <span class="material-symbols-outlined text-4xl mb-2">done_all</span>
+                <p class="text-sm font-medium">End of notifications</p>
+            </div>
+        </div>
+        <!-- Float Action Button (Optional Contextual Action) -->
+        <div class="fixed bottom-8 right-8 z-30 lg:hidden">
+            <button
+                class="flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 active:scale-95 transition-transform">
+                <span class="material-symbols-outlined">playlist_add_check</span>
+            </button>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Driver Dashboard - Analytics</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1E3A8A",
+                        "primary-light": "#3B82F6",
+                        "soft-white": "#F8FAFC",
+                        "gray-subtle": "#F1F5F9",
+                        "success": "#10B981"
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "ios": "12px",
+                        "xl": "1.5rem"
+                    }
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply bg-soft-white text-[#1E293B] antialiased;
+            }
+        }
+        .ios-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .metric-card {
+            @apply bg-white p-5 rounded-ios border border-gray-100 ios-shadow flex flex-col items-center text-center overflow-hidden;
+        }
+        .chart-glow {
+            filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.4));
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex justify-center">
+    <div class="w-full max-w-[430px] min-h-screen bg-soft-white flex flex-col relative pb-20">
+        <header class="bg-primary text-white p-6 pt-12 rounded-b-[32px] shadow-lg">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <img alt="Driver Profile" class="w-14 h-14 rounded-full border-2 border-white/20"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZq1sgp2cTBBZ5PctsPAU2kfcTH3XYFqdlEkAChCRBsWD6TkJ87w1VgzJgGT4BQe8zlVQ3v9rbJ257aLUrZIfy61CcUi2m3nvinPRG0m6mUArHVyhyD-rlSfVt3bvroY2y9PqVB7KMx-dy6BmgV4zOM66xqoBWRozOAOrWpIBLBYeUIxTpo_lRJEkJqtJimc9XA0LTEZuUzTcpNzOkLDRYy9NYmNdbCHdVpLH8QSd8BpeeXY4x3DW5GLJNIuztvZzXOsba6uWXEOs" />
+                        <span
+                            class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-success border-2 border-primary rounded-full"></span>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold leading-tight">Alex Thompson</h2>
+                        <div class="flex items-center gap-1 opacity-80 text-xs">
+                            <span class="material-symbols-outlined text-[14px]">stars</span>
+                            <span>4.95 Rating</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="bg-white/10 p-2.5 rounded-full hover:bg-white/20 transition-colors">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+            <div class="flex items-center justify-between bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+                <div class="flex flex-col">
+                    <span class="text-xs uppercase tracking-wider opacity-70 font-semibold">Current Status</span>
+                    <span class="font-bold text-lg">Online &amp; Active</span>
+                </div>
+                <button class="bg-success text-white px-6 py-2 rounded-full font-bold text-sm shadow-sm">
+                    GO OFFLINE
+                </button>
+            </div>
+        </header>
+        <main class="px-6 -mt-6">
+            <div class="grid grid-cols-1 gap-4">
+                <div class="metric-card bg-white !items-start !text-left border-l-4 border-l-primary relative">
+                    <div class="flex justify-between w-full mb-1 z-10">
+                        <span class="text-gray-500 text-sm font-medium">Daily Income</span>
+                        <span class="material-symbols-outlined text-primary">payments</span>
+                    </div>
+                    <div class="flex items-baseline gap-2 mb-4 z-10">
+                        <h3 class="text-3xl font-bold text-primary">$184.50</h3>
+                        <span class="text-success text-xs font-bold">+12% vs avg</span>
+                    </div>
+                    <div class="w-full h-16 mt-1 overflow-visible">
+                        <svg class="w-full h-full chart-glow" preserveAspectRatio="none" viewBox="0 0 400 60">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.2"></stop>
+                                    <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"></stop>
+                                </linearGradient>
+                            </defs>
+                            <path
+                                d="M0,45 C40,42 60,15 100,20 C140,25 180,50 220,45 C260,40 300,10 340,15 C380,20 400,35 400,35"
+                                fill="none" stroke="#3B82F6" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2.5"></path>
+                            <path
+                                d="M0,45 C40,42 60,15 100,20 C140,25 180,50 220,45 C260,40 300,10 340,15 C380,20 400,35 400,35 L400,60 L0,60 Z"
+                                fill="url(#gradient)"></path>
+                        </svg>
+                    </div>
+                    <div class="flex justify-between w-full mt-2">
+                        <span class="text-[9px] text-gray-400 font-semibold uppercase tracking-tighter">7 Days
+                            Ago</span>
+                        <span class="text-[9px] text-gray-400 font-semibold uppercase tracking-tighter">Today</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="metric-card">
+                        <span class="material-symbols-outlined text-primary mb-2">route</span>
+                        <span class="text-2xl font-bold">14</span>
+                        <span class="text-gray-400 text-[10px] uppercase font-bold tracking-tight">Completed
+                            Trips</span>
+                    </div>
+                    <div class="metric-card">
+                        <div class="flex items-center justify-center w-full mb-1">
+                            <span class="material-symbols-outlined text-primary">verified_user</span>
+                        </div>
+                        <span class="text-2xl font-bold">98%</span>
+                        <span class="text-gray-400 text-[10px] uppercase font-bold tracking-tight mb-2">Acceptance
+                            Rate</span>
+                        <div class="w-full h-4 mt-1 px-2">
+                            <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 20">
+                                <path d="M0,10 L15,8 L30,12 L45,5 L60,7 L75,3 L90,6 L100,5" fill="none" opacity="0.6"
+                                    stroke="#1E3A8A" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8">
+                <div class="flex items-center justify-between mb-4 px-1">
+                    <h3 class="text-lg font-bold text-primary">Recent Activity</h3>
+                    <button class="text-primary text-sm font-semibold">See All</button>
+                </div>
+                <div class="bg-white rounded-ios ios-shadow overflow-hidden">
+                    <div class="flex items-center gap-4 p-4 border-b border-gray-100">
+                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <span class="font-bold text-sm">Delivery Completed</span>
+                                <span class="text-primary font-bold text-sm">+$12.40</span>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-0.5">244 Oak St • 14:20 PM</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4 border-b border-gray-100">
+                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-[20px]">local_gas_station</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <span class="font-bold text-sm">Fuel Expense</span>
+                                <span class="text-red-500 font-bold text-sm">-$35.00</span>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-0.5">Shell Station • 12:45 PM</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4 border-b border-gray-100">
+                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <span class="font-bold text-sm">Delivery Completed</span>
+                                <span class="text-primary font-bold text-sm">+$18.25</span>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-0.5">892 Maple Ave • 11:30 AM</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4">
+                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-[20px]">stars</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <span class="font-bold text-sm">Weekly Bonus</span>
+                                <span class="text-primary font-bold text-sm">+$50.00</span>
+                            </div>
+                            <p class="text-gray-400 text-xs mt-0.5">High Performance • 09:00 AM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <nav
+            class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-white/90 backdrop-blur-lg border-t border-gray-200 px-8 py-3 pb-8 flex justify-between items-center z-50">
+            <button class="flex flex-col items-center gap-1 text-primary">
+                <span class="material-symbols-outlined text-[26px]">dashboard</span>
+                <span class="text-[10px] font-bold">Home</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-gray-400">
+                <span class="material-symbols-outlined text-[26px]">map</span>
+                <span class="text-[10px] font-bold">Map</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-gray-400">
+                <span class="material-symbols-outlined text-[26px]">history</span>
+                <span class="text-[10px] font-bold">Trips</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-gray-400">
+                <span class="material-symbols-outlined text-[26px]">account_circle</span>
+                <span class="text-[10px] font-bold">Profile</span>
+            </button>
+        </nav>
+    </div>
+
+</body>
+
+</html>
