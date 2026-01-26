@@ -8,8 +8,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const DeliveryHeader = () => {
-    const [activeTab, setActiveTab] = useState('Active');
+const DeliveryHeader = ({ activeTab, setActiveTab }) => {
     const [notificationScale] = useState(new Animated.Value(1));
 
     const handleNotificationPress = () => {
