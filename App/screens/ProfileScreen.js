@@ -1,18 +1,29 @@
 import React from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-} from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ProfileHeader from '../components/ProfileHeader';
+import StatusToggleCard from '../components/StatusToggleCard';
+import EarningsCard from '../components/EarningsCard';
+import VehicleInfoCard from '../components/VehicleInfoCard';
+import SettingsCard from '../components/SettingsCard';
+import LogoutButton from '../components/LogoutButton';
 
 const ProfileScreen = () => {
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.content}>
-                <Text style={styles.title}>Profile Screen</Text>
-                <Text style={styles.subtitle}>This screen will show driver profile information</Text>
-            </View>
+        <SafeAreaView style={styles.container} edges={['top']}>
+            <ProfileHeader />
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+                bounces={true}
+            >
+                <StatusToggleCard />
+                <EarningsCard />
+                <VehicleInfoCard />
+                <SettingsCard />
+                <LogoutButton />
+            </ScrollView>
         </SafeAreaView>
     );
 };
@@ -22,22 +33,11 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F8FAFC',
     },
-    content: {
+    scrollView: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1E3A8A',
-        marginBottom: 12,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: '#64748B',
-        textAlign: 'center',
+    scrollContent: {
+        paddingTop: -40, // Pull content up under the header
     },
 });
 
