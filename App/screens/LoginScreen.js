@@ -147,7 +147,7 @@ const LoginScreen = () => {
                     {/* Social Logins */}
                     <View style={styles.socialContainer}>
                         <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin}>
-                            <MaterialIcons name="google" size={20} color="#000" />
+                            <MaterialIcons name="g-translate" size={20} color="#000" />
                             <Text style={styles.socialButtonText}>Google</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.socialButton} onPress={handleFacebookLogin}>

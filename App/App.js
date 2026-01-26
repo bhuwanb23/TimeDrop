@@ -15,6 +15,7 @@ export default function App() {
           initialRouteName="Login"
           screenOptions={{
             headerShown: false,
+            cardStyle: { pointerEvents: 'box-none' },
           }}
         >
           <Stack.Screen name="Login" component={LoginScreen} />
