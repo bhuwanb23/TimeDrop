@@ -177,26 +177,6 @@ const DashboardScreen = () => {
                     </View>
                 </View>
             </ScrollView>
-
-            {/* Bottom Navigation */}
-            <View style={styles.bottomNav}>
-                <TouchableOpacity style={styles.navButton}>
-                    <MaterialIcons name="dashboard" size={26} color="#1E3A8A" />
-                    <Text style={styles.navLabelActive}>Home</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.navButton}>
-                    <MaterialIcons name="map" size={26} color="#94A3B8" />
-                    <Text style={styles.navLabel}>Map</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.navButton}>
-                    <MaterialIcons name="history" size={26} color="#94A3B8" />
-                    <Text style={styles.navLabel}>Trips</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.navButton}>
-                    <MaterialIcons name="account-circle" size={26} color="#94A3B8" />
-                    <Text style={styles.navLabel}>Profile</Text>
-                </TouchableOpacity>
-            </View>
         </SafeAreaView>
     );
 };
@@ -210,7 +190,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        paddingBottom: 80, // Space for bottom nav
+        paddingBottom: 20, // Space for device navbar only
     },
     header: {
         backgroundColor: '#1E3A8A',

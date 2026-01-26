@@ -39,7 +39,7 @@ const LoginScreen = () => {
             password === SAMPLE_CREDENTIALS.password
         ) {
             // Navigate directly without alert
-            navigation.navigate('Dashboard');
+            navigation.navigate('MainTabs');
         } else {
             Alert.alert('Error', 'Invalid credentials. Use:\nPhone: 1234567890\nPassword: password123');
         }
