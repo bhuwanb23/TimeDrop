@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     ScrollView,
+    Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DeliveryHeader from '../components/DeliveryHeader';
@@ -47,6 +48,8 @@ const DeliveryScreen = () => {
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
+                bounces={true}
+                overScrollMode="always"
             >
                 <RouteCard />
                 
@@ -58,16 +61,23 @@ const DeliveryScreen = () => {
 
                 {/* Delivery Cards */}
                 <View style={styles.deliveryList}>
-                    {deliveries.map((delivery) => (
-                        <DeliveryCard
+                    {deliveries.map((delivery, index) => (
+                        <Animated.View
                             key={delivery.id}
-                            orderNumber={delivery.orderNumber}
-                            customerName={delivery.customerName}
-                            address={delivery.address}
-                            status={delivery.status}
-                            isNext={delivery.isNext}
-                            isReady={delivery.isReady}
-                        />
+                            style={{
+                                transform: [{ translateY: 0 }],
+                                opacity: 1,
+                            }}
+                        >
+                            <DeliveryCard
+                                orderNumber={delivery.orderNumber}
+                                customerName={delivery.customerName}
+                                address={delivery.address}
+                                status={delivery.status}
+                                isNext={delivery.isNext}
+                                isReady={delivery.isReady}
+                            />
+                        </Animated.View>
                     ))}
                 </View>
             </ScrollView>
@@ -89,33 +99,34 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        paddingBottom: 20,
+        paddingBottom: 40,
     },
     queueHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-end',
         paddingHorizontal: 16,
-        paddingTop: 24,
-        paddingBottom: 8,
+        paddingTop: 28,
+        paddingBottom: 12,
     },
     queueTitle: {
-        fontSize: 18,
-        fontWeight: '700',
+        fontSize: 20,
+        fontWeight: '800',
         color: '#000000',
+        letterSpacing: -0.3,
     },
     queueCount: {
-        fontSize: 12,
-        fontWeight: '500',
+        fontSize: 14,
+        fontWeight: '600',
         color: '#64748B',
     },
     deliveryList: {
-        paddingHorizontal: 16,
-        paddingBottom: 20,
+        paddingHorizontal: 14,
+        paddingBottom: 40,
     },
     qrButtonContainer: {
         position: 'absolute',
-        bottom: 96, // Above the tab bar
+        bottom: 100, // Above the tab bar
         right: 16,
         zIndex: 20,
     },

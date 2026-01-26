@@ -1,14 +1,54 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     View,
     Text,
     TouchableOpacity,
     StyleSheet,
     ImageBackground,
+    Animated,
+    Easing,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const RouteCard = () => {
+    const pulseAnim = useRef(new Animated.Value(1)).current;
+    const buttonScale = useRef(new Animated.Value(1)).current;
+
+    useEffect(() => {
+        // Pulse animation for the icon
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, {
+                    toValue: 1.2,
+                    duration: 1500,
+                    easing: Easing.inOut(Easing.ease),
+                    useNativeDriver: true,
+                }),
+                Animated.timing(pulseAnim, {
+                    toValue: 1,
+                    duration: 1500,
+                    easing: Easing.inOut(Easing.ease),
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    }, []);
+
+    const handleStartPress = () => {
+        Animated.sequence([
+            Animated.timing(buttonScale, {
+                toValue: 0.95,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+            Animated.timing(buttonScale, {
+                toValue: 1,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
     return (
         <View style={styles.container}>
             <ImageBackground
@@ -20,10 +60,14 @@ const RouteCard = () => {
                 <View style={styles.glassCard}>
                     <View style={styles.contentLeft}>
                         <View style={styles.iconContainer}>
-                            <View style={styles.pulseAnimation}>
-                                <View style={styles.iconBackground}>
-                                    <MaterialIcons name="navigation" size={20} color="#135bec" />
-                                </View>
+                            <Animated.View 
+                                style={[
+                                    styles.pulseAnimation,
+                                    { transform: [{ scale: pulseAnim }] }
+                                ]}
+                            />
+                            <View style={styles.iconBackground}>
+                                <MaterialIcons name="navigation" size={20} color="#135bec" />
                             </View>
                         </View>
                         <View style={styles.textContainer}>
@@ -31,8 +75,14 @@ const RouteCard = () => {
                             <Text style={styles.distanceText}>1.2 miles • 8 mins ETA</Text>
                         </View>
                     </View>
-                    <TouchableOpacity style={styles.startButton}>
-                        <Text style={styles.startButtonText}>Start</Text>
+                    <TouchableOpacity 
+                        style={styles.startButton}
+                        onPress={handleStartPress}
+                        activeOpacity={0.8}
+                    >
+                        <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+                            <Text style={styles.startButtonText}>Start</Text>
+                        </Animated.View>
                     </TouchableOpacity>
                 </View>
             </ImageBackground>
@@ -44,18 +94,18 @@ const styles = StyleSheet.create({
     container: {
         marginHorizontal: 16,
         marginVertical: 16,
-        borderRadius: 16,
+        borderRadius: 20,
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: '#E2E8F0',
         shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 8,
     },
     imageBackground: {
-        height: 176,
+        height: 180,
         width: '100%',
     },
     imageStyle: {
@@ -63,80 +113,83 @@ const styles = StyleSheet.create({
     },
     glassCard: {
         position: 'absolute',
-        bottom: 12,
-        left: 12,
-        right: 12,
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-        borderRadius: 12,
-        padding: 12,
+        bottom: 16,
+        left: 16,
+        right: 16,
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+        borderRadius: 16,
+        padding: 16,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 6,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 16,
+        elevation: 12,
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.2)',
-        backdropFilter: 'blur(10px)',
+        borderColor: 'rgba(255, 255, 255, 0.3)',
+        backdropFilter: 'blur(20px)',
     },
     contentLeft: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
+        gap: 16,
     },
     iconContainer: {
         position: 'relative',
     },
     pulseAnimation: {
         position: 'absolute',
-        top: -4,
-        left: -4,
-        right: -4,
-        bottom: -4,
-        backgroundColor: 'rgba(19, 91, 236, 0.2)',
-        borderRadius: 12,
-        opacity: 0.4,
+        top: -8,
+        left: -8,
+        right: -8,
+        bottom: -8,
+        backgroundColor: 'rgba(19, 91, 236, 0.3)',
+        borderRadius: 20,
+        opacity: 0.6,
     },
     iconBackground: {
         position: 'relative',
-        padding: 8,
-        backgroundColor: 'rgba(19, 91, 236, 0.1)',
-        borderRadius: 8,
+        padding: 12,
+        backgroundColor: 'rgba(19, 91, 236, 0.15)',
+        borderRadius: 12,
+        zIndex: 1,
     },
     textContainer: {
-        gap: 2,
+        gap: 4,
     },
     statusText: {
         fontSize: 10,
-        fontWeight: '700',
+        fontWeight: '800',
         color: '#64748B',
         textTransform: 'uppercase',
-        letterSpacing: 0.5,
+        letterSpacing: 1,
     },
     distanceText: {
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: 16,
+        fontWeight: '700',
         color: '#000000',
+        letterSpacing: -0.2,
     },
     startButton: {
         backgroundColor: '#135bec',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 8,
-        shadowColor: 'rgba(19, 91, 236, 0.4)',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.6,
-        shadowRadius: 10,
-        elevation: 5,
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 12,
+        shadowColor: 'rgba(19, 91, 236, 0.5)',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 12,
+        elevation: 8,
         borderWidth: 1,
-        borderColor: 'rgba(19, 91, 236, 0.5)',
+        borderColor: 'rgba(19, 91, 236, 0.6)',
     },
     startButtonText: {
-        fontSize: 12,
-        fontWeight: '700',
+        fontSize: 14,
+        fontWeight: '800',
         color: '#FFFFFF',
+        letterSpacing: 0.5,
     },
 });
 

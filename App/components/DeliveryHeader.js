@@ -4,11 +4,28 @@ import {
     Text,
     TouchableOpacity,
     StyleSheet,
+    Animated,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const DeliveryHeader = () => {
     const [activeTab, setActiveTab] = useState('Active');
+    const [notificationScale] = useState(new Animated.Value(1));
+
+    const handleNotificationPress = () => {
+        Animated.sequence([
+            Animated.timing(notificationScale, {
+                toValue: 1.2,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+            Animated.timing(notificationScale, {
+                toValue: 1,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
 
     return (
         <View style={styles.container}>
@@ -19,8 +36,14 @@ const DeliveryHeader = () => {
                     <Text style={styles.title}>Deliveries</Text>
                 </View>
                 <View style={styles.notificationContainer}>
-                    <TouchableOpacity style={styles.notificationButton}>
-                        <MaterialIcons name="notifications" size={24} color="#000000" />
+                    <TouchableOpacity 
+                        style={styles.notificationButton}
+                        onPress={handleNotificationPress}
+                        activeOpacity={0.7}
+                    >
+                        <Animated.View style={{ transform: [{ scale: notificationScale }] }}>
+                            <MaterialIcons name="notifications" size={24} color="#000000" />
+                        </Animated.View>
                         <View style={styles.notificationBadge} />
                     </TouchableOpacity>
                 </View>
@@ -35,6 +58,7 @@ const DeliveryHeader = () => {
                             activeTab === 'Active' && styles.activeTabButton
                         ]}
                         onPress={() => setActiveTab('Active')}
+                        activeOpacity={0.8}
                     >
                         <Text style={[
                             styles.tabText,
@@ -49,6 +73,7 @@ const DeliveryHeader = () => {
                             activeTab === 'Delivered' && styles.activeTabButton
                         ]}
                         onPress={() => setActiveTab('Delivered')}
+                        activeOpacity={0.8}
                     >
                         <Text style={[
                             styles.tabText,
@@ -83,7 +108,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: '800',
         color: '#000000',
         letterSpacing: -0.5,
     },
@@ -93,6 +118,12 @@ const styles = StyleSheet.create({
     notificationButton: {
         padding: 8,
         borderRadius: 20,
+        backgroundColor: '#FFFFFF',
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     notificationBadge: {
         position: 'absolute',
@@ -103,37 +134,44 @@ const styles = StyleSheet.create({
         backgroundColor: '#EF4444',
         borderRadius: 4,
         borderWidth: 2,
-        borderColor: '#f6f6f8',
+        borderColor: '#FFFFFF',
     },
     tabContainer: {
         paddingHorizontal: 16,
         paddingBottom: 12,
     },
     tabBar: {
-        backgroundColor: 'rgba(229, 231, 235, 0.5)',
-        borderRadius: 12,
+        backgroundColor: 'rgba(229, 231, 235, 0.6)',
+        borderRadius: 16,
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 4,
-    },
-    tabButton: {
-        flex: 1,
-        paddingVertical: 6,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    activeTabButton: {
-        backgroundColor: '#FFFFFF',
+        padding: 6,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
         shadowRadius: 2,
-        elevation: 2,
+        elevation: 1,
+    },
+    tabButton: {
+        flex: 1,
+        paddingVertical: 8,
+        borderRadius: 12,
+        alignItems: 'center',
+        marginHorizontal: 2,
+    },
+    activeTabButton: {
+        backgroundColor: '#FFFFFF',
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     tabText: {
         fontSize: 14,
-        fontWeight: '600',
-        color: '#64748B',
+        fontWeight: '700',
+        color: '#94A3B8',
+        letterSpacing: 0.2,
     },
     activeTabText: {
         color: '#135bec',
