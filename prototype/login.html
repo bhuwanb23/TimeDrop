@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Modern Professional Login</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1e3b8a",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121620",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .custom-gradient {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .dark .custom-gradient {
+            background: linear-gradient(135deg, #121620 0%, #1e3b8a 100%);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark min-h-screen">
+    <!-- Background Wrapper with subtle iOS-style gradient -->
+    <div class="custom-gradient min-h-screen flex flex-col items-center justify-center p-4">
+        <!-- Main Login Card -->
+        <div
+            class="w-full max-w-[400px] bg-white dark:bg-[#1e2330] rounded-xl shadow-lg p-8 flex flex-col items-center">
+            <!-- Logo Area -->
+            <div class="size-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <span class="material-symbols-outlined text-primary text-4xl">domain</span>
+            </div>
+            <!-- Headline -->
+            <h2 class="text-[#0f121a] dark:text-white text-[28px] font-bold leading-tight text-center pb-2">Welcome Back
+            </h2>
+            <p class="text-[#556591] dark:text-gray-400 text-base font-normal leading-normal pb-8 text-center">Enter
+                your details to sign in</p>
+            <!-- Login Form -->
+            <div class="w-full space-y-4">
+                <!-- Phone Number Input -->
+                <div class="flex flex-col w-full">
+                    <label class="text-[#0f121a] dark:text-gray-200 text-sm font-medium leading-normal pb-1.5">Phone
+                        Number</label>
+                    <div class="flex gap-2">
+                        <!-- Country Code Selector -->
+                        <div class="relative w-24">
+                            <select
+                                class="form-input flex w-full appearance-none rounded-lg text-[#0f121a] dark:text-white border border-[#d2d7e5] dark:border-gray-700 bg-white dark:bg-[#252b3b] focus:ring-1 focus:ring-primary h-12 px-3 text-sm font-normal cursor-pointer">
+                                <option>🇺🇸 +1</option>
+                                <option>🇬🇧 +44</option>
+                                <option>🇦🇺 +61</option>
+                            </select>
+                            <span
+                                class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-lg">expand_more</span>
+                        </div>
+                        <!-- Phone Input -->
+                        <input
+                            class="form-input flex-1 rounded-lg text-[#0f121a] dark:text-white border border-[#d2d7e5] dark:border-gray-700 bg-white dark:bg-[#252b3b] focus:ring-1 focus:ring-primary h-12 px-4 text-sm font-normal"
+                            placeholder="(555) 000-0000" type="tel" />
+                    </div>
+                </div>
+                <!-- Password Input -->
+                <div class="flex flex-col w-full">
+                    <label
+                        class="text-[#0f121a] dark:text-gray-200 text-sm font-medium leading-normal pb-1.5">Password</label>
+                    <div class="relative">
+                        <input
+                            class="form-input w-full rounded-lg text-[#0f121a] dark:text-white border border-[#d2d7e5] dark:border-gray-700 bg-white dark:bg-[#252b3b] focus:ring-1 focus:ring-primary h-12 px-4 pr-12 text-sm font-normal"
+                            placeholder="••••••••" type="password" />
+                        <button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary">
+                            <span class="material-symbols-outlined text-xl">visibility</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Forgot Password -->
+                <div class="flex justify-end pt-1">
+                    <a class="text-primary dark:text-blue-400 text-sm font-medium hover:underline" href="#">Forgot
+                        Password?</a>
+                </div>
+                <!-- Login Button -->
+                <button
+                    class="w-full bg-primary text-white font-bold py-3.5 rounded-lg shadow-sm hover:bg-blue-800 transition-colors mt-4">
+                    Login
+                </button>
+            </div>
+            <!-- Divider -->
+            <div class="w-full flex items-center gap-4 my-8">
+                <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
+                <span class="text-xs text-[#556591] dark:text-gray-400 font-medium uppercase tracking-wider">Or continue
+                    with</span>
+                <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
+            </div>
+            <!-- Social Logins -->
+            <div class="w-full grid grid-cols-2 gap-4 mb-8">
+                <button
+                    class="flex items-center justify-center gap-2 h-12 border border-[#d2d7e5] dark:border-gray-700 rounded-lg bg-white dark:bg-[#252b3b] hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <img class="size-5" data-alt="Google logo icon"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAMofT4C29XTwYgVlnp13loQSUi7UAkOa6ox8lTl2AJjoBTyri9WF6GH5Fqgl6YhqxYGZIWz-O8N5ubN0ypu5xxdtVMrXySXt8fxzHa3QAuiYFbLhHgaNl-JCoHDLmVnZ1Xubt_eEYlRUwqhy1nfl13gbPI1hvRzqD8I1aLB4Oxko5y2-tHVvCenyFjUTPPJjPZwrPTT0JKkAfBQeY5bitafGhepG6dWfCGVUODVI_6Def25XtHpbvlTqOROSr4AtrxY4PdsEo_Ko" />
+                    <span class="text-sm font-medium text-[#0f121a] dark:text-white">Google</span>
+                </button>
+                <button
+                    class="flex items-center justify-center gap-2 h-12 border border-[#d2d7e5] dark:border-gray-700 rounded-lg bg-white dark:bg-[#252b3b] hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <img class="size-5" data-alt="Facebook logo icon"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfybWWkfrBPSB7of8cz-QQzT4DzN4B6FkEGGE0i4Ms4rr7i8dJwF3VdMdqx3yCmew8b3c8-3J4myYh9gF4Q9ulQD4FO7hmS-LRuuvcoXHsr84MuSKCHztfE6uIp4rbe9_2_gLiRQmnpkGwGZ_b95ACWYpnEwN3A8SFDd7UqrrTWfv6osygsTKhgNkKsrImuxnRn3PkC4NTXBXzWWSV9hKiOQGfjRhfIb_7RlxLl7KKXm_wuP9iMom4lQdgk35HRvFQ2O5b_Wo1uUw" />
+                    <span class="text-sm font-medium text-[#0f121a] dark:text-white">Facebook</span>
+                </button>
+            </div>
+            <!-- Sign Up Prompt -->
+            <p class="text-[#556591] dark:text-gray-400 text-sm font-normal">
+                Don't have an account?
+                <a class="text-primary dark:text-blue-400 font-bold hover:underline ml-1" href="#">Sign Up</a>
+            </p>
+        </div>
+        <!-- Footer Safe Area Spacing -->
+        <div class="h-10"></div>
+    </div>
+</body>
+
+</html>
