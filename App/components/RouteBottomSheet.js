@@ -4,53 +4,20 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 const RouteBottomSheet = () => {
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    const toggleExpand = () => {
-        setIsExpanded(!isExpanded);
-    };
-
-    // Render swipeable actions for delivery items
-    const renderRightActions = (progress, dragX, item) => {
-        const trans = dragX.interpolate({
-            inputRange: [0, 100],
-            outputRange: [0, 1],
-            extrapolate: 'clamp',
-        });
-        return (
-            <View style={styles.rightActions}>
-                <TouchableOpacity style={[styles.actionButton, styles.arrivedButton]}>
-                    <MaterialIcons name="location-on" size={20} color="#1152d4" />
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionButton, styles.infoButton]}>
-                    <MaterialIcons name="info" size={20} color="#10b981" />
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionButton, styles.cancelButton]}>
-                    <MaterialIcons name="cancel" size={20} color="#ef4444" />
-                </TouchableOpacity>
-            </View>
-        );
-    };
-
     return (
         <View 
             style={[styles.container, { 
-                height: isExpanded ? 500 : 250,
-                borderBottomLeftRadius: 1000,
-                borderBottomRightRadius: 1000,
+                height: '50%', // Match HTML max-h-[50%]
             }]}
         >
+            {/* Drag Indicator */}
             <View style={styles.indicatorContainer}>
-                <View 
-                    style={[
-                        styles.indicator,
-                        { opacity: isExpanded ? 0 : 1 }
-                    ]}
-                />
+                <View style={styles.indicator} />
             </View>
 
+            {/* Header Section */}
             <View style={styles.header}>
-                <View style={styles.headerLeft}>
+                <View>
                     <Text style={styles.headerTitle}>Today's Route</Text>
                     <Text style={styles.headerSubtitle}>8 STOPS REMAINING • 4H 20M</Text>
                 </View>
@@ -60,94 +27,70 @@ const RouteBottomSheet = () => {
                 </View>
             </View>
 
+            {/* Stops List */}
             <ScrollView style={styles.stopsContainer}>
                 {/* Stop 1 - Next */}
-                <Swipeable
-                    renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, 1)}
-                >
-                    <View style={styles.stopItem}>
-                        <View style={styles.stopIndicator}>
-                            <View style={styles.stopNumberContainer}>
-                                <Text style={styles.stopNumber}>1</Text>
-                            </View>
-                            <View style={styles.stopLine} />
+                <View style={styles.stopItem}>
+                    <View style={styles.stopIndicator}>
+                        <View style={styles.stopNumberContainer}>
+                            <Text style={styles.stopNumber}>1</Text>
                         </View>
-                        <View style={styles.stopContent}>
-                            <View style={styles.stopHeader}>
-                                <View style={styles.stopTitleContainer}>
-                                    <Text style={styles.stopTitle}>284 Market St</Text>
-                                    <MaterialIcons name="priority-high" size={16} color="#f59e0b" />
-                                </View>
-                                <Text style={styles.stopBadge}>NEXT</Text>
-                            </View>
-                            <View style={styles.stopDetailsContainer}>
-                                <Text style={styles.stopDetailsText}>ETA 2:15 PM • </Text>
-                                <Text style={styles.orderNumber}>#8821</Text>
-                            </View>
-                        </View>
+                        <View style={styles.stopLineGradient} />
                     </View>
-                </Swipeable>
+                    <View style={styles.stopContent}>
+                        <View style={styles.stopHeader}>
+                            <View style={styles.stopTitleContainer}>
+                                <Text style={styles.stopTitle}>284 Market St</Text>
+                                <MaterialIcons name="priority-high" size={16} color="#f59e0b" />
+                            </View>
+                            <Text style={styles.nextBadge}>NEXT</Text>
+                        </View>
+                        <Text style={styles.stopDetails}>ETA 2:15 PM • <Text style={styles.orderNumber}>#8821</Text></Text>
+                    </View>
+                </View>
 
                 {/* Stop 2 - Express */}
-                <Swipeable
-                    renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, 2)}
-                >
-                    <View style={styles.stopItem}>
-                        <View style={styles.stopIndicator}>
-                            <View style={styles.stopNumberContainerInactive}>
-                                <Text style={styles.stopNumberInactive}>2</Text>
-                            </View>
-                            <View style={styles.stopLineInactive} />
+                <View style={styles.stopItem}>
+                    <View style={styles.stopIndicator}>
+                        <View style={styles.stopNumberContainerInactive}>
+                            <Text style={styles.stopNumberInactive}>2</Text>
                         </View>
-                        <View style={styles.stopContent}>
-                            <View style={styles.stopTitleContainer}>
-                                <Text style={styles.stopTitle}>721 Valencia Blvd</Text>
-                                <MaterialIcons name="bolt" size={16} color="#1152d4" />
-                            </View>
-                            <View style={styles.stopDetailsContainer}>
-                                <Text style={styles.stopDetailsText}>ETA 2:40 PM • </Text>
-                                <Text style={styles.expressText}>Express Delivery</Text>
-                            </View>
-                        </View>
+                        <View style={styles.stopLineInactive} />
                     </View>
-                </Swipeable>
+                    <View style={styles.stopContent}>
+                        <View style={styles.stopTitleContainer}>
+                            <Text style={styles.stopTitle}>721 Valencia Blvd</Text>
+                            <MaterialIcons name="bolt" size={16} color="#1152d4" />
+                        </View>
+                        <Text style={styles.stopDetails}>ETA 2:40 PM • <Text style={styles.expressText}>Express Delivery</Text></Text>
+                    </View>
+                </View>
 
                 {/* Stop 3 - Signature */}
-                <Swipeable
-                    renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, 3)}
-                >
-                    <View style={styles.stopItem}>
-                        <View style={styles.stopIndicator}>
-                            <View style={styles.stopNumberContainerInactive}>
-                                <Text style={styles.stopNumberInactive}>3</Text>
-                            </View>
-                        </View>
-                        <View style={styles.stopContent}>
-                            <View style={styles.stopTitleContainer}>
-                                <Text style={styles.stopTitle}>1502 Mission St</Text>
-                                <MaterialIcons name="edit-document" size={16} color="#94a3b8" />
-                            </View>
-                            <View style={styles.stopDetailsContainer}>
-                                <Text style={styles.stopDetailsText}>ETA 3:05 PM • </Text>
-                                <Text style={styles.signatureText}>Signature Required</Text>
-                            </View>
+                <View style={styles.stopItem}>
+                    <View style={styles.stopIndicator}>
+                        <View style={styles.stopNumberContainerInactive}>
+                            <Text style={styles.stopNumberInactive}>3</Text>
                         </View>
                     </View>
-                </Swipeable>
+                    <View style={styles.stopContent}>
+                        <View style={styles.stopTitleContainer}>
+                            <Text style={styles.stopTitle}>1502 Mission St</Text>
+                            <MaterialIcons name="edit" size={16} color="#94a3b8" />
+                        </View>
+                        <Text style={styles.stopDetails}>ETA 3:05 PM • <Text style={styles.signatureText}>Signature Required</Text></Text>
+                    </View>
+                </View>
             </ScrollView>
 
-            <View 
-                style={[
-                    styles.buttonContainer, 
-                    { opacity: isExpanded ? 1 : 0 }
-                ]}
-            >
+            {/* Bottom Action Buttons */}
+            <View style={styles.bottomActions}>
                 <TouchableOpacity style={styles.startButton}>
-                    <MaterialIcons name="navigation" size={24} color="#FFFFFF" />
+                    <MaterialIcons name="navigation" size={24} color="#FFFFFF" style={{fontWeight: 'bold'}} />
                     <Text style={styles.startButtonText}>START NAVIGATION</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.listButton}>
-                    <MaterialIcons name="list-alt" size={24} color="#64748B" />
+                    <MaterialIcons name="list" size={24} color="#64748B" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -161,8 +104,8 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         backgroundColor: '#FFFFFF',
-        borderTopLeftRadius: 40,
-        borderTopRightRadius: 40,
+        borderTopLeftRadius: 40, // 2.5rem in HTML
+        borderTopRightRadius: 40, // 2.5rem in HTML
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: -15 },
         shadowOpacity: 0.12,
@@ -175,13 +118,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 8,
         paddingTop: 16,
+        flexShrink: 0,
     },
     indicator: {
         height: 6,
+        width: 56,
         backgroundColor: 'rgba(148, 163, 184, 0.6)',
         borderRadius: 3,
-        maxWidth: 56,
-        paddingHorizontal: 0,
     },
     header: {
         flexDirection: 'row',
@@ -191,9 +134,7 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
         borderBottomWidth: 1,
         borderBottomColor: '#f1f5f9',
-    },
-    headerLeft: {
-        flex: 1,
+        flexShrink: 0,
     },
     headerTitle: {
         fontSize: 21,
@@ -204,7 +145,7 @@ const styles = StyleSheet.create({
     },
     headerSubtitle: {
         fontSize: 12,
-        fontWeight: 'bold',
+        fontWeight: '600',
         color: '#94a3b8',
         letterSpacing: 0.5,
         textTransform: 'uppercase',
@@ -275,7 +216,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#94a3b8',
     },
-    stopLine: {
+    stopLineGradient: {
         position: 'absolute',
         width: 2,
         top: 36,
@@ -314,7 +255,7 @@ const styles = StyleSheet.create({
         color: '#111318',
         flex: 1,
     },
-    stopBadge: {
+    nextBadge: {
         backgroundColor: '#dbeafe',
         color: '#1d4ed8',
         fontSize: 9,
@@ -325,11 +266,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
         textTransform: 'uppercase',
     },
-    stopDetailsContainer: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
-    },
-    stopDetailsText: {
+    stopDetails: {
         fontSize: 12,
         fontWeight: '600',
         color: '#64748B',
@@ -366,7 +303,7 @@ const styles = StyleSheet.create({
     cancelButton: {
         backgroundColor: '#fee2e2',
     },
-    buttonContainer: {
+    bottomActions: {
         flexDirection: 'row',
         gap: 12,
         paddingHorizontal: 24,
@@ -374,6 +311,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         borderTopWidth: 1,
         borderTopColor: '#f1f5f9',
+        flexShrink: 0,
     },
     startButton: {
         flex: 1,
