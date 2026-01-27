@@ -85,8 +85,15 @@ class LocationPermissionManager {
      */
     async getCurrentLocation() {
         try {
+            // Check if location services are enabled
+            const locationServicesEnabled = await Location.hasServicesEnabledAsync();
+            if (!locationServicesEnabled) {
+                this.showLocationServicesDisabledAlert();
+                return null;
+            }
+            
             const hasPermission = await this.checkLocationPermissions();
-
+            
             if (!hasPermission) {
                 const granted = await this.requestLocationPermissions();
                 if (!granted) {
@@ -103,8 +110,27 @@ class LocationPermissionManager {
             return location;
         } catch (error) {
             console.error('Error getting current location:', error);
+            if (error.code === 1) { // PERMISSION_DENIED
+                this.showPermissionDeniedAlert();
+            } else if (error.code === 2) { // POSITION_UNAVAILABLE
+                this.showLocationServicesDisabledAlert();
+            }
             return null;
         }
+    }
+
+    /**
+     * Show alert when location services are disabled
+     */
+    showLocationServicesDisabledAlert() {
+        Alert.alert(
+            'Location Services Disabled',
+            'Please enable location services in your device settings to use this feature.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Open Settings', onPress: this.openAppSettings }
+            ]
+        );
     }
 
     /**

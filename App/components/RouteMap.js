@@ -7,6 +7,7 @@ import LocationPermissionManager from '../utils/LocationPermissionManager';
 let MapView;
 let Marker;
 let Polyline;
+let Circle;
 let PROVIDER_DEFAULT;
 
 try {
@@ -14,6 +15,7 @@ try {
   MapView = MapComponents.default;
   Marker = MapComponents.Marker;
   Polyline = MapComponents.Polyline;
+  Circle = MapComponents.Circle;
   PROVIDER_DEFAULT = MapComponents.PROVIDER_DEFAULT;
 } catch (error) {
   console.warn('MapView not available:', error.message);
@@ -162,16 +164,39 @@ const RouteMap = () => {
                 pitchEnabled={true}
                 toolbarEnabled={true}
             >
-                {/* User's current location marker */}
+                {/* User's current location marker with accuracy circle */}
                 {currentLocation && (
-                    <Marker
-                        coordinate={{
-                            latitude: currentLocation.coords.latitude,
-                            longitude: currentLocation.coords.longitude,
-                        }}
-                        title="Your Location"
-                        pinColor="#1152d4"
-                    />
+                    <>
+                        {/* Accuracy circle */}
+                        <Circle
+                            center={{
+                                latitude: currentLocation.coords.latitude,
+                                longitude: currentLocation.coords.longitude,
+                            }}
+                            radius={currentLocation.coords.accuracy || 50}
+                            fillColor="rgba(17, 82, 212, 0.2)"
+                            strokeColor="rgba(17, 82, 212, 0.5)"
+                            strokeWidth={1}
+                        />
+                        {/* Main location marker */}
+                        <Marker
+                            coordinate={{
+                                latitude: currentLocation.coords.latitude,
+                                longitude: currentLocation.coords.longitude,
+                            }}
+                            title="Your Location"
+                            identifier="user-location"
+                        >
+                            <View style={styles.userLocationMarkerContainer}>
+                                <View style={styles.userLocationMarker}>
+                                    <MaterialIcons name="person-pin-circle" size={24} color="#1152d4" />
+                                    {currentLocation.coords.accuracy && (
+                                        <Text style={styles.accuracyText}>{Math.round(currentLocation.coords.accuracy)}m</Text>
+                                    )}
+                                </View>
+                            </View>
+                        </Marker>
+                    </>
                 )}
                 
                 {/* Delivery destinations */}
@@ -456,7 +481,36 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: '600',
     },
-
+    userLocationMarkerContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    userLocationMarker: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderWidth: 2,
+        borderColor: '#1152d4',
+    },
+    accuracyText: {
+        position: 'absolute',
+        bottom: -12,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 8,
+        fontSize: 10,
+        color: '#1152d4',
+        fontWeight: 'bold',
+    },
 });
 
 export default RouteMap;
