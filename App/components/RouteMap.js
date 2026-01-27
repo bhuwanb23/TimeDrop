@@ -11,24 +11,24 @@ let Circle;
 let PROVIDER_DEFAULT;
 
 try {
-  const MapComponents = require('react-native-maps');
-  MapView = MapComponents.default;
-  Marker = MapComponents.Marker;
-  Polyline = MapComponents.Polyline;
-  Circle = MapComponents.Circle;
-  PROVIDER_DEFAULT = MapComponents.PROVIDER_DEFAULT;
+    const MapComponents = require('react-native-maps');
+    MapView = MapComponents.default;
+    Marker = MapComponents.Marker;
+    Polyline = MapComponents.Polyline;
+    Circle = MapComponents.Circle;
+    PROVIDER_DEFAULT = MapComponents.PROVIDER_DEFAULT;
 } catch (error) {
-  console.warn('MapView not available:', error.message);
-  // Fallback to Image if MapView is not available
-  MapView = ({ children, style, ...props }) => (
-    <Image
-      source={{ uri: 'https://maps.wikimedia.org/osm-intl/13/37.78825/-122.4324.png' }}
-      style={style}
-      {...props}
-    />
-  );
-  Marker = ({ children }) => <View>{children}</View>; // No-op for fallback
-  Polyline = ({ children }) => <View>{children}</View>; // No-op for fallback
+    console.warn('MapView not available:', error.message);
+    // Fallback to Image if MapView is not available
+    MapView = ({ children, style, ...props }) => (
+        <Image
+            source={{ uri: 'https://maps.wikimedia.org/osm-intl/13/37.78825/-122.4324.png' }}
+            style={style}
+            {...props}
+        />
+    );
+    Marker = ({ children }) => <View>{children}</View>; // No-op for fallback
+    Polyline = ({ children }) => <View>{children}</View>; // No-op for fallback
 }
 
 const RouteMap = () => {
@@ -38,9 +38,9 @@ const RouteMap = () => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
     });
-    
+
     const [hasLocationPermission, setHasLocationPermission] = useState(false);
-    
+
     const [currentLocation, setCurrentLocation] = useState(null);
     const [destinations, setDestinations] = useState([
         // Sample destinations - in a real app, these would come from delivery data
@@ -48,14 +48,14 @@ const RouteMap = () => {
         { latitude: 37.7870, longitude: -122.4344, id: 2, name: 'Delivery 2' },
         { latitude: 37.7850, longitude: -122.4304, id: 3, name: 'Delivery 3' },
     ]);
-    
+
     const mapRef = useRef(null);
-    
+
     const [locationSubscription, setLocationSubscription] = useState(null);
-    
+
     useEffect(() => {
         checkLocationPermission();
-        
+
         return () => {
             // Cleanup subscription on unmount
             if (locationSubscription && typeof locationSubscription.remove === 'function') {
@@ -63,20 +63,20 @@ const RouteMap = () => {
             }
         };
     }, []);
-    
+
     const checkLocationPermission = async () => {
         const hasPermission = await LocationPermissionManager.checkLocationPermissions();
         setHasLocationPermission(hasPermission);
-        
+
         if (hasPermission) {
             getCurrentLocation();
-            
+
             // Set up location watching
             const subscription = LocationPermissionManager.startWatchingLocation(handleLocationUpdate);
             setLocationSubscription(subscription);
         }
     };
-    
+
     const getCurrentLocation = async () => {
         const location = await LocationPermissionManager.getCurrentLocation();
         if (location) {
@@ -89,19 +89,19 @@ const RouteMap = () => {
             });
         }
     };
-    
+
     const requestLocationPermission = async () => {
         const granted = await LocationPermissionManager.requestLocationPermissions();
         setHasLocationPermission(granted);
         if (granted) {
             getCurrentLocation();
-            
+
             // Set up location watching
             const subscription = LocationPermissionManager.startWatchingLocation(handleLocationUpdate);
             setLocationSubscription(subscription);
         }
     };
-    
+
     // Fallback region if no location permission
     const fallbackRegion = {
         latitude: 37.78825,
@@ -109,11 +109,11 @@ const RouteMap = () => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
     };
-    
+
     const handleLocationUpdate = (location) => {
         setCurrentLocation(location);
     };
-    
+
     const centerOnCurrentLocation = () => {
         if (currentLocation) {
             const newRegion = {
@@ -123,31 +123,45 @@ const RouteMap = () => {
                 longitudeDelta: 0.0421,
             };
             setRegion(newRegion);
-            
+
             if (mapRef.current) {
                 mapRef.current.animateToRegion(newRegion, 1000);
             }
         }
     };
-    
+
     const zoomIn = () => {
         if (mapRef.current) {
             mapRef.current.animateCamera({
-                pitch: 45,
-                altitude: 1000,
-            });
+                zoom: 1,
+            }, { duration: 200 });
         }
     };
-    
+
     const zoomOut = () => {
         if (mapRef.current) {
             mapRef.current.animateCamera({
-                pitch: 0,
-                altitude: 10000,
-            });
+                zoom: -1,
+            }, { duration: 200 });
         }
     };
-    
+        
+    const rotateMap = () => {
+        if (mapRef.current) {
+            mapRef.current.animateCamera({
+                heading: 90, // Rotate 90 degrees
+            }, { duration: 300 });
+        }
+    };
+        
+    const resetNorth = () => {
+        if (mapRef.current) {
+            mapRef.current.animateCamera({
+                heading: 0, // Reset to North
+            }, { duration: 300 });
+        }
+    };
+
     return (
         <View style={styles.container}>
             <MapView
@@ -198,7 +212,7 @@ const RouteMap = () => {
                         </Marker>
                     </>
                 )}
-                
+
                 {/* Delivery destinations */}
                 {destinations.map((dest, index) => (
                     <Marker
@@ -211,7 +225,7 @@ const RouteMap = () => {
                         pinColor="#f59e0b" // Amber color for destinations
                     />
                 ))}
-                
+
                 {/* Route polyline between current location and destinations */}
                 {currentLocation && destinations.length > 0 && (
                     <Polyline
@@ -233,7 +247,7 @@ const RouteMap = () => {
             {!hasLocationPermission && (
                 <View style={styles.permissionOverlay}>
                     <Text style={styles.permissionText}>Location permission required to show your position and calculate routes.</Text>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.permissionButton}
                         onPress={requestLocationPermission}
                     >
@@ -244,28 +258,43 @@ const RouteMap = () => {
 
             {/* Right Controls */}
             <View style={styles.rightControls}>
-                <View style={styles.zoomControls}>
-                    <TouchableOpacity style={styles.zoomButton} onPress={zoomIn}>
-                        <MaterialIcons name="add" size={20} color="#111318" />
+                <View style={styles.controlsColumn}>
+                    {/* Zoom Controls */}
+                    <View style={styles.controlGroup}>
+                        <TouchableOpacity style={styles.controlButton} onPress={zoomIn}>
+                            <MaterialIcons name="add" size={24} color="#111318" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.controlButton} onPress={zoomOut}>
+                            <MaterialIcons name="remove" size={24} color="#111318" />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Rotation Controls */}
+                    <TouchableOpacity style={styles.controlButton} onPress={rotateMap}>
+                        <MaterialIcons name="screen-rotation" size={24} color="#111318" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.zoomButton} onPress={zoomOut}>
-                        <MaterialIcons name="remove" size={20} color="#111318" />
+
+                    {/* Compass */}
+                    <TouchableOpacity style={styles.controlButton} onPress={resetNorth}>
+                        <MaterialIcons name="explore" size={24} color="#111318" />
+                    </TouchableOpacity>
+
+                    {/* Location Button */}
+                    <TouchableOpacity
+                        style={styles.locationButton}
+                        onPress={hasLocationPermission ? centerOnCurrentLocation : requestLocationPermission}
+                    >
+                        <MaterialIcons
+                            name={hasLocationPermission ? "my-location" : "location-off"}
+                            size={24}
+                            color={hasLocationPermission ? "#1152d4" : "#94a3b8"}
+                        />
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity 
-                    style={styles.locationButton} 
-                    onPress={hasLocationPermission ? centerOnCurrentLocation : requestLocationPermission}
-                >
-                    <MaterialIcons 
-                        name={hasLocationPermission ? "my-location" : "location-off"} 
-                        size={20} 
-                        color={hasLocationPermission ? "#1152d4" : "#94a3b8"} 
-                    />
-                </TouchableOpacity>
             </View>
 
             {/* Top Route Modes */}
-            <ScrollView 
+            <ScrollView
                 style={styles.modeSelector}
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -356,11 +385,10 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 16,
         top: '50%',
-        transform: [{ translateY: -48 }],
-        gap: 12,
+        transform: [{ translateY: -60 }],
         zIndex: 10,
     },
-    zoomControls: {
+    controlsColumn: {
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         borderRadius: 16,
         overflow: 'hidden',
@@ -373,17 +401,19 @@ const styles = StyleSheet.create({
         elevation: 4,
         backdropFilter: 'blur(10px)',
     },
-    zoomButton: {
-        width: 48,
-        height: 48,
-        alignItems: 'center',
-        justifyContent: 'center',
+    controlGroup: {
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(0, 0, 0, 0.1)',
     },
+    controlButton: {
+        width: 56,
+        height: 56,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     locationButton: {
-        width: 48,
-        height: 48,
+        width: 56,
+        height: 56,
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         borderRadius: 16,
         alignItems: 'center',
