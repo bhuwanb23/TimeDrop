@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Marker } from 'react-native-maps';
+
+// Use safe MapComponents wrapper to handle compatibility issues
+const { Marker } = require('../components/MapComponentsWrapper');
 
 const DeliveryMarker = ({ 
   coordinate, 

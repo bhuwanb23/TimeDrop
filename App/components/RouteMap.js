@@ -2,35 +2,21 @@ import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Image, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import LocationPermissionManager from '../utils/LocationPermissionManager';
-import DeliveryMarker from './DeliveryMarker';
 
-// Dynamically import MapView to handle compatibility issues
-let MapView;
-let Marker;
-let Polyline;
-let Circle;
-let PROVIDER_DEFAULT;
+// Import DeliveryMarker with dynamic import to handle compatibility issues
+let DeliveryMarker;
 
 try {
-    const MapComponents = require('react-native-maps');
-    MapView = MapComponents.default;
-    Marker = MapComponents.Marker;
-    Polyline = MapComponents.Polyline;
-    Circle = MapComponents.Circle;
-    PROVIDER_DEFAULT = MapComponents.PROVIDER_DEFAULT;
+  const DeliveryMarkerModule = require('./DeliveryMarker');
+  DeliveryMarker = DeliveryMarkerModule.default;
 } catch (error) {
-    console.warn('MapView not available:', error.message);
-    // Fallback to Image if MapView is not available
-    MapView = ({ children, style, ...props }) => (
-        <Image
-            source={{ uri: 'https://maps.wikimedia.org/osm-intl/13/37.78825/-122.4324.png' }}
-            style={style}
-            {...props}
-        />
-    );
-    Marker = ({ children }) => <View>{children}</View>; // No-op for fallback
-    Polyline = ({ children }) => <View>{children}</View>; // No-op for fallback
+  console.warn('DeliveryMarker not available:', error.message);
+  // Fallback component
+  DeliveryMarker = ({ children }) => <View>{children}</View>;
 }
+
+// Use safe MapComponents wrapper to handle compatibility issues
+const { MapView, Marker, Polyline, Circle, PROVIDER_DEFAULT } = require('./MapComponentsWrapper');
 
 const RouteMap = () => {
     const [region, setRegion] = useState({
@@ -179,7 +165,7 @@ const RouteMap = () => {
                 pitchEnabled={true}
                 toolbarEnabled={true}
             >
-                {/* User's current location marker with accuracy circle */}
+                {/* User's current location marker */}
                 {currentLocation && (
                     <>
                         {/* Accuracy circle */}
