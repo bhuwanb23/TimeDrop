@@ -2,30 +2,74 @@ import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Image, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import LocationPermissionManager from '../utils/LocationPermissionManager';
+import RouteOptimizer from '../utils/RouteOptimizer';
 
 // Use safe MapComponents wrapper to handle compatibility issues
 const { MapView, Marker, Circle, PROVIDER_DEFAULT } = require('./MapComponentsWrapper');
 
-// Import DeliveryMarker and RoutePolyline with dynamic import to handle compatibility issues
+// Import all components with dynamic import to handle compatibility issues
 let DeliveryMarker;
 let RoutePolyline;
+let RouteInfoOverlay;
+let ETAOverlay;
+let DistanceOverlay;
+let TrafficOverlay;
+let MapLegend;
 
 try {
-  const DeliveryMarkerModule = require('./DeliveryMarker');
-  DeliveryMarker = DeliveryMarkerModule.default;
+    const DeliveryMarkerModule = require('./DeliveryMarker');
+    DeliveryMarker = DeliveryMarkerModule.default;
 } catch (error) {
-  console.warn('DeliveryMarker not available:', error.message);
-  // Fallback component
-  DeliveryMarker = ({ children }) => <View>{children}</View>;
+    console.warn('DeliveryMarker not available:', error.message);
+    DeliveryMarker = ({ children }) => <View>{children}</View>;
 }
 
 try {
-  const RoutePolylineModule = require('./RoutePolyline');
-  RoutePolyline = RoutePolylineModule.default;
+    const RoutePolylineModule = require('./RoutePolyline');
+    RoutePolyline = RoutePolylineModule.default;
 } catch (error) {
-  console.warn('RoutePolyline not available:', error.message);
-  // Fallback component
-  RoutePolyline = ({ children }) => <View>{children}</View>;
+    console.warn('RoutePolyline not available:', error.message);
+    RoutePolyline = ({ children }) => <View>{children}</View>;
+}
+
+try {
+    const RouteInfoOverlayModule = require('./RouteInfoOverlay');
+    RouteInfoOverlay = RouteInfoOverlayModule.default;
+} catch (error) {
+    console.warn('RouteInfoOverlay not available:', error.message);
+    RouteInfoOverlay = ({ children }) => <View>{children}</View>;
+}
+
+try {
+    const ETAOverlayModule = require('./ETAOverlay');
+    ETAOverlay = ETAOverlayModule.default;
+} catch (error) {
+    console.warn('ETAOverlay not available:', error.message);
+    ETAOverlay = ({ children }) => <View>{children}</View>;
+}
+
+try {
+    const DistanceOverlayModule = require('./DistanceOverlay');
+    DistanceOverlay = DistanceOverlayModule.default;
+} catch (error) {
+    console.warn('DistanceOverlay not available:', error.message);
+    DistanceOverlay = ({ children }) => <View>{children}</View>;
+}
+
+try {
+    const TrafficOverlayModule = require('./TrafficOverlay');
+    TrafficOverlay = TrafficOverlayModule.default;
+} catch (error) {
+    console.warn('TrafficOverlay not available:', error.message);
+    TrafficOverlay = ({ children }) => <View>{children}</View>;
+}
+
+try {
+    const MapLegendModule = require('./MapLegend');
+    MapLegend = MapLegendModule.default;
+} catch (error) {
+    console.warn('MapLegend not available:', error.message);
+    MapLegend = ({ children }) => <View>{children}</View>;
 }
 
 const RouteMap = () => {
@@ -46,6 +90,21 @@ const RouteMap = () => {
         { latitude: 37.7850, longitude: -122.4304, id: 3, name: 'Delivery 3' },
     ]);
 
+    // Overlay visibility states
+    const [showRouteInfo, setShowRouteInfo] = useState(true);
+    const [showETA, setShowETA] = useState(true);
+    const [showDistance, setShowDistance] = useState(true);
+    const [showTraffic, setShowTraffic] = useState(true);
+    const [showLegend, setShowLegend] = useState(true);
+    
+    // Route statistics
+    const [routeStats, setRouteStats] = useState({
+        totalDistance: 0,
+        totalTime: 0,
+        stopsCount: 0,
+        optimizedRoute: []
+    });
+
     const mapRef = useRef(null);
 
     const [locationSubscription, setLocationSubscription] = useState(null);
@@ -60,6 +119,17 @@ const RouteMap = () => {
             }
         };
     }, []);
+    
+    // Calculate route statistics when location or destinations change
+    useEffect(() => {
+        if (currentLocation && destinations.length > 0) {
+            const stats = RouteOptimizer.calculateRouteStats(
+                currentLocation.coords, 
+                destinations
+            );
+            setRouteStats(stats);
+        }
+    }, [currentLocation, destinations]);
 
     const checkLocationPermission = async () => {
         const hasPermission = await LocationPermissionManager.checkLocationPermissions();
@@ -142,7 +212,7 @@ const RouteMap = () => {
             }, { duration: 200 });
         }
     };
-        
+
     const rotateMap = () => {
         if (mapRef.current) {
             mapRef.current.animateCamera({
@@ -150,7 +220,7 @@ const RouteMap = () => {
             }, { duration: 300 });
         }
     };
-        
+
     const resetNorth = () => {
         if (mapRef.current) {
             mapRef.current.animateCamera({
@@ -319,6 +389,61 @@ const RouteMap = () => {
                     <Text style={styles.modeText}>Eco (22 min)</Text>
                 </TouchableOpacity>
             </ScrollView>
+            {/* </View> */}
+
+            {/* Map Overlays */}
+            {RouteInfoOverlay && (
+                <RouteInfoOverlay
+                    totalStops={routeStats.stopsCount}
+                    remainingStops={destinations.length}
+                    totalTime={`${Math.floor(routeStats.totalTime)}h ${Math.round(routeStats.totalTime % 60)}m`}
+                    totalDistance={`${(routeStats.totalDistance / 1000).toFixed(1)} km`}
+                    isOptimized={true}
+                    isVisible={showRouteInfo}
+                />
+            )}
+
+            {ETAOverlay && (
+                <ETAOverlay
+                    currentStop={1}
+                    nextStopETA="2:15 PM"
+                    nextStopAddress="284 Market St"
+                    orderNumber="#8821"
+                    deliveryType="standard"
+                    isVisible={showETA}
+                />
+            )}
+
+            {DistanceOverlay && (
+                <DistanceOverlay
+                    fromLocation="Current Location"
+                    toLocation="284 Market St"
+                    distance="2.3 km"
+                    estimatedTime="8 min"
+                    viaRoute="Main St"
+                    isVisible={showDistance}
+                />
+            )}
+
+            {TrafficOverlay && (
+                <TrafficOverlay
+                    trafficCondition="light"
+                    trafficDelay="0 min"
+                    alternativeRouteAvailable={false}
+                    isVisible={showTraffic}
+                />
+            )}
+
+            {MapLegend && (
+                <MapLegend
+                    isVisible={showLegend}
+                    onToggle={() => setShowLegend(!showLegend)}
+                    showUserLocation={true}
+                    showDestinations={true}
+                    showRoute={true}
+                    showTraffic={true}
+                />
+            )}
         </View>
     );
 };
