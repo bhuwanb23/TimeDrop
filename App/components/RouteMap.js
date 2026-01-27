@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Image, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import LocationPermissionManager from '../utils/LocationPermissionManager';
+import DeliveryMarker from './DeliveryMarker';
 
 // Dynamically import MapView to handle compatibility issues
 let MapView;
@@ -215,14 +216,19 @@ const RouteMap = () => {
 
                 {/* Delivery destinations */}
                 {destinations.map((dest, index) => (
-                    <Marker
+                    <DeliveryMarker
                         key={dest.id}
                         coordinate={{
                             latitude: dest.latitude,
                             longitude: dest.longitude,
                         }}
                         title={`Delivery ${index + 1}`}
-                        pinColor="#f59e0b" // Amber color for destinations
+                        type={index === 0 ? 'next' : index === 1 ? 'pending' : 'completed'}
+                        onPress={() => {
+                            console.log(`Delivery ${index + 1} pressed`);
+                            // Add navigation or action here
+                        }}
+                        isActive={index === 0} // Highlight the next delivery
                     />
                 ))}
 
