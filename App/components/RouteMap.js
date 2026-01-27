@@ -1,48 +1,216 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import React, { useRef, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import MapView, { PROVIDER_DEFAULT, Marker, Polyline } from 'react-native-maps';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Image } from 'react-native';
+import LocationPermissionManager from '../utils/LocationPermissionManager';
 
 const RouteMap = () => {
-    // Sample map image - you'll need to replace this with actual map component
-    const mapImageUrl = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBk8ej8zUYptoJwl__2IikFjQPsy280pOszeI6PKU5rerIpsq2WIdzHcFUmnchsyDRpZGd4IJa5F4Kn6ZParZFLEP0VfWPU6mSITlqee5GEJQN8HzZ-iGSmI1hHdNqSFlsD47XEudu6peenDIxnqSikNSKEUvdhAuMVid8noD19hfuj7NAXE66lVT1W9roZ_Hb_JNWhG8zTkISs2P5WSHh7r99JQXQKBrdJFkMaDK-y1-av6Cn_eZxSIJoGBVK9BvG1PP50Qtlg1zc';
-
+    const [region, setRegion] = useState({
+        latitude: 37.78825, // Default to somewhere central
+        longitude: -122.4324, // San Francisco as default
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    });
+    
+    const [hasLocationPermission, setHasLocationPermission] = useState(false);
+    
+    const [currentLocation, setCurrentLocation] = useState(null);
+    const [destinations, setDestinations] = useState([
+        // Sample destinations - in a real app, these would come from delivery data
+        { latitude: 37.7890, longitude: -122.4314, id: 1, name: 'Delivery 1' },
+        { latitude: 37.7870, longitude: -122.4344, id: 2, name: 'Delivery 2' },
+        { latitude: 37.7850, longitude: -122.4304, id: 3, name: 'Delivery 3' },
+    ]);
+    
+    const mapRef = useRef(null);
+    
+    const [locationSubscription, setLocationSubscription] = useState(null);
+    
+    useEffect(() => {
+        checkLocationPermission();
+        
+        return () => {
+            // Cleanup subscription on unmount
+            if (locationSubscription && typeof locationSubscription.remove === 'function') {
+                locationSubscription.remove();
+            }
+        };
+    }, []);
+    
+    const checkLocationPermission = async () => {
+        const hasPermission = await LocationPermissionManager.checkLocationPermissions();
+        setHasLocationPermission(hasPermission);
+        
+        if (hasPermission) {
+            getCurrentLocation();
+            
+            // Set up location watching
+            const subscription = LocationPermissionManager.startWatchingLocation(handleLocationUpdate);
+            setLocationSubscription(subscription);
+        }
+    };
+    
+    const getCurrentLocation = async () => {
+        const location = await LocationPermissionManager.getCurrentLocation();
+        if (location) {
+            setCurrentLocation(location);
+            setRegion({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            });
+        }
+    };
+    
+    const requestLocationPermission = async () => {
+        const granted = await LocationPermissionManager.requestLocationPermissions();
+        setHasLocationPermission(granted);
+        if (granted) {
+            getCurrentLocation();
+            
+            // Set up location watching
+            const subscription = LocationPermissionManager.startWatchingLocation(handleLocationUpdate);
+            setLocationSubscription(subscription);
+        }
+    };
+    
+    // Fallback region if no location permission
+    const fallbackRegion = {
+        latitude: 37.78825,
+        longitude: -122.4324,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    };
+    
+    const handleLocationUpdate = (location) => {
+        setCurrentLocation(location);
+    };
+    
+    const centerOnCurrentLocation = () => {
+        if (currentLocation) {
+            const newRegion = {
+                latitude: currentLocation.coords.latitude,
+                longitude: currentLocation.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            };
+            setRegion(newRegion);
+            
+            if (mapRef.current) {
+                mapRef.current.animateToRegion(newRegion, 1000);
+            }
+        }
+    };
+    
+    const zoomIn = () => {
+        if (mapRef.current) {
+            mapRef.current.animateCamera({
+                pitch: 45,
+                altitude: 1000,
+            });
+        }
+    };
+    
+    const zoomOut = () => {
+        if (mapRef.current) {
+            mapRef.current.animateCamera({
+                pitch: 0,
+                altitude: 10000,
+            });
+        }
+    };
+    
     return (
         <View style={styles.container}>
-            {/* Map Background */}
-            <View style={styles.mapContainer}>
-                <Image
-                    source={{ uri: mapImageUrl }}
-                    style={styles.mapImage}
-                    resizeMode="cover"
-                />
+            <MapView
+                ref={mapRef}
+                provider={PROVIDER_DEFAULT}
+                style={styles.mapContainer}
+                initialRegion={hasLocationPermission ? region : fallbackRegion}
+                region={hasLocationPermission ? region : fallbackRegion}
+                showsUserLocation={hasLocationPermission}
+                showsMyLocationButton={false}
+                followsUserLocation={false}
+                showsCompass={true}
+                rotateEnabled={true}
+                pitchEnabled={true}
+                toolbarEnabled={true}
+            >
+                {/* User's current location marker */}
+                {currentLocation && (
+                    <Marker
+                        coordinate={{
+                            latitude: currentLocation.coords.latitude,
+                            longitude: currentLocation.coords.longitude,
+                        }}
+                        title="Your Location"
+                        pinColor="#1152d4"
+                    />
+                )}
                 
-                {/* Route Line Overlay */}
-                <View style={styles.routeOverlay} pointerEvents="none">
-                    <View style={styles.routeLinePrimary} />
-                    <View style={styles.routeLineSecondary} />
-                </View>
+                {/* Delivery destinations */}
+                {destinations.map((dest, index) => (
+                    <Marker
+                        key={dest.id}
+                        coordinate={{
+                            latitude: dest.latitude,
+                            longitude: dest.longitude,
+                        }}
+                        title={`Delivery ${index + 1}`}
+                        pinColor="#f59e0b" // Amber color for destinations
+                    />
+                ))}
+                
+                {/* Route polyline between current location and destinations */}
+                {currentLocation && destinations.length > 0 && (
+                    <Polyline
+                        coordinates={[{
+                            latitude: currentLocation.coords.latitude,
+                            longitude: currentLocation.coords.longitude,
+                        }, ...destinations.map(dest => ({
+                            latitude: dest.latitude,
+                            longitude: dest.longitude,
+                        }))]
+                        }
+                        strokeColor="#1152d4"
+                        strokeWidth={6}
+                        lineDashPhase={1}
+                    />
+                )}
+            </MapView>
 
-                {/* Marker */}
-                <View style={styles.marker}>
-                    <View style={styles.markerInner}>
-                        <Text style={styles.markerText}>1</Text>
-                    </View>
+            {!hasLocationPermission && (
+                <View style={styles.permissionOverlay}>
+                    <Text style={styles.permissionText}>Location permission required to show your position and calculate routes.</Text>
+                    <TouchableOpacity 
+                        style={styles.permissionButton}
+                        onPress={requestLocationPermission}
+                    >
+                        <Text style={styles.permissionButtonText}>Enable Location</Text>
+                    </TouchableOpacity>
                 </View>
-            </View>
+            )}
 
             {/* Right Controls */}
             <View style={styles.rightControls}>
                 <View style={styles.zoomControls}>
-                    <TouchableOpacity style={styles.zoomButton}>
+                    <TouchableOpacity style={styles.zoomButton} onPress={zoomIn}>
                         <MaterialIcons name="add" size={20} color="#111318" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.zoomButton}>
+                    <TouchableOpacity style={styles.zoomButton} onPress={zoomOut}>
                         <MaterialIcons name="remove" size={20} color="#111318" />
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.locationButton}>
-                    <MaterialIcons name="my-location" size={20} color="#1152d4" />
+                <TouchableOpacity 
+                    style={styles.locationButton} 
+                    onPress={hasLocationPermission ? centerOnCurrentLocation : requestLocationPermission}
+                >
+                    <MaterialIcons 
+                        name={hasLocationPermission ? "my-location" : "location-off"} 
+                        size={20} 
+                        color={hasLocationPermission ? "#1152d4" : "#94a3b8"} 
+                    />
                 </TouchableOpacity>
             </View>
 
@@ -230,6 +398,38 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         color: '#111318',
+    },
+    permissionOverlay: {
+        position: 'absolute',
+        top: 100,
+        left: 20,
+        right: 20,
+        backgroundColor: 'white',
+        padding: 16,
+        borderRadius: 12,
+        alignItems: 'center',
+        zIndex: 10,
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    permissionText: {
+        fontSize: 14,
+        color: '#64748b',
+        textAlign: 'center',
+        marginBottom: 12,
+    },
+    permissionButton: {
+        backgroundColor: '#1152d4',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 8,
+    },
+    permissionButtonText: {
+        color: 'white',
+        fontWeight: '600',
     },
 });
 
