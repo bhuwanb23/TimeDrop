@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const RouteCard = () => {
+const RouteCard = ({ navigation }) => {
     const pulseAnim = useRef(new Animated.Value(1)).current;
     const buttonScale = useRef(new Animated.Value(1)).current;
 
@@ -47,6 +47,11 @@ const RouteCard = () => {
                 useNativeDriver: true,
             }),
         ]).start();
+        
+        // Navigate to Route screen using the root navigator
+        if (navigation) {
+            navigation.navigate('Route');
+        }
     };
 
     return (

@@ -15,7 +15,7 @@ import EarningsCard from '../components/EarningsCard';
 import DeliveredCard from '../components/DeliveredCard';
 import DownloadButton from '../components/DownloadButton';
 
-const DeliveryScreen = () => {
+const DeliveryScreen = ({ navigation }) => {
     const [activeTab, setActiveTab] = useState('Active');
     
     // Sample delivery data for Active tab
@@ -86,7 +86,7 @@ const DeliveryScreen = () => {
             >
                 {activeTab === 'Active' ? (
                     <>
-                        <RouteCard />
+                        <RouteCard navigation={navigation} />
                         
                         {/* Today's Queue Header */}
                         <View style={styles.queueHeader}>

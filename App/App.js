@@ -7,6 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import LoginScreen from './screens/LoginScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import DeliveryScreen from './screens/DeliveryScreen';
+import RouteScreen from './screens/RouteScreen';
 import ProfileScreen from './screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
@@ -105,6 +106,7 @@ const RootNavigator = () => {
                     headerShown: false,
                 }}
             />
+            <Stack.Screen name="Route" component={RouteScreen} />
         </Stack.Navigator>
     );
 };
