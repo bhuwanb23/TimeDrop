@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
-import MapView, { PROVIDER_DEFAULT, Marker, Polyline } from 'react-native-maps';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import LocationPermissionManager from '../utils/LocationPermissionManager';
 
@@ -123,62 +122,40 @@ const RouteMap = () => {
     
     return (
         <View style={styles.container}>
-            <MapView
-                ref={mapRef}
-                provider={PROVIDER_DEFAULT}
-                style={styles.mapContainer}
-                initialRegion={hasLocationPermission ? region : fallbackRegion}
-                region={hasLocationPermission ? region : fallbackRegion}
-                showsUserLocation={hasLocationPermission}
-                showsMyLocationButton={false}
-                followsUserLocation={false}
-                showsCompass={true}
-                rotateEnabled={true}
-                pitchEnabled={true}
-                toolbarEnabled={true}
-            >
-                {/* User's current location marker */}
+            <View style={styles.mapContainer}>
+                <Image
+                    source={{ uri: 'https://maps.wikimedia.org/osm-intl/13/37.78825/-122.4324.png' }} // Wikimedia OSM tiles (free)
+                    style={styles.mapImage}
+                    resizeMode="cover"
+                />
+                
+                {/* Temporary marker overlay for current location */}
                 {currentLocation && (
-                    <Marker
-                        coordinate={{
-                            latitude: currentLocation.coords.latitude,
-                            longitude: currentLocation.coords.longitude,
-                        }}
-                        title="Your Location"
-                        pinColor="#1152d4"
-                    />
+                    <View style={[styles.marker, { top: '45%', left: '50%' }]}> // Approximate position
+                        <View style={styles.markerInner}>
+                            <Text style={styles.markerText}>You</Text>
+                        </View>
+                    </View>
                 )}
                 
-                {/* Delivery destinations */}
+                {/* Temporary marker overlay for destinations */}
                 {destinations.map((dest, index) => (
-                    <Marker
-                        key={dest.id}
-                        coordinate={{
-                            latitude: dest.latitude,
-                            longitude: dest.longitude,
-                        }}
-                        title={`Delivery ${index + 1}`}
-                        pinColor="#f59e0b" // Amber color for destinations
-                    />
+                    <View 
+                        key={dest.id} 
+                        style={[
+                            styles.destinationMarker, 
+                            { 
+                                top: `${45 + (index * 5)}%`, 
+                                left: `${50 + (index * 5)}%` 
+                            }
+                        ]}
+                    >
+                        <View style={styles.destinationMarkerInner}>
+                            <Text style={styles.markerText}>{index + 1}</Text>
+                        </View>
+                    </View>
                 ))}
-                
-                {/* Route polyline between current location and destinations */}
-                {currentLocation && destinations.length > 0 && (
-                    <Polyline
-                        coordinates={[{
-                            latitude: currentLocation.coords.latitude,
-                            longitude: currentLocation.coords.longitude,
-                        }, ...destinations.map(dest => ({
-                            latitude: dest.latitude,
-                            longitude: dest.longitude,
-                        }))]
-                        }
-                        strokeColor="#1152d4"
-                        strokeWidth={6}
-                        lineDashPhase={1}
-                    />
-                )}
-            </MapView>
+            </View>
 
             {!hasLocationPermission && (
                 <View style={styles.permissionOverlay}>
@@ -430,6 +407,27 @@ const styles = StyleSheet.create({
     permissionButtonText: {
         color: 'white',
         fontWeight: '600',
+    },
+    mapImage: {
+        flex: 1,
+        width: '100%',
+    },
+    destinationMarker: {
+        position: 'absolute',
+        zIndex: 3,
+    },
+    destinationMarkerInner: {
+        width: 32,
+        height: 32,
+        backgroundColor: '#f59e0b', // Amber color for destinations
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#f59e0b',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 8,
     },
 });
 
