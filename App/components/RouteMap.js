@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { View, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'react-native';
 
