@@ -3,8 +3,12 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Image
 import { MaterialIcons } from '@expo/vector-icons';
 import LocationPermissionManager from '../utils/LocationPermissionManager';
 
-// Import DeliveryMarker with dynamic import to handle compatibility issues
+// Use safe MapComponents wrapper to handle compatibility issues
+const { MapView, Marker, Circle, PROVIDER_DEFAULT } = require('./MapComponentsWrapper');
+
+// Import DeliveryMarker and RoutePolyline with dynamic import to handle compatibility issues
 let DeliveryMarker;
+let RoutePolyline;
 
 try {
   const DeliveryMarkerModule = require('./DeliveryMarker');
@@ -15,8 +19,14 @@ try {
   DeliveryMarker = ({ children }) => <View>{children}</View>;
 }
 
-// Use safe MapComponents wrapper to handle compatibility issues
-const { MapView, Marker, Polyline, Circle, PROVIDER_DEFAULT } = require('./MapComponentsWrapper');
+try {
+  const RoutePolylineModule = require('./RoutePolyline');
+  RoutePolyline = RoutePolylineModule.default;
+} catch (error) {
+  console.warn('RoutePolyline not available:', error.message);
+  // Fallback component
+  RoutePolyline = ({ children }) => <View>{children}</View>;
+}
 
 const RouteMap = () => {
     const [region, setRegion] = useState({
@@ -219,19 +229,27 @@ const RouteMap = () => {
                 ))}
 
                 {/* Route polyline between current location and destinations */}
-                {currentLocation && destinations.length > 0 && (
-                    <Polyline
-                        coordinates={[{
+                {currentLocation && destinations.length > 0 && RoutePolyline && (
+                    <RoutePolyline
+                        origin={{
                             latitude: currentLocation.coords.latitude,
                             longitude: currentLocation.coords.longitude,
-                        }, ...destinations.map(dest => ({
+                        }}
+                        destination={destinations[0] ? {
+                            latitude: destinations[0].latitude,
+                            longitude: destinations[0].longitude,
+                        } : null}
+                        waypoints={destinations.slice(1).map(dest => ({
                             latitude: dest.latitude,
                             longitude: dest.longitude,
-                        }))]
-                        }
-                        strokeColor="#1152d4"
-                        strokeWidth={6}
-                        lineDashPhase={1}
+                        }))}
+                        color="#1152d4"
+                        width={6}
+                        linePattern="dashed"
+                        onRouteCalculated={(routeInfo) => {
+                            console.log('Route calculated:', routeInfo);
+                            // Update state with route information
+                        }}
                     />
                 )}
             </MapView>
