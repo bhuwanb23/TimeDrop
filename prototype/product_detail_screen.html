@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Premium Product Details V2</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style type="text/tailwindcss">
+        :root {
+            --primary-deep: #1E3A8A;
+            --primary-light: #EFF6FF;
+            --accent-blue: #3B82F6;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --ios-bg: #F9FAFB;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--ios-bg);
+            color: var(--text-main);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .product-card-overlap {
+            margin-top: -40px;
+            border-radius: 32px 32px 0 0;
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="max-w-md mx-auto min-h-screen pb-32">
+    <header class="relative h-[400px] w-full overflow-hidden">
+        <img alt="Premium Product" class="w-full h-full object-cover"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCclyspctCNVPqriMgtzOvRAFJKIWcm04MBPTzXQvRL2b8MyWJ2OHUq-EqSmlvmY2PzzOIbAysGo8NNR0c3IfrylDkKH9q_Bppqswty4uuOWpQqj6oFFdI-be6HcFSH99QT415slSEhiVbnDFiqW4IdNJGfQI9AkymIDf6GzdDMfUql7NWGISSjuKyCMT3-Znv06hmIwkzcwqS6AZb8Q2kyIfzxdoK6Zbmw5WeWS5U2OrtXh4PZRDlvre6T_BiXImZpNjMmI0_s73Q" />
+        <div class="absolute top-12 left-0 right-0 px-6 flex justify-between items-center">
+            <button class="glass-nav w-10 h-10 rounded-full flex items-center justify-center text-white">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div class="flex gap-3">
+                <button class="glass-nav w-10 h-10 rounded-full flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined">share</span>
+                </button>
+                <button class="glass-nav w-10 h-10 rounded-full flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined">favorite</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main class="relative z-10 product-card-overlap bg-white px-6 pt-8">
+        <div class="flex justify-between items-start mb-2">
+            <div>
+                <span class="text-[var(--accent-blue)] font-semibold text-sm tracking-wider uppercase">Pro-Elite
+                    Series</span>
+                <h1 class="text-2xl font-bold mt-1">AirSpeed Performance V2</h1>
+            </div>
+            <div class="bg-[var(--primary-light)] px-3 py-1 rounded-full flex items-center gap-1">
+                <span class="material-symbols-outlined text-yellow-500 text-sm"
+                    style="font-variation-settings: 'FILL' 1">star</span>
+                <span class="text-[var(--primary-deep)] font-bold text-sm">4.8</span>
+            </div>
+        </div>
+        <div class="flex items-baseline gap-2 mb-8">
+            <span class="text-3xl font-bold text-[var(--primary-deep)]">$189.00</span>
+            <span class="text-[var(--text-muted)] line-through text-lg">$240.00</span>
+        </div>
+        <div class="space-y-4">
+            <details class="group" open="">
+                <summary
+                    class="flex justify-between items-center list-none cursor-pointer py-4 border-b border-gray-100">
+                    <span class="font-semibold text-lg">Description</span>
+                    <span
+                        class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="py-4 text-[var(--text-muted)] leading-relaxed">
+                    Designed for peak delivery performance, the AirSpeed Performance V2 features lightweight
+                    carbon-fiber mesh and reactive foam cushioning for all-day comfort on the move.
+                </div>
+            </details>
+            <details class="group">
+                <summary
+                    class="flex justify-between items-center list-none cursor-pointer py-4 border-b border-gray-100">
+                    <span class="font-semibold text-lg">Specifications</span>
+                    <span
+                        class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="py-4 space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-[var(--text-muted)]">Weight</span>
+                        <span class="font-medium">240g</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-[var(--text-muted)]">Material</span>
+                        <span class="font-medium">Breathable PrimeKnit</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-[var(--text-muted)]">Sole</span>
+                        <span class="font-medium">High-Grip Rubber</span>
+                    </div>
+                </div>
+            </details>
+            <details class="group">
+                <summary
+                    class="flex justify-between items-center list-none cursor-pointer py-4 border-b border-gray-100">
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold text-lg">Reviews</span>
+                        <span class="text-sm text-[var(--text-muted)] font-normal">(128)</span>
+                    </div>
+                    <span
+                        class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="py-4 space-y-4">
+                    <div class="bg-[var(--primary-light)] p-4 rounded-2xl">
+                        <div class="flex justify-between mb-2">
+                            <span class="font-semibold">Michael R.</span>
+                            <span class="text-xs text-[var(--text-muted)]">2 days ago</span>
+                        </div>
+                        <p class="text-sm text-[var(--text-muted)]">Incredible grip even in rainy weather. Perfect for
+                            my delivery shifts.</p>
+                    </div>
+                </div>
+            </details>
+        </div>
+        <section class="mt-10 pb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Related Products</h3>
+                <button class="text-[var(--accent-blue)] font-semibold text-sm">See All</button>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white rounded-3xl overflow-hidden custom-shadow p-3 border border-gray-50">
+                    <img alt="Related 1" class="w-full h-32 object-cover rounded-2xl mb-3"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq9ZpOZvF18XtDc50Dh13DKCxdoKVpzalMpymyCysshyWsMXCH1mtpPppLtldXtY6mBk8BykW8-07rnSxnFEn3DMjML0rqOoHjc63S44Bg6ITs4ebSTPdrUVAZUChd8c4DNY-U4fxzUP6jHZjnMb2Obwz-iWBAl3AVaKrq8eQSsvzIVLC7jlXeYJVgx5OQxmbAi_jZCDWuFHczK30SkLVEfcOzHKoNpoRUK3ajAmG5kZOxKSSaWTUIkMF5Xdwu_T4RSSXTXzBpvp4" />
+                    <h4 class="font-semibold text-sm truncate">Cloud Foam Pro</h4>
+                    <p class="text-[var(--accent-blue)] font-bold mt-1">$145.00</p>
+                </div>
+                <div class="bg-white rounded-3xl overflow-hidden custom-shadow p-3 border border-gray-50">
+                    <img alt="Related 2" class="w-full h-32 object-cover rounded-2xl mb-3"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6p6PUcQc4xMyWy5ciIEx43zJ8c40PJtYtLMDclqgir1jlynZ5P4_4ews6JSoaHH8puA1_GHeBdgyjqNiTcIz0HAvdp37yxsGkBhBDOu0UsH8L-V3Z2DDyeN372F7vGdvA1PcwhC4qNPLYjjn0zWQeVa3KDe1bIMudRtP2a9jcEXwNc7B3HTTulO47usR7S9BuQXFOF72DZc0-LBcURDr2cAn0brhchI81HYD5UlpqWUAzctY0arScbTi--AAJQfm8KkIpUNmyUKg" />
+                    <h4 class="font-semibold text-sm truncate">Steady Glide X</h4>
+                    <p class="text-[var(--accent-blue)] font-bold mt-1">$162.00</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer
+        class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/80 backdrop-blur-xl border-t border-gray-100 p-6 flex gap-4 z-50">
+        <button
+            class="flex-1 bg-[var(--primary-light)] text-[var(--primary-deep)] font-bold py-4 px-6 rounded-2xl transition-all active:scale-95">
+            Add to Cart
+        </button>
+        <button
+            class="flex-[1.5] bg-[var(--primary-deep)] text-white font-bold py-4 px-6 rounded-2xl transition-all active:scale-95 shadow-lg shadow-blue-900/20">
+            Buy Now
+        </button>
+    </footer>
+    <div class="h-8 bg-white"></div>
+
+</body>
+
+</html>

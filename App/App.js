@@ -10,6 +10,7 @@ import DeliveryScreen from './screens/DeliveryScreen';
 import RouteScreen from './screens/RouteScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import CustomerDashboardScreen from './screens/CustomerDashboardScreen';
+import ProductCatalogScreen from './screens/ProductCatalogScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -110,6 +111,13 @@ const RootNavigator = () => {
             <Stack.Screen 
                 name="CustomerDashboard" 
                 component={CustomerDashboardScreen}
+                options={{ 
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen 
+                name="ProductCatalog" 
+                component={ProductCatalogScreen}
                 options={{ 
                     headerShown: false,
                 }}
