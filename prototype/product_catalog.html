@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Customer Product Grid V1</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .active-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+        <!-- Top App Bar -->
+        <div class="flex items-center px-4 py-3 justify-between">
+            <h1 class="text-xl font-bold tracking-tight">Explore</h1>
+            <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5">
+                <span class="material-symbols-outlined text-2xl">tune</span>
+            </button>
+        </div>
+        <!-- Search Bar -->
+        <div class="px-4 pb-2">
+            <label class="flex flex-col w-full">
+                <div
+                    class="flex w-full items-stretch rounded-xl h-12 bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div class="flex items-center justify-center pl-4">
+                        <span class="material-symbols-outlined text-slate-400">search</span>
+                    </div>
+                    <input
+                        class="form-input flex w-full border-none bg-transparent focus:ring-0 text-base placeholder:text-slate-400 px-3"
+                        placeholder="Search products..." type="text" />
+                    <div class="flex items-center pr-3">
+                        <span class="material-symbols-outlined text-slate-400 text-xl">mic</span>
+                    </div>
+                </div>
+            </label>
+        </div>
+        <!-- Categories Tabs -->
+        <div class="overflow-x-auto no-scrollbar">
+            <div class="flex px-4 gap-6 border-b border-slate-200 dark:border-slate-800">
+                <a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-3 min-w-max"
+                    href="#">
+                    <p class="text-sm font-bold tracking-wide">All</p>
+                </a>
+                <a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-3 min-w-max"
+                    href="#">
+                    <p class="text-sm font-bold tracking-wide">Electronics</p>
+                </a>
+                <a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-3 min-w-max"
+                    href="#">
+                    <p class="text-sm font-bold tracking-wide">Home</p>
+                </a>
+                <a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-3 min-w-max"
+                    href="#">
+                    <p class="text-sm font-bold tracking-wide">Fashion</p>
+                </a>
+                <a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-3 min-w-max"
+                    href="#">
+                    <p class="text-sm font-bold tracking-wide">Beauty</p>
+                </a>
+            </div>
+        </div>
+    </header>
+    <!-- Pull to refresh indicator (Visual only) -->
+    <div class="flex justify-center py-2">
+        <span class="material-symbols-outlined animate-spin text-slate-300">refresh</span>
+    </div>
+    <!-- Product Grid -->
+    <main class="px-4 pb-24">
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Product Card 1 -->
+            <div class="flex flex-col gap-3 group">
+                <div
+                    class="relative w-full aspect-[4/5] bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm">
+                    <div class="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-500 group-hover:scale-105"
+                        data-alt="Modern wireless over-ear headphones in silver"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAEdclVWy3M8BxMzFeb1J8f-hS8djSpmXa6b9iE8h9X0A8zLlFO0WmE7ZRrSxnR9-_RWY_1PMTL4TOfjJHRSHdDJn1rdYoASaK6VNdURRjwlX8q5eqYehv8VH3a5CRK9MEDCT4APc6sV1p55Dq4Wecd4F8m8ik8Hu6RTrUZx4pr0tY44g57TsGfQx_Ijy9PGKM4Av2BEK-nsWHj2gVGmBRK67hOY1nqg_tSaKzx960_DQQpAn07KDKG5qhO9UfXeV8BVvLayHEnPgE");'>
+                    </div>
+                    <button
+                        class="absolute top-2 right-2 size-9 flex items-center justify-center bg-white/90 dark:bg-slate-900/90 rounded-full shadow-md backdrop-blur-sm">
+                        <span class="material-symbols-outlined text-slate-400 text-xl">favorite</span>
+                    </button>
+                </div>
+                <div class="flex flex-col gap-1 px-1">
+                    <p class="text-slate-900 dark:text-slate-100 text-[15px] font-semibold leading-tight line-clamp-1">
+                        Wireless Headphones</p>
+                    <div class="flex items-center">
+                        <span class="px-2 py-0.5 rounded-lg bg-primary/10 text-primary text-sm font-bold">$129.00</span>
+                    </div>
+                    <button
+                        class="mt-2 w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform">
+                        <span class="material-symbols-outlined text-sm">shopping_bag</span>
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+            <!-- Product Card 2 -->
+            <div class="flex flex-col gap-3 group">
+                <div
+                    class="relative w-full aspect-[4/5] bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm">
+                    <div class="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-500 group-hover:scale-105"
+                        data-alt="Premium smart watch with black silicon strap"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAQO437bK_hgQmHBH9VoZkMmbRpEslnGjb9OmHyaCKtH6qe6i0p3Z7EXKX5kMG8Zf5ZGHPHcwIhKYl9g7u-uPA1ui4BoLYK5FDtLaRsCy5lQMSJmucwZ2OqlWzrQXGVtGF39nvi_vlfJ-iTvHpL90HXtzK6OBj-l3Fl3GelEeZItTGgwWBCatUx2yRxYaMYBeM533BOKAf4iFRX_uuMj3JbTaea4Vre3rEApKuXSRO1mAMSisEQP15ykRRaE1sUuqEGc_Ysniz_MIg");'>
+                    </div>
+                    <button
+                        class="absolute top-2 right-2 size-9 flex items-center justify-center bg-white/90 dark:bg-slate-900/90 rounded-full shadow-md backdrop-blur-sm">
+                        <span class="material-symbols-outlined text-primary active-fill text-xl">favorite</span>
+                    </button>
+                </div>
+                <div class="flex flex-col gap-1 px-1">
+                    <p class="text-slate-900 dark:text-slate-100 text-[15px] font-semibold leading-tight line-clamp-1">
+                        Smart Watch Series 7</p>
+                    <div class="flex items-center">
+                        <span class="px-2 py-0.5 rounded-lg bg-primary/10 text-primary text-sm font-bold">$199.00</span>
+                    </div>
+                    <button
+                        class="mt-2 w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform">
+                        <span class="material-symbols-outlined text-sm">shopping_bag</span>
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+            <!-- Product Card 3 -->
+            <div class="flex flex-col gap-3 group">
+                <div
+                    class="relative w-full aspect-[4/5] bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm">
+                    <div class="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-500 group-hover:scale-105"
+                        data-alt="Minimalist wooden desk lamp with warm glow"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKS0Pgzg5smSaKAiicZemb5MlJn114352m03oR2dmX9Uaiv7VIrAKughWPR8uz77s0QCTcAdt1GugcbACR2JOXd7GdhFTORwRZkbkLdWDm-ufDhZhkioucO-rlgIu3gGouseZl00OlkGV70_iuxXBwIdQvItQKkpMQmfg_kTmbo3IkO-iOfZ8iqmJjoeD2JSPagh2Jc7ewKn1zZD9hdfDS0-N-xYhtOp--7mh1qlmJKcoo5TNsTg6iG7j-nAGmYE72e6leicMG4AU");'>
+                    </div>
+                    <button
+                        class="absolute top-2 right-2 size-9 flex items-center justify-center bg-white/90 dark:bg-slate-900/90 rounded-full shadow-md backdrop-blur-sm">
+                        <span class="material-symbols-outlined text-slate-400 text-xl">favorite</span>
+                    </button>
+                </div>
+                <div class="flex flex-col gap-1 px-1">
+                    <p class="text-slate-900 dark:text-slate-100 text-[15px] font-semibold leading-tight line-clamp-1">
+                        Minimalist Lamp</p>
+                    <div class="flex items-center">
+                        <span class="px-2 py-0.5 rounded-lg bg-primary/10 text-primary text-sm font-bold">$45.00</span>
+                    </div>
+                    <button
+                        class="mt-2 w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform">
+                        <span class="material-symbols-outlined text-sm">shopping_bag</span>
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+            <!-- Product Card 4 -->
+            <div class="flex flex-col gap-3 group">
+                <div
+                    class="relative w-full aspect-[4/5] bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm">
+                    <div class="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-500 group-hover:scale-105"
+                        data-alt="Classic brown leather jacket hanging"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBBBqBSbJ6tsg-GPkChiFsBu4qV5kOhQe9zicIg2RFU9sohLTWC0nslkxbLPOJ0vAl3OxrvxkpqEKufQcu14lPsMGU_l0zyFTh50UP0GHRqmxwVcPFEZIM-Cra4uQBML6c6Mbq7RjN2yKW63liuwhZt8FQF6L1RdluIbJTYonkZucdwexp2f6vDNB6L8vcnypK_LKcwnxfaut6uOjeMKL9dr3cikoIDPp7_QbwSemyE6U6tXEC1BI9J1KcKnS0vz6uczJX8V_nbeHY");'>
+                    </div>
+                    <button
+                        class="absolute top-2 right-2 size-9 flex items-center justify-center bg-white/90 dark:bg-slate-900/90 rounded-full shadow-md backdrop-blur-sm">
+                        <span class="material-symbols-outlined text-slate-400 text-xl">favorite</span>
+                    </button>
+                </div>
+                <div class="flex flex-col gap-1 px-1">
+                    <p class="text-slate-900 dark:text-slate-100 text-[15px] font-semibold leading-tight line-clamp-1">
+                        Leather Jacket</p>
+                    <div class="flex items-center">
+                        <span class="px-2 py-0.5 rounded-lg bg-primary/10 text-primary text-sm font-bold">$120.00</span>
+                    </div>
+                    <button
+                        class="mt-2 w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform">
+                        <span class="material-symbols-outlined text-sm">shopping_bag</span>
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Infinite scroll loader -->
+        <div class="flex flex-col items-center justify-center py-8 gap-2">
+            <div class="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <p class="text-xs text-slate-400 font-medium">Loading more...</p>
+        </div>
+    </main>
+    <!-- Bottom Navigation Bar -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 pb-safe-area-inset-bottom">
+        <div class="flex gap-2 px-4 pb-3 pt-2 h-16">
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+                <span class="material-symbols-outlined active-fill text-[26px]">home</span>
+                <p class="text-[10px] font-bold tracking-tight">Home</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[26px]">grid_view</span>
+                <p class="text-[10px] font-medium tracking-tight">Categories</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[26px]">favorite</span>
+                <p class="text-[10px] font-medium tracking-tight">Wishlist</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <div class="relative">
+                    <span class="material-symbols-outlined text-[26px]">shopping_cart</span>
+                    <span
+                        class="absolute -top-1 -right-1 size-4 bg-primary text-[10px] text-white flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900">2</span>
+                </div>
+                <p class="text-[10px] font-medium tracking-tight">Cart</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[26px]">person</span>
+                <p class="text-[10px] font-medium tracking-tight">Profile</p>
+            </a>
+        </div>
+    </nav>
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .pb-safe-area-inset-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+</body>
+
+</html>

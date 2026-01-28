@@ -9,6 +9,7 @@ import DashboardScreen from './screens/DashboardScreen';
 import DeliveryScreen from './screens/DeliveryScreen';
 import RouteScreen from './screens/RouteScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import CustomerDashboardScreen from './screens/CustomerDashboardScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -102,6 +103,13 @@ const RootNavigator = () => {
             <Stack.Screen 
                 name="MainTabs" 
                 component={MainTabs}
+                options={{ 
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen 
+                name="CustomerDashboard" 
+                component={CustomerDashboardScreen}
                 options={{ 
                     headerShown: false,
                 }}

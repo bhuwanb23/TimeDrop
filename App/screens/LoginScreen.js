@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const LoginScreen = () => {
+    const [userType, setUserType] = useState('driver'); // 'driver' or 'customer'
     const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [countryCode, setCountryCode] = useState('+1');
@@ -22,8 +23,14 @@ const LoginScreen = () => {
 
     // Sample credentials for testing
     const SAMPLE_CREDENTIALS = {
-        phone: '1234567890',
-        password: 'password123',
+        driver: {
+            phone: '1234567890',
+            password: 'password123',
+        },
+        customer: {
+            phone: '9876543210',
+            password: 'customer123',
+        }
     };
 
     const handleLogin = () => {
@@ -33,15 +40,21 @@ const LoginScreen = () => {
             return;
         }
 
-        // Check credentials (for demo purposes)
+        // Check credentials based on user type (for demo purposes)
+        const credentials = SAMPLE_CREDENTIALS[userType];
         if (
-            phoneNumber === SAMPLE_CREDENTIALS.phone &&
-            password === SAMPLE_CREDENTIALS.password
+            phoneNumber === credentials.phone &&
+            password === credentials.password
         ) {
-            // Navigate directly without alert
-            navigation.navigate('MainTabs');
+            // Navigate based on user type
+            if (userType === 'driver') {
+                navigation.navigate('MainTabs');
+            } else {
+                navigation.navigate('CustomerDashboard');
+            }
         } else {
-            Alert.alert('Error', 'Invalid credentials. Use:\nPhone: 1234567890\nPassword: password123');
+            const userTypeText = userType === 'driver' ? 'Driver' : 'Customer';
+            Alert.alert('Error', `Invalid ${userTypeText} credentials. Use:\nPhone: ${credentials.phone}\nPassword: ${credentials.password}`);
         }
     };
 
@@ -72,9 +85,40 @@ const LoginScreen = () => {
                         </View>
                     </View>
 
+                    {/* User Type Selection */}
+                    <View style={styles.userTypeContainer}>
+                        <Text style={styles.userTypeLabel}>I am a:</Text>
+                        <View style={styles.userTypeButtons}>
+                            <TouchableOpacity 
+                                style={[styles.userTypeButton, userType === 'driver' && styles.userTypeButtonActive]}
+                                onPress={() => setUserType('driver')}
+                            >
+                                <MaterialIcons 
+                                    name="local-shipping" 
+                                    size={24} 
+                                    color={userType === 'driver' ? '#fff' : '#1e3b8a'} 
+                                />
+                                <Text style={[styles.userTypeButtonText, userType === 'driver' && styles.userTypeButtonTextActive]}>Driver</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity 
+                                style={[styles.userTypeButton, userType === 'customer' && styles.userTypeButtonActive]}
+                                onPress={() => setUserType('customer')}
+                            >
+                                <MaterialIcons 
+                                    name="shopping-cart" 
+                                    size={24} 
+                                    color={userType === 'customer' ? '#fff' : '#1e3b8a'} 
+                                />
+                                <Text style={[styles.userTypeButtonText, userType === 'customer' && styles.userTypeButtonTextActive]}>Customer</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
                     {/* Headline */}
                     <Text style={styles.title}>Welcome Back</Text>
-                    <Text style={styles.subtitle}>Enter your details to sign in</Text>
+                    <Text style={styles.subtitle}>
+                        {userType === 'driver' ? 'Enter your details to sign in as Driver' : 'Enter your details to sign in as Customer'}
+                    </Text>
 
                     {/* Form */}
                     <View style={styles.form}>
@@ -192,6 +236,45 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 5,
+    },
+    userTypeContainer: {
+        marginBottom: 24,
+        alignItems: 'center',
+    },
+    userTypeLabel: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#0f121a',
+        marginBottom: 12,
+    },
+    userTypeButtons: {
+        flexDirection: 'row',
+        gap: 16,
+        width: '100%',
+    },
+    userTypeButton: {
+        flex: 1,
+        height: 60,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: '#1e3b8a',
+        backgroundColor: '#fff',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+    },
+    userTypeButtonActive: {
+        backgroundColor: '#1e3b8a',
+        borderColor: '#1e3b8a',
+    },
+    userTypeButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1e3b8a',
+    },
+    userTypeButtonTextActive: {
+        color: '#fff',
     },
     logoContainer: {
         alignItems: 'center',
