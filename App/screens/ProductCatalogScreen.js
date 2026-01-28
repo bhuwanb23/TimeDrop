@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
+import { navigate } from '../utils/RootNavigation';
 
 
 const ProductCatalogScreen = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const navigation = useNavigation();
 
     // Sample product data
     const sampleProducts = [
@@ -136,8 +140,8 @@ const ProductCatalogScreen = () => {
     };
 
     const handleProductPress = (product) => {
-        console.log('Product pressed:', product.name);
-        // Implement product detail navigation here
+        // Use global navigation to access the ProductDetail screen in the root stack
+        navigate('ProductDetail', { product });
     };
 
     const ProductCard = ({ product }) => {

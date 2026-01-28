@@ -4,12 +4,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import { navigationRef } from './utils/RootNavigation';
 import LoginScreen from './screens/LoginScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import DeliveryScreen from './screens/DeliveryScreen';
 import RouteScreen from './screens/RouteScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProductCatalogScreen from './screens/ProductCatalogScreen';
+import ProductDetailScreen from './screens/ProductDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -211,6 +213,13 @@ const RootNavigator = () => {
                 }}
             />
             <Stack.Screen name="Route" component={RouteScreen} />
+            <Stack.Screen 
+                name="ProductDetail" 
+                component={ProductDetailScreen}
+                options={{ 
+                    headerShown: false,
+                }}
+            />
         </Stack.Navigator>
     );
 };
@@ -218,7 +227,7 @@ const RootNavigator = () => {
 export default function App() {
     return (
         <SafeAreaProvider>
-            <NavigationContainer>
+            <NavigationContainer ref={navigationRef}>
                 <RootNavigator />
             </NavigationContainer>
         </SafeAreaProvider>
