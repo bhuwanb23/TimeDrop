@@ -50,7 +50,7 @@ const LoginScreen = () => {
             if (userType === 'driver') {
                 navigation.navigate('MainTabs');
             } else {
-                navigation.navigate('ProductCatalog');
+                navigation.navigate('CustomerDashboard');
             }
         } else {
             const userTypeText = userType === 'driver' ? 'Driver' : 'Customer';
