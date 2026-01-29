@@ -15,6 +15,7 @@ import ProductDetailScreen from './screens/ProductDetailScreen';
 import CartScreen from './screens/CartScreen';
 import CustomerProfileScreen from './screens/CustomerProfileScreen';
 import CategoryScreen from './screens/CategoryScreen';
+import WishlistScreen from './screens/WishlistScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -168,7 +169,7 @@ const CustomerMainTabs = () => {
             />
             <Tab.Screen 
                 name="Wishlist" 
-                component={ProductCatalogScreen} // Placeholder - will create actual wishlist screen later
+                component={WishlistScreen}
                 options={{ 
                     tabBarLabel: 'Wishlist',
                 }}
