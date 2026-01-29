@@ -13,6 +13,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import ProductCatalogScreen from './screens/ProductCatalogScreen';
 import ProductDetailScreen from './screens/ProductDetailScreen';
 import CartScreen from './screens/CartScreen';
+import CustomerProfileScreen from './screens/CustomerProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -181,7 +182,7 @@ const CustomerMainTabs = () => {
             />
             <Tab.Screen 
                 name="Profile" 
-                component={ProductCatalogScreen} // Placeholder - will create actual profile screen later
+                component={CustomerProfileScreen}
                 options={{ 
                     tabBarLabel: 'Profile',
                 }}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Explore Categories V2</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .active-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .pb-safe-area-inset-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+    <header class="pt-8 px-6 pb-4">
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Shop by Category</h1>
+        <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm">Discover our curated collections</p>
+    </header>
+    <main class="px-4 pb-28 flex flex-col gap-4">
+        <a class="group relative h-48 w-full overflow-hidden rounded-2xl shadow-sm" href="#">
+            <div class="absolute inset-0 bg-slate-200 dark:bg-slate-800">
+                <div class="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBBqBSbJ6tsg-GPkChiFsBu4qV5kOhQe9zicIg2RFU9sohLTWC0nslkxbLPOJ0vAl3OxrvxkpqEKufQcu14lPsMGU_l0zyFTh50UP0GHRqmxwVcPFEZIM-Cra4uQBML6c6Mbq7RjN2yKW63liuwhZt8FQF6L1RdluIbJTYonkZucdwexp2f6vDNB6L8vcnypK_LKcwnxfaut6uOjeMKL9dr3cikoIDPp7_QbwSemyE6U6tXEC1BI9J1KcKnS0vz6uczJX8V_nbeHY');">
+                </div>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent"></div>
+            <div class="absolute inset-0 flex items-center justify-between px-6">
+                <div class="flex flex-col">
+                    <h2 class="text-2xl font-bold text-white tracking-wide">Fashion</h2>
+                    <p class="text-white/80 text-sm font-medium mt-1">1,240+ Products</p>
+                </div>
+                <div
+                    class="size-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 group-hover:bg-white/40 transition-colors">
+                    <span class="material-symbols-outlined text-2xl">chevron_right</span>
+                </div>
+            </div>
+        </a>
+        <a class="group relative h-48 w-full overflow-hidden rounded-2xl shadow-sm" href="#">
+            <div class="absolute inset-0 bg-slate-200 dark:bg-slate-800">
+                <div class="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAEdclVWy3M8BxMzFeb1J8f-hS8djSpmXa6b9iE8h9X0A8zLlFO0WmE7ZRrSxnR9-_RWY_1PMTL4TOfjJHRSHdDJn1rdYoASaK6VNdURRjwlX8q5eqYehv8VH3a5CRK9MEDCT4APc6sV1p55Dq4Wecd4F8m8ik8Hu6RTrUZx4pr0tY44g57TsGfQx_Ijy9PGKM4Av2BEK-nsWHj2gVGmBRK67hOY1nqg_tSaKzx960_DQQpAn07KDKG5qhO9UfXeV8BVvLayHEnPgE');">
+                </div>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent"></div>
+            <div class="absolute inset-0 flex items-center justify-between px-6">
+                <div class="flex flex-col">
+                    <h2 class="text-2xl font-bold text-white tracking-wide">Tech</h2>
+                    <p class="text-white/80 text-sm font-medium mt-1">850+ Products</p>
+                </div>
+                <div
+                    class="size-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 group-hover:bg-white/40 transition-colors">
+                    <span class="material-symbols-outlined text-2xl">chevron_right</span>
+                </div>
+            </div>
+        </a>
+        <a class="group relative h-48 w-full overflow-hidden rounded-2xl shadow-sm" href="#">
+            <div class="absolute inset-0 bg-slate-200 dark:bg-slate-800">
+                <div class="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAQO437bK_hgQmHBH9VoZkMmbRpEslnGjb9OmHyaCKtH6qe6i0p3Z7EXKX5kMG8Zf5ZGHPHcwIhKYl9g7u-uPA1ui4BoLYK5FDtLaRsCy5lQMSJmucwZ2OqlWzrQXGVtGF39nvi_vlfJ-iTvHpL90HXtzK6OBj-l3Fl3GelEeZItTGgwWBCatUx2yRxYaMYBeM533BOKAf4iFRX_uuMj3JbTaea4Vre3rEApKuXSRO1mAMSisEQP15ykRRaE1sUuqEGc_Ysniz_MIg');">
+                </div>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent"></div>
+            <div class="absolute inset-0 flex items-center justify-between px-6">
+                <div class="flex flex-col">
+                    <h2 class="text-2xl font-bold text-white tracking-wide">Beauty</h2>
+                    <p class="text-white/80 text-sm font-medium mt-1">520+ Products</p>
+                </div>
+                <div
+                    class="size-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 group-hover:bg-white/40 transition-colors">
+                    <span class="material-symbols-outlined text-2xl">chevron_right</span>
+                </div>
+            </div>
+        </a>
+        <a class="group relative h-48 w-full overflow-hidden rounded-2xl shadow-sm" href="#">
+            <div class="absolute inset-0 bg-slate-200 dark:bg-slate-800">
+                <div class="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDKS0Pgzg5smSaKAiicZemb5MlJn114352m03oR2dmX9Uaiv7VIrAKughWPR8uz77s0QCTcAdt1GugcbACR2JOXd7GdhFTORwRZkbkLdWDm-ufDhZhkioucO-rlgIu3gGouseZl00OlkGV70_iuxXBwIdQvItQKkpMQmfg_kTmbo3IkO-iOfZ8iqmJjoeD2JSPagh2Jc7ewKn1zZD9hdfDS0-N-xYhtOp--7mh1qlmJKcoo5TNsTg6iG7j-nAGmYE72e6leicMG4AU');">
+                </div>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent"></div>
+            <div class="absolute inset-0 flex items-center justify-between px-6">
+                <div class="flex flex-col">
+                    <h2 class="text-2xl font-bold text-white tracking-wide">Home</h2>
+                    <p class="text-white/80 text-sm font-medium mt-1">310+ Products</p>
+                </div>
+                <div
+                    class="size-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 group-hover:bg-white/40 transition-colors">
+                    <span class="material-symbols-outlined text-2xl">chevron_right</span>
+                </div>
+            </div>
+        </a>
+    </main>
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 pb-safe-area-inset-bottom z-50">
+        <div class="flex gap-2 px-4 pb-3 pt-2 h-16">
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[26px]">home</span>
+                <p class="text-[10px] font-medium tracking-tight">Home</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+                <span class="material-symbols-outlined active-fill text-[26px]">grid_view</span>
+                <p class="text-[10px] font-bold tracking-tight">Categories</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[26px]">favorite</span>
+                <p class="text-[10px] font-medium tracking-tight">Wishlist</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <div class="relative">
+                    <span class="material-symbols-outlined text-[26px]">shopping_cart</span>
+                    <span
+                        class="absolute -top-1 -right-1 size-4 bg-primary text-[10px] text-white flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900">2</span>
+                </div>
+                <p class="text-[10px] font-medium tracking-tight">Cart</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[26px]">person</span>
+                <p class="text-[10px] font-medium tracking-tight">Profile</p>
+            </a>
+        </div>
+    </nav>
+
+</body>
+
+</html>
