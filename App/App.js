@@ -16,6 +16,7 @@ import CartScreen from './screens/CartScreen';
 import CustomerProfileScreen from './screens/CustomerProfileScreen';
 import CategoryScreen from './screens/CategoryScreen';
 import WishlistScreen from './screens/WishlistScreen';
+import CheckoutScreen from './screens/CheckoutScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -183,6 +184,14 @@ const CustomerMainTabs = () => {
                 }}
             />
             <Tab.Screen 
+                name="Checkout" 
+                component={CheckoutScreen}
+                options={{ 
+                    tabBarLabel: 'Checkout',
+                    tabBarButton: () => null, // Hide from tab bar but keep in navigation
+                }}
+            />
+            <Tab.Screen 
                 name="Profile" 
                 component={CustomerProfileScreen}
                 options={{ 
@@ -222,6 +231,13 @@ const RootNavigator = () => {
             <Stack.Screen 
                 name="ProductDetail" 
                 component={ProductDetailScreen}
+                options={{ 
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen 
+                name="Cart" 
+                component={CartScreen}
                 options={{ 
                     headerShown: false,
                 }}

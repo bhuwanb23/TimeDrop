@@ -90,8 +90,8 @@ const CartScreen = ({ navigation }) => {
             Alert.alert('Empty Cart', 'Please add items to your cart before proceeding to checkout.');
             return;
         }
-        Alert.alert('Checkout', 'Proceeding to checkout...');
-        // Navigate to checkout screen here
+        // Navigate to checkout tab
+        navigation.navigate('Checkout');
     };
 
     const CartItem = ({ item }) => (
