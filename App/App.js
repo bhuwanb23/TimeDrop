@@ -14,6 +14,7 @@ import ProductCatalogScreen from './screens/ProductCatalogScreen';
 import ProductDetailScreen from './screens/ProductDetailScreen';
 import CartScreen from './screens/CartScreen';
 import CustomerProfileScreen from './screens/CustomerProfileScreen';
+import CategoryScreen from './screens/CategoryScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -160,7 +161,7 @@ const CustomerMainTabs = () => {
             />
             <Tab.Screen 
                 name="Categories" 
-                component={ProductCatalogScreen} // Placeholder - will create actual category screen later
+                component={CategoryScreen}
                 options={{ 
                     tabBarLabel: 'Categories',
                 }}

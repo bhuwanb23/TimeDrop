@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Customer Wishlist V1</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pb-safe-area-inset-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        @keyframes pulse-heart {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .animate-pulse-heart {
+            animation: pulse-heart 2s ease-in-out infinite;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+    <header
+        class="pt-10 px-6 pb-6 sticky top-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md z-40">
+        <div class="flex items-baseline justify-between">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">My Wishlist</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">12 Items</p>
+            </div>
+            <button class="text-primary font-semibold text-sm">Clear All</button>
+        </div>
+    </header>
+    <main class="px-4 pb-28 flex flex-col gap-4">
+        <div class="relative bg-white dark:bg-slate-900 rounded-[12px] p-3 shadow-sm flex gap-4 group">
+            <div class="relative size-24 flex-shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
+                <img alt="Product" class="h-full w-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBBqBSbJ6tsg-GPkChiFsBu4qV5kOhQe9zicIg2RFU9sohLTWC0nslkxbLPOJ0vAl3OxrvxkpqEKufQcu14lPsMGU_l0zyFTh50UP0GHRqmxwVcPFEZIM-Cra4uQBML6c6Mbq7RjN2yKW63liuwhZt8FQF6L1RdluIbJTYonkZucdwexp2f6vDNB6L8vcnypK_LKcwnxfaut6uOjeMKL9dr3cikoIDPp7_QbwSemyE6U6tXEC1BI9J1KcKnS0vz6uczJX8V_nbeHY" />
+                <div class="absolute top-1 left-1 bg-white/90 dark:bg-slate-900/90 p-1 rounded-full shadow-sm">
+                    <span
+                        class="material-symbols-outlined active-fill text-red-500 text-lg animate-pulse-heart">favorite</span>
+                </div>
+            </div>
+            <div class="flex flex-col flex-1 justify-between py-0.5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-semibold text-slate-900 dark:text-white text-[15px] line-clamp-1">Classic
+                            Minimalist Watch</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Accessories • Silver</p>
+                    </div>
+                    <button class="text-slate-400 hover:text-red-500 transition-colors">
+                        <span class="material-symbols-outlined text-xl">delete</span>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-lg font-bold text-slate-900 dark:text-white">$129.00</span>
+                    <button
+                        class="bg-primary text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
+                        Move to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-[12px] p-3 shadow-sm flex gap-4">
+            <div class="size-24 flex-shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
+                <img alt="Product" class="h-full w-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEdclVWy3M8BxMzFeb1J8f-hS8djSpmXa6b9iE8h9X0A8zLlFO0WmE7ZRrSxnR9-_RWY_1PMTL4TOfjJHRSHdDJn1rdYoASaK6VNdURRjwlX8q5eqYehv8VH3a5CRK9MEDCT4APc6sV1p55Dq4Wecd4F8m8ik8Hu6RTrUZx4pr0tY44g57TsGfQx_Ijy9PGKM4Av2BEK-nsWHj2gVGmBRK67hOY1nqg_tSaKzx960_DQQpAn07KDKG5qhO9UfXeV8BVvLayHEnPgE" />
+            </div>
+            <div class="flex flex-col flex-1 justify-between py-0.5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-semibold text-slate-900 dark:text-white text-[15px] line-clamp-1">Wireless Noise
+                            Headphones</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Tech • Midnight Blue</p>
+                    </div>
+                    <button class="text-slate-400 hover:text-red-500 transition-colors">
+                        <span class="material-symbols-outlined text-xl">delete</span>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-lg font-bold text-slate-900 dark:text-white">$249.00</span>
+                    <button
+                        class="bg-primary text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
+                        Move to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-[12px] p-3 shadow-sm flex gap-4">
+            <div class="size-24 flex-shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
+                <img alt="Product" class="h-full w-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQO437bK_hgQmHBH9VoZkMmbRpEslnGjb9OmHyaCKtH6qe6i0p3Z7EXKX5kMG8Zf5ZGHPHcwIhKYl9g7u-uPA1ui4BoLYK5FDtLaRsCy5lQMSJmucwZ2OqlWzrQXGVtGF39nvi_vlfJ-iTvHpL90HXtzK6OBj-l3Fl3GelEeZItTGgwWBCatUx2yRxYaMYBeM533BOKAf4iFRX_uuMj3JbTaea4Vre3rEApKuXSRO1mAMSisEQP15ykRRaE1sUuqEGc_Ysniz_MIg" />
+            </div>
+            <div class="flex flex-col flex-1 justify-between py-0.5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-semibold text-slate-900 dark:text-white text-[15px] line-clamp-1">Luxury Scented
+                            Candle</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Home • Sandalwood</p>
+                    </div>
+                    <button class="text-slate-400 hover:text-red-500 transition-colors">
+                        <span class="material-symbols-outlined text-xl">delete</span>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                    <div class="flex flex-col">
+                        <span class="text-lg font-bold text-slate-900 dark:text-white">$34.00</span>
+                        <span class="text-[10px] text-red-500 font-bold uppercase tracking-wider">Sale ends soon</span>
+                    </div>
+                    <button
+                        class="bg-primary text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
+                        Move to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="relative bg-white dark:bg-slate-900 rounded-[12px] p-3 shadow-sm flex gap-4">
+            <div class="relative size-24 flex-shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
+                <img alt="Product" class="h-full w-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKS0Pgzg5smSaKAiicZemb5MlJn114352m03oR2dmX9Uaiv7VIrAKughWPR8uz77s0QCTcAdt1GugcbACR2JOXd7GdhFTORwRZkbkLdWDm-ufDhZhkioucO-rlgIu3gGouseZl00OlkGV70_iuxXBwIdQvItQKkpMQmfg_kTmbo3IkO-iOfZ8iqmJjoeD2JSPagh2Jc7ewKn1zZD9hdfDS0-N-xYhtOp--7mh1qlmJKcoo5TNsTg6iG7j-nAGmYE72e6leicMG4AU" />
+                <div class="absolute top-1 left-1 bg-white/90 dark:bg-slate-900/90 p-1 rounded-full shadow-sm">
+                    <span
+                        class="material-symbols-outlined active-fill text-red-500 text-lg animate-pulse-heart">favorite</span>
+                </div>
+            </div>
+            <div class="flex flex-col flex-1 justify-between py-0.5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-semibold text-slate-900 dark:text-white text-[15px] line-clamp-1">Smart Coffee
+                            Brewer</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Tech • Matte Black</p>
+                    </div>
+                    <button class="text-slate-400 hover:text-red-500 transition-colors">
+                        <span class="material-symbols-outlined text-xl">delete</span>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-lg font-bold text-slate-900 dark:text-white">$189.99</span>
+                    <button
+                        class="bg-primary text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
+                        Move to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 pb-safe-area-inset-bottom z-50">
+        <div class="flex gap-2 px-4 pb-3 pt-2 h-16">
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[26px]">home</span>
+                <p class="text-[10px] font-medium tracking-tight">Home</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[26px]">grid_view</span>
+                <p class="text-[10px] font-medium tracking-tight">Categories</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+                <span class="material-symbols-outlined active-fill text-[26px]">favorite</span>
+                <p class="text-[10px] font-bold tracking-tight">Wishlist</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <div class="relative">
+                    <span class="material-symbols-outlined text-[26px]">shopping_cart</span>
+                    <span
+                        class="absolute -top-1 -right-1 size-4 bg-primary text-[10px] text-white flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900">2</span>
+                </div>
+                <p class="text-[10px] font-medium tracking-tight">Cart</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[26px]">person</span>
+                <p class="text-[10px] font-medium tracking-tight">Profile</p>
+            </a>
+        </div>
+    </nav>
+
+</body>
+
+</html>
