@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,6 +12,7 @@ import RouteScreen from './screens/RouteScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProductCatalogScreen from './screens/ProductCatalogScreen';
 import ProductDetailScreen from './screens/ProductDetailScreen';
+import CartScreen from './screens/CartScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -93,6 +94,8 @@ const MainTabs = () => {
 
 // Customer Main Tab Navigator with Bottom Navbar
 const CustomerMainTabs = () => {
+    const [cartItemCount, setCartItemCount] = useState(3); // This should come from cart context/state
+    
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -170,10 +173,10 @@ const CustomerMainTabs = () => {
             />
             <Tab.Screen 
                 name="Cart" 
-                component={ProductCatalogScreen} // Placeholder - will create actual cart screen later
+                component={CartScreen}
                 options={{ 
                     tabBarLabel: 'Cart',
-                    tabBarBadge: 2, // Example badge
+                    tabBarBadge: cartItemCount > 0 ? cartItemCount : undefined,
                 }}
             />
             <Tab.Screen 
