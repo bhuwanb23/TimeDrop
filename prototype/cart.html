@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Shopping Cart Overview V2</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0d121b] dark:text-gray-100 min-h-screen">
+    <div
+        class="max-w-[480px] mx-auto bg-background-light dark:bg-background-dark min-h-screen shadow-2xl relative flex flex-col">
+        <!-- Top App Bar -->
+        <div
+            class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md flex items-center p-4 pb-2 justify-between border-b border-gray-200/50 dark:border-gray-800/50">
+            <div class="flex items-center gap-2">
+                <button class="text-[#0d121b] dark:text-white p-2">
+                    <span class="material-symbols-outlined text-2xl">arrow_back_ios</span>
+                </button>
+            </div>
+            <h2 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center">Cart (3)</h2>
+            <div class="flex items-center justify-end">
+                <button class="p-2 text-[#0d121b] dark:text-white">
+                    <span class="material-symbols-outlined text-2xl">delete</span>
+                </button>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto">
+            <!-- Active Items List -->
+            <div class="px-4 pt-4 space-y-2">
+                <!-- Item 1 -->
+                <div
+                    class="flex gap-4 bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-[80px] shrink-0"
+                        data-alt="Minimalist white leather sneakers on white background"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBjgpqdGZ25XswzLe9G3WUZ1dOFa1LYCK4Ifsz3Iq3y9AympfbQqNHTCTmxqI926-cvXpW8mN5zp5Z474riV_AA8O7O_xbiZgNE5fAu_86OxbgflgNMQdC338pqvwvI1M_bsKSr8IWbNtYyVKEXuYc9_o67WYNibYVYvY5iausRUSmbFQn2smDYdmoXGxgyfkwQSPJu9HmX04TMszKBHRaRZSWXJP25e40mGtO42mtIvST_DvRkwc8Zh8DsyJJIEUCaO2Ly5XldNCs");'>
+                    </div>
+                    <div class="flex flex-1 flex-col justify-between">
+                        <div>
+                            <p class="text-base font-semibold leading-tight">Leather Sneakers</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">Size: 10, Color: White</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2">
+                            <p class="text-primary dark:text-blue-400 text-base font-bold">$120.00</p>
+                            <div
+                                class="flex items-center gap-3 bg-background-light dark:bg-gray-800 px-3 py-1.5 rounded-full border border-gray-100 dark:border-gray-700">
+                                <button class="text-gray-500 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-lg leading-none">remove</span>
+                                </button>
+                                <span class="text-sm font-bold w-4 text-center">1</span>
+                                <button class="text-gray-500 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-lg leading-none">add</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Item 2 -->
+                <div
+                    class="flex gap-4 bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-[80px] shrink-0"
+                        data-alt="Navy blue organic cotton t-shirt folded neatly"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCekpLqvq1f3jwGr81ZIne41gAtTkbO97p8xUe3t9t3ra2pwiY_xQH0qgr8U5FEdFTZf8RZhyRuCnrrTBZDS9L7SMsZ1mQOt9d99kmi72pO5hLKMfL8D3lSh6wIMppEPuRog0dQUgA-Eusc2t-XzmK4HKm7_vJdL00hKdTQiqOAJWp_oR4ECnJ7PSU2ybPRtoQJWFb8Y8V2zHovIbf7DyOa86wJUltsBhCrfHpfMh7kPq8tXZZ-JXo7WkzPilpnOT9nRTyGtB-FJxk");'>
+                    </div>
+                    <div class="flex flex-1 flex-col justify-between">
+                        <div>
+                            <p class="text-base font-semibold leading-tight">Organic Cotton Tee</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">Size: M, Color: Navy</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2">
+                            <p class="text-primary dark:text-blue-400 text-base font-bold">$35.00</p>
+                            <div
+                                class="flex items-center gap-3 bg-background-light dark:bg-gray-800 px-3 py-1.5 rounded-full border border-gray-100 dark:border-gray-700">
+                                <button class="text-gray-500">
+                                    <span class="material-symbols-outlined text-lg leading-none">remove</span>
+                                </button>
+                                <span class="text-sm font-bold w-4 text-center">2</span>
+                                <button class="text-gray-500">
+                                    <span class="material-symbols-outlined text-lg leading-none">add</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Summary Section -->
+            <div class="px-4 py-6">
+                <div class="bg-white dark:bg-gray-900/50 p-6 rounded-xl border border-gray-100 dark:border-gray-800">
+                    <h3 class="text-base font-bold mb-4">Order Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">Subtotal</p>
+                            <p class="text-sm font-medium">$190.00</p>
+                        </div>
+                        <div class="flex justify-between">
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">Shipping</p>
+                            <p class="text-sm font-medium text-green-600 dark:text-green-400">Free</p>
+                        </div>
+                        <div class="flex justify-between">
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">Estimated Tax</p>
+                            <p class="text-sm font-medium">$15.20</p>
+                        </div>
+                        <div
+                            class="pt-3 mt-3 border-t border-dashed border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <p class="text-base font-bold">Total</p>
+                            <p class="text-xl font-bold text-primary dark:text-blue-400">$205.20</p>
+                        </div>
+                    </div>
+                    <button
+                        class="w-full mt-6 bg-gradient-to-r from-primary to-[#2563eb] text-white py-4 rounded-xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 active:scale-[0.98] transition-all">
+                        Proceed to Checkout
+                    </button>
+                </div>
+            </div>
+            <!-- Saved for Later Section -->
+            <div class="px-4 pb-12">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-base font-bold">Saved for Later (2)</h3>
+                    <button class="text-primary dark:text-blue-400 text-xs font-semibold">View All</button>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Saved Item 1 -->
+                    <div class="bg-white dark:bg-gray-900 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg w-full mb-3"
+                            data-alt="Black modern desk lamp with thin neck"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAB-bWafTGQn5QT8C2X6ovOuBU_Ki_Y0HUve30AfHKXiEGPyciPlDh6EZ5UMAegPq_KkNA6PROGNVY0NEIsod4lonao5WtXKgj7EURMWiqwPJh8v7FSQ1Qr2W1Ogaehv7nxrlVvoor0HL9bBL-1pkx9dZqTz3yXMfz9tOGOQ92q5_RS6Jwtlq4tXUDBC2uTFrpgzFMD1BNB4dS6raUtkPFNbyYFl0qQ-UUeEjlxI4GtVFcQIP35MfQFJB7SzZhTNzEdBfGKgU1CUxI");'>
+                        </div>
+                        <p class="text-sm font-medium truncate">Minimal Desk Lamp</p>
+                        <p class="text-xs text-gray-500 mb-2">$85.00</p>
+                        <button
+                            class="w-full py-2 bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-300 text-xs font-bold rounded-lg hover:bg-primary/20">
+                            Move to Cart
+                        </button>
+                    </div>
+                    <!-- Saved Item 2 -->
+                    <div class="bg-white dark:bg-gray-900 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg w-full mb-3"
+                            data-alt="Ceramic aesthetic coffee mug in beige"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBouS316W8T35WAEuLmaI9FDruF0EQMR2GaXjhpo-CzYou_-c3BAWA6f4qgezZZupzdrhMACuTmBWuJXteMYvttXN53RwpGgDbZuSUm2famJhHhUXG9HtS_XanTABFZ_YOEOKvFT9g1TkPfIOhzOvn1UfEDbRY56r17zmX2-3urhxcPD_RZ9sl-2AA88ScAEKCnaVEFHnhgNZRnyvtHtrv2lwGrITDmsU1ib3DEhrZGOa8hYzgoXlgojQaHS5dyQJ_LS6cJH6x9a2o");'>
+                        </div>
+                        <p class="text-sm font-medium truncate">Ceramic Mug Set</p>
+                        <p class="text-xs text-gray-500 mb-2">$24.00</p>
+                        <button
+                            class="w-full py-2 bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-300 text-xs font-bold rounded-lg hover:bg-primary/20">
+                            Move to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom Navigation Spacer (iOS Indicator) -->
+        <div class="h-8 bg-background-light dark:bg-background-dark"></div>
+    </div>
+</body>
+
+</html>

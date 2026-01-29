@@ -3,7 +3,12 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, Dimensions
 import { MaterialIcons } from '@expo/vector-icons';
 
 const ProductDetailScreen = ({ route, navigation }) => {
+    console.log('ProductDetailScreen mounted');
+    console.log('Route params:', route.params);
+    
     const { product } = route.params;
+    console.log('Product received:', product);
+    
     const [isFavorite, setIsFavorite] = useState(product.isFavorite || false);
 
     const handleBackPress = () => {
@@ -82,7 +87,12 @@ const ProductDetailScreen = ({ route, navigation }) => {
             </View>
 
             {/* Product Info */}
-            <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+            <ScrollView 
+                style={styles.content} 
+                contentContainerStyle={styles.contentContainer}
+                showsVerticalScrollIndicator={true}
+                scrollEnabled={true}
+            >
                 <View style={styles.productInfo}>
                     <View style={styles.titleSection}>
                         <Text style={styles.brand}>Pro-Elite Series</Text>
@@ -106,6 +116,11 @@ const ProductDetailScreen = ({ route, navigation }) => {
                     <Text style={styles.descriptionText}>
                         Designed for peak delivery performance, the {product.name} features lightweight 
                         carbon-fiber mesh and reactive foam cushioning for all-day comfort on the move.
+                        Perfect for delivery drivers, couriers, and anyone who spends long hours on their feet.
+                        Engineered with premium materials for maximum durability and comfort.
+                        The advanced sole technology provides superior grip on various surfaces, making it 
+                        ideal for all weather conditions. Breathable upper material keeps your feet cool 
+                        during extended wear periods.
                     </Text>
                 </ExpandableSection>
 
@@ -123,6 +138,18 @@ const ProductDetailScreen = ({ route, navigation }) => {
                         <Text style={styles.specLabel}>Sole</Text>
                         <Text style={styles.specValue}>High-Grip Rubber</Text>
                     </View>
+                    <View style={styles.specRow}>
+                        <Text style={styles.specLabel}>Size Range</Text>
+                        <Text style={styles.specValue}>US 7-13</Text>
+                    </View>
+                    <View style={styles.specRow}>
+                        <Text style={styles.specLabel}>Color Options</Text>
+                        <Text style={styles.specValue}>Black, White, Blue</Text>
+                    </View>
+                    <View style={styles.specRow}>
+                        <Text style={styles.specLabel}>Warranty</Text>
+                        <Text style={styles.specValue}>1 Year Limited</Text>
+                    </View>
                 </ExpandableSection>
 
                 {/* Reviews Section */}
@@ -134,6 +161,24 @@ const ProductDetailScreen = ({ route, navigation }) => {
                         </View>
                         <Text style={styles.reviewText}>
                             Incredible grip even in rainy weather. Perfect for my delivery shifts.
+                        </Text>
+                    </View>
+                    <View style={styles.reviewCard}>
+                        <View style={styles.reviewHeader}>
+                            <Text style={styles.reviewerName}>Sarah K.</Text>
+                            <Text style={styles.reviewDate}>1 week ago</Text>
+                        </View>
+                        <Text style={styles.reviewText}>
+                            Extremely comfortable and durable. Highly recommend for anyone who's on their feet all day.
+                        </Text>
+                    </View>
+                    <View style={styles.reviewCard}>
+                        <View style={styles.reviewHeader}>
+                            <Text style={styles.reviewerName}>James T.</Text>
+                            <Text style={styles.reviewDate}>2 weeks ago</Text>
+                        </View>
+                        <Text style={styles.reviewText}>
+                            Great value for money. The quality exceeded my expectations.
                         </Text>
                     </View>
                 </ExpandableSection>
@@ -232,7 +277,8 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         padding: 24,
-        paddingBottom: 100,
+        paddingBottom: 120,
+        minHeight: 800,
     },
     productInfo: {
         flexDirection: 'row',

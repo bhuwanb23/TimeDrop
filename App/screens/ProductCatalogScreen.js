@@ -140,8 +140,13 @@ const ProductCatalogScreen = () => {
     };
 
     const handleProductPress = (product) => {
-        // Use global navigation to access the ProductDetail screen in the root stack
-        navigate('ProductDetail', { product });
+        // Get parent navigation to access the ProductDetail screen
+        const parent = navigation.getParent();
+        if (parent) {
+            parent.navigate('ProductDetail', { product });
+        } else {
+            navigation.navigate('ProductDetail', { product });
+        }
     };
 
     const ProductCard = ({ product }) => {
@@ -153,9 +158,17 @@ const ProductCatalogScreen = () => {
             handleToggleFavorite(product.id, newFavoriteState);
         };
 
+        const handleCardPress = () => {
+            console.log('Card pressed for product:', product.name);
+            handleProductPress(product);
+        };
+
         return (
             <View style={styles.productCard}>
-                <View style={styles.productImageContainer}>
+                <TouchableOpacity 
+                    style={styles.productImageContainer}
+                    onPress={handleCardPress}
+                >
                     <Image 
                         source={{ uri: product.image }}
                         style={styles.productImage}
@@ -163,7 +176,10 @@ const ProductCatalogScreen = () => {
                     />
                     <TouchableOpacity 
                         style={styles.favoriteButton}
-                        onPress={handleFavoritePress}
+                        onPress={(e) => {
+                            e.stopPropagation();
+                            handleFavoritePress();
+                        }}
                     >
                         <MaterialIcons 
                             name={isFavorite ? "favorite" : "favorite-border"}
@@ -171,7 +187,7 @@ const ProductCatalogScreen = () => {
                             color={isFavorite ? "#1152d4" : "#94a3b8"}
                         />
                     </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
                 <View style={styles.productContent}>
                     <Text style={styles.productTitle} numberOfLines={1}>
                         {product.name}
