@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, ScrollView, Alert, StyleSheet } from 'react-native';
+import { View, ScrollView, Alert, StyleSheet, SafeAreaView } from 'react-native';
+import { navigate } from '../utils/RootNavigation';
 import CheckoutHeader from '../components/CheckoutHeader';
 import ShippingAddressForm from '../components/ShippingAddressForm';
 import PaymentMethodForm from '../components/PaymentMethodForm';
 import OrderReview from '../components/OrderReview';
+import CustomerBottomNavbar from '../components/CustomerBottomNavbar';
 
 const CheckoutScreen = ({ navigation }) => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -37,8 +39,8 @@ const CheckoutScreen = ({ navigation }) => {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
         } else {
-            // Navigate back to cart or previous screen
-            navigation.goBack();
+            // Navigate back to cart screen
+            navigation.navigate('Cart');
         }
     };
 
@@ -83,7 +85,7 @@ const CheckoutScreen = ({ navigation }) => {
                             saveCard: false,
                         });
                         setCurrentStep(1);
-                        navigation.navigate('Home'); // or 'Orders' screen
+                        navigation.navigate('Cart'); // Navigate back to cart screen
                     }
                 }
             ]
@@ -123,7 +125,7 @@ const CheckoutScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <CheckoutHeader
                 currentStep={currentStep}
                 onStepPress={handleStepChange}
@@ -136,10 +138,23 @@ const CheckoutScreen = ({ navigation }) => {
                 showsVerticalScrollIndicator={true}
                 keyboardShouldPersistTaps="handled"
                 scrollEnabled={true}
+                bounces={false}
+                nestedScrollEnabled={true}
             >
                 {renderCurrentStep()}
             </ScrollView>
-        </View>
+            
+            <View style={styles.bottomNavbarContainer}>
+                <CustomerBottomNavbar
+                    activeTab="Cart" // Show cart as active since we're in checkout
+                    onTabPress={(tab) => {
+                        if (tab !== 'Checkout') { // Don't allow navigation away from checkout
+                            navigation.navigate(tab);
+                        }
+                    }}
+                />
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -153,6 +168,10 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         paddingBottom: 24, // Space for content
+    },
+    bottomNavbarContainer: {
+        position: 'relative',
+        zIndex: 10,
     },
 });
 

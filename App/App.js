@@ -184,14 +184,6 @@ const CustomerMainTabs = () => {
                 }}
             />
             <Tab.Screen 
-                name="Checkout" 
-                component={CheckoutScreen}
-                options={{ 
-                    tabBarLabel: 'Checkout',
-                    tabBarButton: () => null, // Hide from tab bar but keep in navigation
-                }}
-            />
-            <Tab.Screen 
                 name="Profile" 
                 component={CustomerProfileScreen}
                 options={{ 
@@ -199,6 +191,20 @@ const CustomerMainTabs = () => {
                 }}
             />
         </Tab.Navigator>
+    );
+};
+
+// Customer Stack Navigator to wrap tab navigator and add checkout screen
+const CustomerStackNavigator = () => {
+    return (
+        <Stack.Navigator
+            screenOptions={{
+                headerShown: false,
+            }}
+        >
+            <Stack.Screen name="CustomerTabs" component={CustomerMainTabs} />
+            <Stack.Screen name="Checkout" component={CheckoutScreen} />
+        </Stack.Navigator>
     );
 };
 
@@ -222,7 +228,7 @@ const RootNavigator = () => {
             />
             <Stack.Screen 
                 name="CustomerMainTabs" 
-                component={CustomerMainTabs}
+                component={CustomerStackNavigator}
                 options={{ 
                     headerShown: false,
                 }}

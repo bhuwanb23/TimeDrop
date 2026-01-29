@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { navigate } from '../utils/RootNavigation';
 
 const CartScreen = ({ navigation }) => {
     const [cartItems, setCartItems] = useState([
@@ -90,8 +91,8 @@ const CartScreen = ({ navigation }) => {
             Alert.alert('Empty Cart', 'Please add items to your cart before proceeding to checkout.');
             return;
         }
-        // Navigate to checkout tab
-        navigation.navigate('Checkout');
+        // Navigate to checkout screen using global navigation
+        navigate('Checkout');
     };
 
     const CartItem = ({ item }) => (
