@@ -1,6 +1,7 @@
 const { Sequelize } = require('sequelize');
 
 // SQLite database configuration
+// Initialize Sequelize with the sqlite package directly
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: './timedrop.sqlite', // SQLite file will be created in the project root
@@ -9,10 +10,11 @@ const sequelize = new Sequelize({
     timestamps: true, // Automatically add createdAt and updatedAt fields
     underscored: true, // Use snake_case for field names
   },
+  dialectModule: require('sqlite'),
 });
 
-// Import models and set up associations
-require('../models/associations');
+// Import models and set up associations will be done after DB connection
+// This prevents circular dependency issues
 
 module.exports = {
   sequelize,

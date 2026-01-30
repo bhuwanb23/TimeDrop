@@ -78,6 +78,9 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('Database connected successfully.');
     
+    // Set up model associations after sequelize instance is ready
+    require('./src/models/associations');
+    
     // Sync all models
     await sequelize.sync({ alter: true }); // Use 'alter: true' to update existing tables
     console.log('Database synchronized.');
