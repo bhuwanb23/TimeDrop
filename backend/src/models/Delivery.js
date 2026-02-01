@@ -24,12 +24,11 @@ const Delivery = sequelize.define('Delivery', {
     }
   },
   status: {
-    type: DataTypes.ENUM(
-      'pending_assignment', 'assigned', 'picked_up', 
-      'in_transit', 'arrived', 'delivered', 
-      'failed', 'returned'
-    ),
-    defaultValue: 'pending_assignment'
+    type: DataTypes.STRING,
+    defaultValue: 'pending_assignment',
+    validate: {
+      isIn: [['pending_assignment', 'assigned', 'picked_up', 'in_transit', 'arrived', 'delivered', 'failed', 'returned']]
+    }
   },
   pickup_location: {
     type: DataTypes.JSON, // Store as JSON {lat, lng, address}

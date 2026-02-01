@@ -31,12 +31,18 @@ const User = sequelize.define('User', {
     allowNull: true
   },
   role: {
-    type: DataTypes.ENUM('customer', 'driver', 'admin'),
-    defaultValue: 'customer'
+    type: DataTypes.STRING,
+    defaultValue: 'customer',
+    validate: {
+      isIn: [['customer', 'driver', 'admin']]
+    }
   },
   status: {
-    type: DataTypes.ENUM('active', 'inactive', 'suspended'),
-    defaultValue: 'active'
+    type: DataTypes.STRING,
+    defaultValue: 'active',
+    validate: {
+      isIn: [['active', 'inactive', 'suspended']]
+    }
   },
   profile_image: {
     type: DataTypes.STRING,

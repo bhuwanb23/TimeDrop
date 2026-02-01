@@ -23,7 +23,6 @@ Product.hasMany(OrderItem, { foreignKey: 'product_id', as: 'order_items' });
 Order.belongsTo(User, { foreignKey: 'customer_id', as: 'customer' });
 Order.hasMany(OrderItem, { foreignKey: 'order_id', as: 'items' });
 Order.hasOne(Delivery, { foreignKey: 'order_id', as: 'delivery' });
-Order.belongsTo(Address, { foreignKey: 'delivery_address_id', as: 'delivery_address' });
 
 // OrderItem associations
 OrderItem.belongsTo(Order, { foreignKey: 'order_id', as: 'order' });

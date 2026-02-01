@@ -29,8 +29,11 @@ const Category = sequelize.define('Category', {
     }
   },
   status: {
-    type: DataTypes.ENUM('active', 'inactive'),
-    defaultValue: 'active'
+    type: DataTypes.STRING,
+    defaultValue: 'active',
+    validate: {
+      isIn: [['active', 'inactive']]
+    }
   },
   sort_order: {
     type: DataTypes.INTEGER,

@@ -16,8 +16,11 @@ const Address = sequelize.define('Address', {
     }
   },
   type: {
-    type: DataTypes.ENUM('home', 'work', 'other'),
-    defaultValue: 'home'
+    type: DataTypes.STRING,
+    defaultValue: 'home',
+    validate: {
+      isIn: [['home', 'work', 'other']]
+    }
   },
   first_name: {
     type: DataTypes.STRING,

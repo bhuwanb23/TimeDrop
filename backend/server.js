@@ -75,6 +75,7 @@ app.use('*', (req, res) => {
 // Sync database and start server
 const startServer = async () => {
   try {
+    console.log('Attempting to connect to database...');
     await sequelize.authenticate();
     console.log('Database connected successfully.');
     
@@ -91,6 +92,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error('Unable to connect to database:', error);
+    console.error('Error details:', error.message);
     process.exit(1);
   }
 };

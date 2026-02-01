@@ -21,12 +21,11 @@ const Order = sequelize.define('Order', {
     }
   },
   status: {
-    type: DataTypes.ENUM(
-      'pending', 'confirmed', 'processing', 
-      'assigned', 'picked_up', 'in_transit', 
-      'delivered', 'cancelled', 'returned'
-    ),
-    defaultValue: 'pending'
+    type: DataTypes.STRING,
+    defaultValue: 'pending',
+    validate: {
+      isIn: [['pending', 'confirmed', 'processing', 'assigned', 'picked_up', 'in_transit', 'delivered', 'cancelled', 'returned']]
+    }
   },
   total_amount: {
     type: DataTypes.DECIMAL(10, 2),
@@ -48,12 +47,18 @@ const Order = sequelize.define('Order', {
     allowNull: true
   },
   payment_method: {
-    type: DataTypes.ENUM('cash_on_delivery', 'credit_card', 'debit_card', 'digital_wallet'),
-    defaultValue: 'cash_on_delivery'
+    type: DataTypes.STRING,
+    defaultValue: 'cash_on_delivery',
+    validate: {
+      isIn: [['cash_on_delivery', 'credit_card', 'debit_card', 'digital_wallet']]
+    }
   },
   payment_status: {
-    type: DataTypes.ENUM('pending', 'paid', 'failed', 'refunded'),
-    defaultValue: 'pending'
+    type: DataTypes.STRING,
+    defaultValue: 'pending',
+    validate: {
+      isIn: [['pending', 'paid', 'failed', 'refunded']]
+    }
   },
   delivery_time: {
     type: DataTypes.DATE,

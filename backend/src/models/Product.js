@@ -42,8 +42,11 @@ const Product = sequelize.define('Product', {
     }
   },
   status: {
-    type: DataTypes.ENUM('active', 'inactive', 'discontinued'),
-    defaultValue: 'active'
+    type: DataTypes.STRING,
+    defaultValue: 'active',
+    validate: {
+      isIn: [['active', 'inactive', 'discontinued']]
+    }
   },
   weight: {
     type: DataTypes.DECIMAL(8, 2),

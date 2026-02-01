@@ -1,16 +1,24 @@
 const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
 // SQLite database configuration
-// Initialize Sequelize with the sqlite package directly
+const sqlite3 = require('sqlite3');
+
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: './timedrop.sqlite', // SQLite file will be created in the project root
-  logging: console.log, // Enable logging in development, set to false in production
+  storage: process.env.DB_NAME || './timedrop.sqlite', // SQLite file will be created in the project root
+  logging: false, // Disable logging in development to reduce noise
   define: {
     timestamps: true, // Automatically add createdAt and updatedAt fields
     underscored: true, // Use snake_case for field names
   },
-  dialectModule: require('sqlite'),
+  dialectModule: sqlite3,
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  }
 });
 
 // Import models and set up associations will be done after DB connection
