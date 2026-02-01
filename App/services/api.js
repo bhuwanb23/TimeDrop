@@ -19,6 +19,10 @@ const getBaseUrl = () => {
   return 'https://your-production-api.com/api';
 };
 
+// Simple in-memory cache for optimization
+const apiCache = new Map();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 const API_BASE_URL = getBaseUrl();
 
 const api = axios.create({
@@ -43,7 +47,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for handling responses and errors
+// Enhanced response interceptor with caching and error handling
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -60,6 +64,43 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Cache helper functions
+const generateCacheKey = (url, params = {}) => {
+  const sortedParams = Object.keys(params).sort().reduce((obj, key) => {
+    obj[key] = params[key];
+    return obj;
+  }, {});
+  return `${url}_${JSON.stringify(sortedParams)}`;
+};
+
+const getCachedData = (key) => {
+  const cached = apiCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    return cached.data;
+  }
+  return null;
+};
+
+const setCachedData = (key, data) => {
+  apiCache.set(key, {
+    data,
+    timestamp: Date.now()
+  });
+};
+
+// Clear expired cache entries
+const cleanCache = () => {
+  const now = Date.now();
+  for (const [key, value] of apiCache.entries()) {
+    if (now - value.timestamp > CACHE_DURATION) {
+      apiCache.delete(key);
+    }
+  }
+};
+
+// Clean cache periodically
+setInterval(cleanCache, 60000); // Clean every minute
 
 // AUTHENTICATION ENDPOINTS
 const authAPI = {
@@ -84,14 +125,41 @@ const authAPI = {
   }
 };
 
-// PRODUCT ENDPOINTS
+// PRODUCT ENDPOINTS with caching
 const productAPI = {
   getProducts: async (params = {}) => {
-    return api.get('/products', { params });
+    const cacheKey = generateCacheKey('/products', params);
+    const cachedData = getCachedData(cacheKey);
+    
+    if (cachedData) {
+      return { data: cachedData, fromCache: true };
+    }
+    
+    const response = await api.get('/products', { params });
+    setCachedData(cacheKey, response.data);
+    return response;
   },
   
   getProductById: async (id) => {
-    return api.get(`/products/${id}`);
+    const cacheKey = generateCacheKey(`/products/${id}`);
+    const cachedData = getCachedData(cacheKey);
+    
+    if (cachedData) {
+      return { data: cachedData, fromCache: true };
+    }
+    
+    const response = await api.get(`/products/${id}`);
+    setCachedData(cacheKey, response.data);
+    return response;
+  },
+  
+  // Clear product cache when needed
+  clearProductCache: () => {
+    for (const key of apiCache.keys()) {
+      if (key.startsWith('/products')) {
+        apiCache.delete(key);
+      }
+    }
   }
 };
 

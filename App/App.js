@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { navigationRef } from './utils/RootNavigation';
 import { CartProvider, useCart } from './context/CartContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import LoginScreen from './screens/LoginScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import DeliveryScreen from './screens/DeliveryScreen';
@@ -278,12 +279,14 @@ const RootNavigator = () => {
 
 export default function App() {
     return (
-        <CartProvider>
-            <SafeAreaProvider>
-                <NavigationContainer ref={navigationRef}>
-                    <RootNavigator />
-                </NavigationContainer>
-            </SafeAreaProvider>
-        </CartProvider>
+        <ErrorBoundary>
+            <CartProvider>
+                <SafeAreaProvider>
+                    <NavigationContainer ref={navigationRef}>
+                        <RootNavigator />
+                    </NavigationContainer>
+                </SafeAreaProvider>
+            </CartProvider>
+        </ErrorBoundary>
     );
 }
