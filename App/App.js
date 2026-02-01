@@ -18,6 +18,8 @@ import CustomerProfileScreen from './screens/CustomerProfileScreen';
 import CategoryScreen from './screens/CategoryScreen';
 import WishlistScreen from './screens/WishlistScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
+import MyOrdersScreen from './screens/MyOrdersScreen';
+import OrderDetailScreen from './screens/OrderDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -170,6 +172,13 @@ const CustomerMainTabs = () => {
                 }}
             />
             <Tab.Screen
+                name="Orders"
+                component={MyOrdersScreen}
+                options={{
+                    tabBarLabel: 'Orders',
+                }}
+            />
+            <Tab.Screen
                 name="Wishlist"
                 component={WishlistScreen}
                 options={{
@@ -245,6 +254,20 @@ const RootNavigator = () => {
             <Stack.Screen
                 name="Cart"
                 component={CartScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
+                name="MyOrders"
+                component={MyOrdersScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
+                name="OrderDetail"
+                component={OrderDetailScreen}
                 options={{
                     headerShown: false,
                 }}
