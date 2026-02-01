@@ -1,132 +1,102 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, RefreshControl, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, RefreshControl, ActivityIndicator, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { navigate } from '../utils/RootNavigation';
+import apiService from '../services/api';
+
+// Debounce utility function
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(null, args), delay);
+  };
+};
 
 
 const ProductCatalogScreen = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [error, setError] = useState(null);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [sortBy, setSortBy] = useState('createdAt');
+    const [sortOrder, setSortOrder] = useState('DESC');
+    const [favorites, setFavorites] = useState(new Set());
     const navigation = useNavigation();
 
-    // Sample product data
-    const sampleProducts = [
-        {
-            id: 1,
-            name: 'Wireless Headphones',
-            price: '129.00',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAEdclVWy3M8BxMzFeb1J8f-hS8djSpmXa6b9iE8h9X0A8zLlFO0WmE7ZRrSxnR9-_RWY_1PMTL4TOfjJHRSHdDJn1rdYoASaK6VNdURRjwlX8q5eqYehv8VH3a5CRK9MEDCT4APc6sV1p55Dq4Wecd4F8m8ik8Hu6RTrUZx4pr0tY44g57TsGfQx_Ijy9PGKM4Av2BEK-nsWHj2gVGmBRK67hOY1nqg_tSaKzx960_DQQpAn07KDKG5qhO9UfXeV8BVvLayHEnPgE',
-            category: 'Electronics',
-            isFavorite: false
-        },
-        {
-            id: 2,
-            name: 'Smart Watch Series 7',
-            price: '199.00',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAQO437bK_hgQmHBH9VoZkMmbRpEslnGjb9OmHyaCKtH6qe6i0p3Z7EXKX5kMG8Zf5ZGHPHcwIhKYl9g7u-uPA1ui4BoLYK5FDtLaRsCy5lQMSJmucwZ2OqlWzrQXGVtGF39nvi_vlfJ-iTvHpL90HXtzK6OBj-l3Fl3GelEeZItTGgwWBCatUx2yRxYaMYBeM533BOKAf4iFRX_uuMj3JbTaea4Vre3rEApKuXSRO1mAMSisEQP15ykRRaE1sUuqEGc_Ysniz_MIg',
-            category: 'Electronics',
-            isFavorite: true
-        },
-        {
-            id: 3,
-            name: 'Minimalist Lamp',
-            price: '45.00',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDKS0Pgzg5smSaKAiicZemb5MlJn114352m03oR2dmX9Uaiv7VIrAKughWPR8uz77s0QCTcAdt1GugcbACR2JOXd7GdhFTORwRZkbkLdWDm-ufDhZhkioucO-rlgIu3gGouseZl00OlkGV70_iuxXBwIdQvItQKkpMQmfg_kTmbo3IkO-iOfZ8iqmJjoeD2JSPagh2Jc7ewKn1zZD9hdfDS0-N-xYhtOp--7mh1qlmJKcoo5TNsTg6iG7j-nAGmYE72e6leicMG4AU',
-            category: 'Home',
-            isFavorite: false
-        },
-        {
-            id: 4,
-            name: 'Leather Jacket',
-            price: '120.00',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBBBqBSbJ6tsg-GPkChiFsBu4qV5kOhQe9zicIg2RFU9sohLTWC0nslkxbLPOJ0vAl3OxrvxkpqEKufQcu14lPsMGU_l0zyFTh50UP0GHRqmxwVcPFEZIM-Cra4uQBML6c6Mbq7RjN2yKW63liuwhZt8FQF6L1RdluIbJTYonkZucdwexp2f6vDNB6L8vcnypK_LKcwnxfaut6uOjeMKL9dr3cikoIDPp7_QbwSemyE6U6tXEC1BI9J1KcKnS0vz6uczJX8V_nbeHY',
-            category: 'Fashion',
-            isFavorite: false
-        },
-        {
-            id: 5,
-            name: 'Bluetooth Speaker',
-            price: '79.99',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAEdclVWy3M8BxMzFeb1J8f-hS8djSpmXa6b9iE8h9X0A8zLlFO0WmE7ZRrSxnR9-_RWY_1PMTL4TOfjJHRSHdDJn1rdYoASaK6VNdURRjwlX8q5eqYehv8VH3a5CRK9MEDCT4APc6sV1p55Dq4Wecd4F8m8ik8Hu6RTrUZx4pr0tY44g57TsGfQx_Ijy9PGKM4Av2BEK-nsWHj2gVGmBRK67hOY1nqg_tSaKzx960_DQQpAn07KDKG5qhO9UfXeV8BVvLayHEnPgE',
-            category: 'Electronics',
-            isFavorite: false
-        },
-        {
-            id: 6,
-            name: 'Running Shoes',
-            price: '89.99',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAQO437bK_hgQmHBH9VoZkMmbRpEslnGjb9OmHyaCKtH6qe6i0p3Z7EXKX5kMG8Zf5ZGHPHcwIhKYl9g7u-uPA1ui4BoLYK5FDtLaRsCy5lQMSJmucwZ2OqlWzrQXGVtGF39nvi_vlfJ-iTvHpL90HXtzK6OBj-l3Fl3GelEeZItTGgwWBCatUx2yRxYaMYBeM533BOKAf4iFRX_uuMj3JbTaea4Vre3rEApKuXSRO1mAMSisEQP15ykRRaE1sUuqEGc_Ysniz_MIg',
-            category: 'Fashion',
-            isFavorite: true
-        },
-        {
-            id: 7,
-            name: 'Coffee Maker',
-            price: '59.99',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDKS0Pgzg5smSaKAiicZemb5MlJn114352m03oR2dmX9Uaiv7VIrAKughWPR8uz77s0QCTcAdt1GugcbACR2JOXd7GdhFTORwRZkbkLdWDm-ufDhZhkioucO-rlgIu3gGouseZl00OlkGV70_iuxXBwIdQvItQKkpMQmfg_kTmbo3IkO-iOfZ8iqmJjoeD2JSPagh2Jc7ewKn1zZD9hdfDS0-N-xYhtOp--7mh1qlmJKcoo5TNsTg6iG7j-nAGmYE72e6leicMG4AU',
-            category: 'Home',
-            isFavorite: false
-        },
-        {
-            id: 8,
-            name: 'Backpack',
-            price: '49.99',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBBBqBSbJ6tsg-GPkChiFsBu4qV5kOhQe9zicIg2RFU9sohLTWC0nslkxbLPOJ0vAl3OxrvxkpqEKufQcu14lPsMGU_l0zyFTh50UP0GHRqmxwVcPFEZIM-Cra4uQBML6c6Mbq7RjN2yKW63liuwhZt8FQF6L1RdluIbJTYonkZucdwexp2f6vDNB6L8vcnypK_LKcwnxfaut6uOjeMKL9dr3cikoIDPp7_QbwSemyE6U6tXEC1BI9J1KcKnS0vz6uczJX8V_nbeHY',
-            category: 'Accessories',
-            isFavorite: false
-        },
-        {
-            id: 9,
-            name: 'Wireless Earbuds',
-            price: '89.00',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAEdclVWy3M8BxMzFeb1J8f-hS8djSpmXa6b9iE8h9X0A8zLlFO0WmE7ZRrSxnR9-_RWY_1PMTL4TOfjJHRSHdDJn1rdYoASaK6VNdURRjwlX8q5eqYehv8VH3a5CRK9MEDCT4APc6sV1p55Dq4Wecd4F8m8ik8Hu6RTrUZx4pr0tY44g57TsGfQx_Ijy9PGKM4Av2BEK-nsWHj2gVGmBRK67hOY1nqg_tSaKzx960_DQQpAn07KDKG5qhO9UfXeV8BVvLayHEnPgE',
-            category: 'Electronics',
-            isFavorite: true
-        },
-        {
-            id: 10,
-            name: 'Desk Organizer',
-            price: '34.99',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAQO437bK_hgQmHBH9VoZkMmbRpEslnGjb9OmHyaCKtH6qe6i0p3Z7EXKX5kMG8Zf5ZGHPHcwIhKYl9g7u-uPA1ui4BoLYK5FDtLaRsCy5lQMSJmucwZ2OqlWzrQXGVtGF39nvi_vlfJ-iTvHpL90HXtzK6OBj-l3Fl3GelEeZItTGgwWBCatUx2yRxYaMYBeM533BOKAf4iFRX_uuMj3JbTaea4Vre3rEApKuXSRO1mAMSisEQP15ykRRaE1sUuqEGc_Ysniz_MIg',
-            category: 'Home',
-            isFavorite: false
-        },
-        {
-            id: 11,
-            name: 'Sunglasses',
-            price: '75.00',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDKS0Pgzg5smSaKAiicZemb5MlJn114352m03oR2dmX9Uaiv7VIrAKughWPR8uz77s0QCTcAdt1GugcbACR2JOXd7GdhFTORwRZkbkLdWDm-ufDhZhkioucO-rlgIu3gGouseZl00OlkGV70_iuxXBwIdQvItQKkpMQmfg_kTmbo3IkO-iOfZ8iqmJjoeD2JSPagh2Jc7ewKn1zZD9hdfDS0-N-xYhtOp--7mh1qlmJKcoo5TNsTg6iG7j-nAGmYE72e6leicMG4AU',
-            category: 'Fashion',
-            isFavorite: false
-        },
-        {
-            id: 12,
-            name: 'Water Bottle',
-            price: '24.99',
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBBBqBSbJ6tsg-GPkChiFsBu4qV5kOhQe9zicIg2RFU9sohLTWC0nslkxbLPOJ0vAl3OxrvxkpqEKufQcu14lPsMGU_l0zyFTh50UP0GHRqmxwVcPFEZIM-Cra4uQBML6c6Mbq7RjN2yKW63liuwhZt8FQF6L1RdluIbJTYonkZucdwexp2f6vDNB6L8vcnypK_LKcwnxfaut6uOjeMKL9dr3cikoIDPp7_QbwSemyE6U6tXEC1BI9J1KcKnS0vz6uczJX8V_nbeHY',
-            category: 'Accessories',
-            isFavorite: true
-        }
-    ];
-
     useEffect(() => {
-        // Simulate loading products
-        setTimeout(() => {
-            setProducts(sampleProducts);
-            setLoading(false);
-        }, 1000);
+        loadProducts(1, true);
     }, []);
+
+    const loadProducts = async (pageNum = 1, isInitialLoad = false, reset = false) => {
+        try {
+            if (isInitialLoad) {
+                setLoading(true);
+            } else if (pageNum > 1) {
+                setIsLoadingMore(true);
+            } else if (reset) {
+                setProducts([]);
+            }
+            
+            const params = {
+                page: pageNum,
+                limit: 12, // Load 12 products per page
+                search: searchQuery || undefined,
+                category: selectedCategory || undefined,
+                sortBy: sortBy,
+                sortOrder: sortOrder
+            };
+            
+            const response = await apiService.products.getProducts(params);
+            
+            if (response.data && response.data.data && response.data.data.products) {
+                const newProducts = response.data.data.products;
+                
+                if (reset || pageNum === 1) {
+                    setProducts(newProducts);
+                } else {
+                    setProducts(prev => [...prev, ...newProducts]);
+                }
+                
+                // Check if there are more products to load
+                const total = response.data.data.total || 0;
+                const currentTotal = pageNum === 1 ? newProducts.length : products.length + newProducts.length;
+                setHasMore(currentTotal < total);
+            } else {
+                // Handle case where response format is different
+                console.warn('Unexpected response format:', response.data);
+                if (reset || pageNum === 1) {
+                    setProducts([]);
+                }
+            }
+            
+            setError(null);
+        } catch (err) {
+            console.error('Error loading products:', err);
+            setError(err.message || 'Failed to load products');
+            
+            // Provide fallback error message to user
+            if (isInitialLoad) {
+                Alert.alert('Error', 'Could not load products. Please try again later.');
+            }
+        } finally {
+            setLoading(false);
+            setIsLoadingMore(false);
+            setRefreshing(false);
+        }
+    };
 
     const onRefresh = () => {
         setRefreshing(true);
-        // Simulate refresh
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 1500);
+        loadProducts(1, false, true); // Load page 1, not initial load, reset data
     };
 
     const handleAddToCart = (productId) => {
@@ -134,9 +104,50 @@ const ProductCatalogScreen = () => {
         // Implement add to cart logic here
     };
 
+    const loadMoreProducts = () => {
+        if (!isLoadingMore && hasMore) {
+            loadProducts(page + 1);
+            setPage(prev => prev + 1);
+        }
+    };
+
     const handleToggleFavorite = (productId, isFavorite) => {
         console.log('Toggling favorite for product:', productId, 'to:', isFavorite);
         // Implement favorite toggle logic here
+    };
+
+    // Debounced search function
+    const debouncedSearch = debounce((query) => {
+        setSearchQuery(query);
+        setPage(1); // Reset to page 1 when searching
+        loadProducts(1, false, true);
+    }, 500); // 500ms delay
+
+    const handleSearchChange = (query) => {
+        debouncedSearch(query);
+    };
+
+    const clearSearch = () => {
+        setSearchQuery('');
+        setPage(1);
+        loadProducts(1, false, true);
+    };
+
+    const applyFilters = (category, sortByParam = null, sortOrderParam = null) => {
+        setSelectedCategory(category);
+        if (sortByParam) setSortBy(sortByParam);
+        if (sortOrderParam) setSortOrder(sortOrderParam);
+        setPage(1);
+        loadProducts(1, false, true);
+    };
+
+    const clearFilters = () => {
+        setSelectedCategory(null);
+        setSortBy('createdAt');
+        setSortOrder('DESC');
+        setSearchQuery('');
+        setPage(1);
+        loadProducts(1, false, true);
     };
 
     const handleProductPress = (product) => {
@@ -150,12 +161,17 @@ const ProductCatalogScreen = () => {
     };
 
     const ProductCard = ({ product }) => {
-        const [isFavorite, setIsFavorite] = useState(product.isFavorite || false);
+        const isFavorite = favorites.has(product.id);
 
         const handleFavoritePress = () => {
-            const newFavoriteState = !isFavorite;
-            setIsFavorite(newFavoriteState);
-            handleToggleFavorite(product.id, newFavoriteState);
+            const newFavorites = new Set(favorites);
+            if (isFavorite) {
+                newFavorites.delete(product.id);
+            } else {
+                newFavorites.add(product.id);
+            }
+            setFavorites(newFavorites);
+            handleToggleFavorite(product.id, !isFavorite);
         };
 
         const handleCardPress = () => {
@@ -193,7 +209,7 @@ const ProductCatalogScreen = () => {
                         {product.name}
                     </Text>
                     <View style={styles.priceContainer}>
-                        <Text style={styles.price}>${product.price}</Text>
+                        <Text style={styles.price}>${parseFloat(product.price).toFixed(2)}</Text>
                     </View>
                     <TouchableOpacity 
                         style={styles.addToCartButton}
@@ -207,7 +223,7 @@ const ProductCatalogScreen = () => {
         );
     };
 
-    if (loading) {
+    if (loading && products.length === 0) {
         return (
             <SafeAreaView style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#1152d4" />
@@ -218,13 +234,34 @@ const ProductCatalogScreen = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* Header */}
+            {/* Header with search */}
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Explore</Text>
-                <TouchableOpacity style={styles.filterButton}>
-                    <MaterialIcons name="tune" size={24} color="#111318" />
-                </TouchableOpacity>
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChangeText={handleSearchChange}
+                    />
+                    {searchQuery ? (
+                        <TouchableOpacity style={styles.clearSearchButton} onPress={clearSearch}>
+                            <MaterialIcons name="close" size={20} color="#64748b" />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity style={styles.filterButton}>
+                            <MaterialIcons name="tune" size={24} color="#111318" />
+                        </TouchableOpacity>
+                    )}
+                </View>
             </View>
+
+            {/* Error Message */}
+            {error && (
+                <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            )}
 
             {/* Product Grid */}
             <ScrollView 
@@ -238,20 +275,39 @@ const ProductCatalogScreen = () => {
                         tintColor="#1152d4"
                     />
                 }
+                onScroll={({ nativeEvent }) => {
+                    if (
+                        nativeEvent.layoutMeasurement.height + nativeEvent.contentOffset.y >=
+                        nativeEvent.contentSize.height - 20 &&
+                        !isLoadingMore &&
+                        hasMore
+                    ) {
+                        loadMoreProducts();
+                    }
+                }}
+                scrollEventThrottle={400}
             >
                 <View style={styles.grid}>
                     {products.map((product) => (
-                        <View key={product.id} style={styles.gridItem}>
+                        <View key={product.id || product._id} style={styles.gridItem}>
                             <ProductCard product={product} />
                         </View>
                     ))}
                 </View>
 
                 {/* Loading more indicator */}
-                <View style={styles.loadingMore}>
-                    <ActivityIndicator size="small" color="#1152d4" />
-                    <Text style={styles.loadingMoreText}>Loading more...</Text>
-                </View>
+                {isLoadingMore && (
+                    <View style={styles.loadingMore}>
+                        <ActivityIndicator size="small" color="#1152d4" />
+                        <Text style={styles.loadingMoreText}>Loading more products...</Text>
+                    </View>
+                )}
+
+                {!hasMore && products.length > 0 && (
+                    <View style={styles.endOfList}>
+                        <Text style={styles.endOfListText}>You've reached the end</Text>
+                    </View>
+                )}
             </ScrollView>
         </SafeAreaView>
     );
@@ -276,7 +332,6 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingVertical: 12,
         backgroundColor: 'rgba(246, 246, 248, 0.8)',
@@ -288,10 +343,48 @@ const styles = StyleSheet.create({
         color: '#111318',
         letterSpacing: 0.4,
     },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+        marginLeft: 12,
+        backgroundColor: 'white',
+        borderRadius: 24,
+        paddingHorizontal: 12,
+        height: 40,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 2,
+    },
+    searchInput: {
+        flex: 1,
+        height: '100%',
+        fontSize: 14,
+        color: '#111318',
+    },
+    clearSearchButton: {
+        padding: 8,
+        borderRadius: 12,
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    },
     filterButton: {
         padding: 8,
         borderRadius: 20,
         backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    },
+    errorContainer: {
+        marginHorizontal: 16,
+        padding: 12,
+        backgroundColor: '#fee2e2',
+        borderRadius: 8,
+        marginBottom: 12,
+    },
+    errorText: {
+        color: '#dc2626',
+        textAlign: 'center',
+        fontSize: 14,
     },
     productGrid: {
         flex: 1,
@@ -401,6 +494,18 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     loadingMoreText: {
+        fontSize: 12,
+        color: '#94a3b8',
+        fontWeight: '500',
+    },
+    endOfList: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 24,
+        gap: 8,
+    },
+    endOfListText: {
         fontSize: 12,
         color: '#94a3b8',
         fontWeight: '500',
