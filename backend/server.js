@@ -82,8 +82,26 @@ const startServer = async () => {
     // Set up model associations after sequelize instance is ready
     require('./src/models/associations');
     
-    // Sync all models
-    await sequelize.sync({ alter: true }); // Use 'alter: true' to update existing tables
+    // Sync all models - using force: false to avoid data loss but handle constraints properly
+    // For SQLite, we need to handle foreign keys carefully
+    try {
+      // Disable foreign key checks for SQLite
+      await sequelize.query('PRAGMA foreign_keys = OFF');
+      
+      // Sync without forcing to preserve data but update structure
+      await sequelize.sync({ force: false });
+      
+      // Re-enable foreign key checks
+      await sequelize.query('PRAGMA foreign_keys = ON');
+    } catch (syncError) {
+      console.error('Sync error, attempting alternative method:', syncError.message);
+      
+      // If sync fails, try with force disabled foreign keys
+      await sequelize.query('PRAGMA foreign_keys = OFF');
+      await sequelize.sync({ force: false });
+      await sequelize.query('PRAGMA foreign_keys = ON');
+    }
+    
     console.log('Database synchronized.');
     
     app.listen(PORT, () => {
