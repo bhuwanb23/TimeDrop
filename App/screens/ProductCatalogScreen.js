@@ -6,14 +6,15 @@ import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { navigate } from '../utils/RootNavigation';
 import apiService from '../services/api';
+import { useCart } from '../context/CartContext';
 
 // Debounce utility function
 const debounce = (func, delay) => {
-  let timeoutId;
-  return (...args) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func.apply(null, args), delay);
-  };
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(null, args), delay);
+    };
 };
 
 
@@ -32,6 +33,9 @@ const ProductCatalogScreen = () => {
     const [favorites, setFavorites] = useState(new Set());
     const navigation = useNavigation();
 
+    // Cart context
+    const { addItem, items: cartItems } = useCart();
+
     useEffect(() => {
         loadProducts(1, true);
     }, []);
@@ -45,7 +49,7 @@ const ProductCatalogScreen = () => {
             } else if (reset) {
                 setProducts([]);
             }
-            
+
             const params = {
                 page: pageNum,
                 limit: 12, // Load 12 products per page
@@ -54,18 +58,18 @@ const ProductCatalogScreen = () => {
                 sortBy: sortBy,
                 sortOrder: sortOrder
             };
-            
+
             const response = await apiService.products.getProducts(params);
-            
+
             if (response.data && response.data.data && response.data.data.products) {
                 const newProducts = response.data.data.products;
-                
+
                 if (reset || pageNum === 1) {
                     setProducts(newProducts);
                 } else {
                     setProducts(prev => [...prev, ...newProducts]);
                 }
-                
+
                 // Check if there are more products to load
                 const total = response.data.data.total || 0;
                 const currentTotal = pageNum === 1 ? newProducts.length : products.length + newProducts.length;
@@ -77,12 +81,12 @@ const ProductCatalogScreen = () => {
                     setProducts([]);
                 }
             }
-            
+
             setError(null);
         } catch (err) {
             console.error('Error loading products:', err);
             setError(err.message || 'Failed to load products');
-            
+
             // Provide fallback error message to user
             if (isInitialLoad) {
                 Alert.alert('Error', 'Could not load products. Please try again later.');
@@ -99,9 +103,14 @@ const ProductCatalogScreen = () => {
         loadProducts(1, false, true); // Load page 1, not initial load, reset data
     };
 
-    const handleAddToCart = (productId) => {
-        console.log('Adding product to cart:', productId);
-        // Implement add to cart logic here
+    const handleAddToCart = async (product) => {
+        try {
+            await addItem(product, 1); // Add 1 quantity of the product
+            Alert.alert('Success', `${product.name} added to cart!`);
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            Alert.alert('Error', error.message || 'Failed to add item to cart');
+        }
     };
 
     const loadMoreProducts = () => {
@@ -181,23 +190,23 @@ const ProductCatalogScreen = () => {
 
         return (
             <View style={styles.productCard}>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.productImageContainer}
                     onPress={handleCardPress}
                 >
-                    <Image 
+                    <Image
                         source={{ uri: product.image }}
                         style={styles.productImage}
                         resizeMode="cover"
                     />
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.favoriteButton}
                         onPress={(e) => {
                             e.stopPropagation();
                             handleFavoritePress();
                         }}
                     >
-                        <MaterialIcons 
+                        <MaterialIcons
                             name={isFavorite ? "favorite" : "favorite-border"}
                             size={20}
                             color={isFavorite ? "#1152d4" : "#94a3b8"}
@@ -211,9 +220,9 @@ const ProductCatalogScreen = () => {
                     <View style={styles.priceContainer}>
                         <Text style={styles.price}>${parseFloat(product.price).toFixed(2)}</Text>
                     </View>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.addToCartButton}
-                        onPress={() => handleAddToCart(product.id)}
+                        onPress={() => handleAddToCart(product)}
                     >
                         <MaterialIcons name="shopping-bag" size={16} color="#ffffff" />
                         <Text style={styles.addToCartText}>Add to Cart</Text>
@@ -264,7 +273,7 @@ const ProductCatalogScreen = () => {
             )}
 
             {/* Product Grid */}
-            <ScrollView 
+            <ScrollView
                 style={styles.productGrid}
                 contentContainerStyle={styles.productGridContent}
                 refreshControl={
@@ -409,7 +418,7 @@ const styles = StyleSheet.create({
     productImageContainer: {
         position: 'relative',
         width: '100%',
-        aspectRatio: 4/5,
+        aspectRatio: 4 / 5,
         backgroundColor: '#e2e8f0',
         borderRadius: 12,
         overflow: 'hidden',

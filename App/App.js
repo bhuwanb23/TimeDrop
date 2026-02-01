@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { navigationRef } from './utils/RootNavigation';
+import { CartProvider, useCart } from './context/CartContext';
 import LoginScreen from './screens/LoginScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import DeliveryScreen from './screens/DeliveryScreen';
@@ -71,24 +72,24 @@ const MainTabs = () => {
                 tabBarHideOnKeyboard: true,
             })}
         >
-            <Tab.Screen 
-                name="Home" 
+            <Tab.Screen
+                name="Home"
                 component={DashboardScreen}
-                options={{ 
+                options={{
                     tabBarLabel: 'Home',
                 }}
             />
-            <Tab.Screen 
-                name="Delivery" 
+            <Tab.Screen
+                name="Delivery"
                 component={DeliveryScreen}
-                options={{ 
+                options={{
                     tabBarLabel: 'Delivery',
                 }}
             />
-            <Tab.Screen 
-                name="Profile" 
+            <Tab.Screen
+                name="Profile"
                 component={ProfileScreen}
-                options={{ 
+                options={{
                     tabBarLabel: 'Profile',
                 }}
             />
@@ -98,8 +99,8 @@ const MainTabs = () => {
 
 // Customer Main Tab Navigator with Bottom Navbar
 const CustomerMainTabs = () => {
-    const [cartItemCount, setCartItemCount] = useState(3); // This should come from cart context/state
-    
+    const { totalItems: cartItemCount } = useCart(); // Get cart count from context
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -154,39 +155,39 @@ const CustomerMainTabs = () => {
                 tabBarHideOnKeyboard: true,
             })}
         >
-            <Tab.Screen 
-                name="Home" 
+            <Tab.Screen
+                name="Home"
                 component={ProductCatalogScreen}
-                options={{ 
+                options={{
                     tabBarLabel: 'Home',
                 }}
             />
-            <Tab.Screen 
-                name="Categories" 
+            <Tab.Screen
+                name="Categories"
                 component={CategoryScreen}
-                options={{ 
+                options={{
                     tabBarLabel: 'Categories',
                 }}
             />
-            <Tab.Screen 
-                name="Wishlist" 
+            <Tab.Screen
+                name="Wishlist"
                 component={WishlistScreen}
-                options={{ 
+                options={{
                     tabBarLabel: 'Wishlist',
                 }}
             />
-            <Tab.Screen 
-                name="Cart" 
+            <Tab.Screen
+                name="Cart"
                 component={CartScreen}
-                options={{ 
+                options={{
                     tabBarLabel: 'Cart',
                     tabBarBadge: cartItemCount > 0 ? cartItemCount : undefined,
                 }}
             />
-            <Tab.Screen 
-                name="Profile" 
+            <Tab.Screen
+                name="Profile"
                 component={CustomerProfileScreen}
-                options={{ 
+                options={{
                     tabBarLabel: 'Profile',
                 }}
             />
@@ -219,32 +220,32 @@ const RootNavigator = () => {
             }}
         >
             <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen 
-                name="MainTabs" 
+            <Stack.Screen
+                name="MainTabs"
                 component={MainTabs}
-                options={{ 
+                options={{
                     headerShown: false,
                 }}
             />
-            <Stack.Screen 
-                name="CustomerMainTabs" 
+            <Stack.Screen
+                name="CustomerMainTabs"
                 component={CustomerStackNavigator}
-                options={{ 
+                options={{
                     headerShown: false,
                 }}
             />
             <Stack.Screen name="Route" component={RouteScreen} />
-            <Stack.Screen 
-                name="ProductDetail" 
+            <Stack.Screen
+                name="ProductDetail"
                 component={ProductDetailScreen}
-                options={{ 
+                options={{
                     headerShown: false,
                 }}
             />
-            <Stack.Screen 
-                name="Cart" 
+            <Stack.Screen
+                name="Cart"
                 component={CartScreen}
-                options={{ 
+                options={{
                     headerShown: false,
                 }}
             />
@@ -254,10 +255,12 @@ const RootNavigator = () => {
 
 export default function App() {
     return (
-        <SafeAreaProvider>
-            <NavigationContainer ref={navigationRef}>
-                <RootNavigator />
-            </NavigationContainer>
-        </SafeAreaProvider>
+        <CartProvider>
+            <SafeAreaProvider>
+                <NavigationContainer ref={navigationRef}>
+                    <RootNavigator />
+                </NavigationContainer>
+            </SafeAreaProvider>
+        </CartProvider>
     );
 }

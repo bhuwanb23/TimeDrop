@@ -2,61 +2,33 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { navigate } from '../utils/RootNavigation';
+import { useCart } from '../context/CartContext';
 
 const CartScreen = ({ navigation }) => {
-    const [cartItems, setCartItems] = useState([
-        {
-            id: 1,
-            name: 'Leather Sneakers',
-            price: 120.00,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBjgpqdGZ25XswzLe9G3WUZ1dOFa1LYCK4Ifsz3Iq3y9AympfbQqNHTCTmxqI926-cvXpW8mN5zp5Z474riV_AA8O7O_xbiZgNE5fAu_86OxbgflgNMQdC338pqvwvI1M_bsKSr8IWbNtYyVKEXuYc9_o67WYNibYVYvY5iausRUSmbFQn2smDYdmoXGxgyfkwQSPJu9HmX04TMszKBHRaRZSWXJP25e40mGtO42mtIvST_DvRkwc8Zh8DsyJJIEUCaO2Ly5XldNCs',
-            size: '10',
-            color: 'White',
-            quantity: 1
-        },
-        {
-            id: 2,
-            name: 'Organic Cotton Tee',
-            price: 35.00,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCekpLqvq1f3jwGr81ZIne41gAtTkbO97p8xUe3t9t3ra2pwiY_xQH0qgr8U5FEdFTZf8RZhyRuCnrrTBZDS9L7SMsZ1mQOt9d99kmi72pO5hLKMfL8D3lSh6wIMppEPuRog0dQUgA-Eusc2t-XzmK4HKm7_vJdL00hKdTQiqOAJWp_oR4ECnJ7PSU2ybPRtoQJWFb8Y8V2zHovIbf7DyOa86wJUltsBhCrfHpfMh7kPq8tXZZ-JXo7WkzPilpnOT9nRTyGtB-FJxk',
-            size: 'M',
-            color: 'Navy',
-            quantity: 2
-        }
-    ]);
+    // Use cart context
+    const {
+        items: cartItems,
+        totalItems,
+        totalAmount,
+        loading,
+        error,
+        updateQuantity,
+        removeItem,
+        clearCart
+    } = useCart();
 
-    const [savedItems] = useState([
-        {
-            id: 3,
-            name: 'Minimal Desk Lamp',
-            price: 85.00,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAB-bWafTGQn5QT8C2X6ovOuBU_Ki_Y0HUve30AfHKXiEGPyciPlDh6EZ5UMAegPq_KkNA6PROGNVY0NEIsod4lonao5WtXKgj7EURMWiqwPJh8v7FSQ1Qr2W1Ogaehv7nxrlVvoor0HL9bBL-1pkx9dZqTz3yXMfz9tOGOQ92q5_RS6Jwtlq4tXUDBC2uTFrpgzFMD1BNB4dS6raUtkPFNbyYFl0qQ-UUeEjlxI4GtVFcQIP35MfQFJB7SzZhTNzEdBfGKgU1CUxI'
-        },
-        {
-            id: 4,
-            name: 'Ceramic Mug Set',
-            price: 24.00,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBouS316W8T35WAEuLmaI9FDruF0EQMR2GaXjhpo-CzYou_-c3BAWA6f4qgezZZupzdrhMACuTmBWuJXteMYvttXN53RwpGgDbZuSUm2famJhHhUXG9HtS_XanTABFZ_YOEOKvFT9g1TkPfIOhzOvn1UfEDbRY56r17zmX2-3urhxcPD_RZ9sl-2AA88ScAEKCnaVEFHnhgNZRnyvtHtrv2lwGrITDmsU1ib3DEhrZGOa8hYzgoXlgojQaHS5dyQJ_LS6cJH6x9a2o'
-        }
-    ]);
-
+    // Calculate cart totals
     const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const shipping = 0; // Free shipping
     const tax = subtotal * 0.08; // 8% tax
     const total = subtotal + shipping + tax;
 
-    const handleQuantityChange = (itemId, newQuantity) => {
+    const handleQuantityChange = (productId, newQuantity) => {
         if (newQuantity < 1) return;
-        setCartItems(prevItems =>
-            prevItems.map(item =>
-                item.id === itemId
-                    ? { ...item, quantity: newQuantity }
-                    : item
-            )
-        );
+        updateQuantity(productId, newQuantity);
     };
 
-    const handleRemoveItem = (itemId) => {
+    const handleRemoveItem = (productId) => {
         Alert.alert(
             'Remove Item',
             'Are you sure you want to remove this item from your cart?',
@@ -66,24 +38,11 @@ const CartScreen = ({ navigation }) => {
                     text: 'Remove',
                     style: 'destructive',
                     onPress: () => {
-                        setCartItems(prevItems =>
-                            prevItems.filter(item => item.id !== itemId)
-                        );
+                        removeItem(productId);
                     }
                 }
             ]
         );
-    };
-
-    const handleMoveToCart = (item) => {
-        const newItem = {
-            ...item,
-            quantity: 1,
-            size: 'M',
-            color: 'Black'
-        };
-        setCartItems(prevItems => [...prevItems, newItem]);
-        Alert.alert('Success', `${item.name} moved to cart`);
     };
 
     const handleProceedToCheckout = () => {
@@ -110,14 +69,14 @@ const CartScreen = ({ navigation }) => {
                     <View style={styles.quantityContainer}>
                         <TouchableOpacity 
                             style={styles.quantityButton}
-                            onPress={() => handleQuantityChange(item.id, item.quantity - 1)}
+                            onPress={() => handleQuantityChange(item.productId, item.quantity - 1)}
                         >
                             <MaterialIcons name="remove" size={18} color="#6b7280" />
                         </TouchableOpacity>
                         <Text style={styles.quantityText}>{item.quantity}</Text>
                         <TouchableOpacity 
                             style={styles.quantityButton}
-                            onPress={() => handleQuantityChange(item.id, item.quantity + 1)}
+                            onPress={() => handleQuantityChange(item.productId, item.quantity + 1)}
                         >
                             <MaterialIcons name="add" size={18} color="#6b7280" />
                         </TouchableOpacity>
@@ -126,12 +85,15 @@ const CartScreen = ({ navigation }) => {
             </View>
             <TouchableOpacity 
                 style={styles.removeItemButton}
-                onPress={() => handleRemoveItem(item.id)}
+                onPress={() => handleRemoveItem(item.productId)}
             >
                 <MaterialIcons name="delete" size={20} color="#6b7280" />
             </TouchableOpacity>
         </View>
     );
+
+    // Placeholder for saved items - could be implemented with wishlist functionality
+    const [savedItems] = useState([]);
 
     const SavedItem = ({ item }) => (
         <View style={styles.savedItem}>
@@ -144,7 +106,10 @@ const CartScreen = ({ navigation }) => {
             <Text style={styles.savedItemPrice}>${item.price.toFixed(2)}</Text>
             <TouchableOpacity 
                 style={styles.moveToCartButton}
-                onPress={() => handleMoveToCart(item)}
+                onPress={() => {
+                    // Add to cart functionality would go here
+                    Alert.alert('Coming Soon', 'Move to cart functionality will be available soon');
+                }}
             >
                 <Text style={styles.moveToCartText}>Move to Cart</Text>
             </TouchableOpacity>
@@ -158,63 +123,107 @@ const CartScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.backButton}>
                     <MaterialIcons name="arrow-back-ios" size={24} color="#0d121b" />
                 </TouchableOpacity>
-                <Text style={styles.appBarTitle}>Cart ({cartItems.length})</Text>
-                <TouchableOpacity style={styles.deleteButton}>
+                <Text style={styles.appBarTitle}>Cart ({totalItems})</Text>
+                <TouchableOpacity 
+                    style={styles.deleteButton}
+                    onPress={() => {
+                        if (cartItems.length > 0) {
+                            Alert.alert(
+                                'Clear Cart',
+                                'Are you sure you want to clear your entire cart?',
+                                [
+                                    { text: 'Cancel', style: 'cancel' },
+                                    {
+                                        text: 'Clear',
+                                        style: 'destructive',
+                                        onPress: clearCart
+                                    }
+                                ]
+                            );
+                        }
+                    }}
+                >
                     <MaterialIcons name="delete" size={24} color="#0d121b" />
                 </TouchableOpacity>
             </View>
 
             <ScrollView style={styles.content}>
+                {/* Show loading state */}
+                {loading && (
+                    <View style={styles.loadingContainer}>
+                        <Text>Loading cart...</Text>
+                    </View>
+                )}
+
+                {/* Show error state */}
+                {error && (
+                    <View style={styles.errorContainer}>
+                        <Text style={styles.errorText}>{error}</Text>
+                    </View>
+                )}
+
                 {/* Cart Items */}
                 <View style={styles.itemsSection}>
-                    {cartItems.map(item => (
-                        <CartItem key={item.id} item={item} />
-                    ))}
+                    {cartItems.length > 0 ? (
+                        cartItems.map(item => (
+                            <CartItem key={item.productId} item={item} />
+                        ))
+                    ) : (
+                        <View style={styles.emptyCartContainer}>
+                            <MaterialIcons name="shopping-cart" size={64} color="#d1d5db" />
+                            <Text style={styles.emptyCartText}>Your cart is empty</Text>
+                            <Text style={styles.emptyCartSubtext}>Start adding items to your cart</Text>
+                        </View>
+                    )}
                 </View>
 
                 {/* Order Summary */}
-                <View style={styles.summarySection}>
-                    <View style={styles.summaryCard}>
-                        <Text style={styles.sectionTitle}>Order Summary</Text>
-                        <View style={styles.summaryRow}>
-                            <Text style={styles.summaryLabel}>Subtotal</Text>
-                            <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+                {cartItems.length > 0 && (
+                    <View style={styles.summarySection}>
+                        <View style={styles.summaryCard}>
+                            <Text style={styles.sectionTitle}>Order Summary</Text>
+                            <View style={styles.summaryRow}>
+                                <Text style={styles.summaryLabel}>Subtotal</Text>
+                                <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+                            </View>
+                            <View style={styles.summaryRow}>
+                                <Text style={styles.summaryLabel}>Shipping</Text>
+                                <Text style={[styles.summaryValue, styles.freeShipping]}>Free</Text>
+                            </View>
+                            <View style={styles.summaryRow}>
+                                <Text style={styles.summaryLabel}>Estimated Tax</Text>
+                                <Text style={styles.summaryValue}>${tax.toFixed(2)}</Text>
+                            </View>
+                            <View style={styles.totalRow}>
+                                <Text style={styles.totalLabel}>Total</Text>
+                                <Text style={styles.totalValue}>${total.toFixed(2)}</Text>
+                            </View>
+                            <TouchableOpacity 
+                                style={styles.checkoutButton}
+                                onPress={handleProceedToCheckout}
+                            >
+                                <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
+                            </TouchableOpacity>
                         </View>
-                        <View style={styles.summaryRow}>
-                            <Text style={styles.summaryLabel}>Shipping</Text>
-                            <Text style={[styles.summaryValue, styles.freeShipping]}>Free</Text>
-                        </View>
-                        <View style={styles.summaryRow}>
-                            <Text style={styles.summaryLabel}>Estimated Tax</Text>
-                            <Text style={styles.summaryValue}>${tax.toFixed(2)}</Text>
-                        </View>
-                        <View style={styles.totalRow}>
-                            <Text style={styles.totalLabel}>Total</Text>
-                            <Text style={styles.totalValue}>${total.toFixed(2)}</Text>
-                        </View>
-                        <TouchableOpacity 
-                            style={styles.checkoutButton}
-                            onPress={handleProceedToCheckout}
-                        >
-                            <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
-                        </TouchableOpacity>
                     </View>
-                </View>
+                )}
 
-                {/* Saved for Later */}
-                <View style={styles.savedSection}>
-                    <View style={styles.savedHeader}>
-                        <Text style={styles.sectionTitle}>Saved for Later ({savedItems.length})</Text>
-                        <TouchableOpacity>
-                            <Text style={styles.viewAllText}>View All</Text>
-                        </TouchableOpacity>
+                {/* Saved for Later - only show if there are saved items */}
+                {savedItems.length > 0 && (
+                    <View style={styles.savedSection}>
+                        <View style={styles.savedHeader}>
+                            <Text style={styles.sectionTitle}>Saved for Later ({savedItems.length})</Text>
+                            <TouchableOpacity>
+                                <Text style={styles.viewAllText}>View All</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.savedGrid}>
+                            {savedItems.map(item => (
+                                <SavedItem key={item.id} item={item} />
+                            ))}
+                        </View>
                     </View>
-                    <View style={styles.savedGrid}>
-                        {savedItems.map(item => (
-                            <SavedItem key={item.id} item={item} />
-                        ))}
-                    </View>
-                </View>
+                )}
             </ScrollView>
 
             {/* Bottom Spacer */}
@@ -457,6 +466,40 @@ const styles = StyleSheet.create({
     bottomSpacer: {
         height: 32,
         backgroundColor: '#f6f6f8',
+    },
+    loadingContainer: {
+        padding: 20,
+        alignItems: 'center',
+    },
+    errorContainer: {
+        padding: 20,
+        alignItems: 'center',
+        backgroundColor: '#fee2e2',
+        margin: 16,
+        borderRadius: 8,
+    },
+    errorText: {
+        color: '#dc2626',
+        fontSize: 14,
+    },
+    emptyCartContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 64,
+        paddingHorizontal: 16,
+    },
+    emptyCartText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#6b7280',
+        marginTop: 16,
+        textAlign: 'center',
+    },
+    emptyCartSubtext: {
+        fontSize: 14,
+        color: '#9ca3af',
+        marginTop: 8,
+        textAlign: 'center',
     },
 });
 
