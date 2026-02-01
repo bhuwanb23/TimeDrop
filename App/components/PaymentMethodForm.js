@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useCart } from '../context/CartContext';
 
 const PaymentMethodForm = ({ formData, onFormDataChange, onBack, onNext }) => {
     const [selectedMethod, setSelectedMethod] = useState('card');
     const [errors, setErrors] = useState({});
+    
+    // Cart context
+    const { items: cartItems, totalAmount: cartTotal, totalItems: cartItemCount } = useCart();
 
     const paymentMethods = [
         {
@@ -227,8 +231,8 @@ const PaymentMethodForm = ({ formData, onFormDataChange, onBack, onNext }) => {
 
             <View style={styles.orderSummary}>
                 <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Subtotal (3 items)</Text>
-                    <Text style={styles.summaryValue}>$249.00</Text>
+                    <Text style={styles.summaryLabel}>Subtotal ({cartItemCount || 0} items)</Text>
+                    <Text style={styles.summaryValue}>${cartTotal?.toFixed(2) || '0.00'}</Text>
                 </View>
                 <View style={styles.summaryRow}>
                     <Text style={styles.summaryLabel}>Shipping</Text>
@@ -237,7 +241,7 @@ const PaymentMethodForm = ({ formData, onFormDataChange, onBack, onNext }) => {
                 <View style={styles.divider} />
                 <View style={styles.summaryRow}>
                     <Text style={styles.summaryTotalLabel}>Total Amount</Text>
-                    <Text style={styles.summaryTotalValue}>$249.00</Text>
+                    <Text style={styles.summaryTotalValue}>${cartTotal?.toFixed(2) || '0.00'}</Text>
                 </View>
             </View>
 

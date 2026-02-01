@@ -7,8 +7,11 @@ const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 router.get('/', authenticateToken, getAllOrders);
 router.get('/:id', authenticateToken, getOrderById);
 
-// Protected routes - for creating orders
-router.post('/', authenticateToken, createOrder);
+// Guest route for creating orders (for local testing)
+router.post('/', createOrder);
+
+// Protected routes for authenticated users
+// router.post('/', authenticateToken, createOrder);
 
 // Protected routes - only for admin or delivery staff to update status
 router.put('/:id/status', authenticateToken, authorizeRoles('admin', 'driver'), updateOrderStatus);

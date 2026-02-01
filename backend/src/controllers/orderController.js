@@ -107,7 +107,19 @@ const getOrderById = async (req, res) => {
 const createOrder = async (req, res) => {
   try {
     const { items, delivery_address, delivery_notes, payment_method, delivery_time } = req.body;
-    const userId = req.user.id;
+    // For guest orders, we'll create a temporary identifier or assign to a default guest user
+    // In a real implementation, you might want to create a temporary user or handle differently
+    const userId = req.user ? req.user.id : null; // Will be null for guest orders
+    
+    // For guest orders, we'll use a special guest identifier
+    const isGuestOrder = !req.user;
+    
+    // If this is a guest order, we can still process it
+    if (isGuestOrder) {
+      console.log('Processing guest order');
+      // We'll assign guest orders to a default customer or handle differently
+      // For this implementation, we'll create a basic order without customer association
+    }
     
     // Validate input
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -137,15 +149,21 @@ const createOrder = async (req, res) => {
     }
     
     // Create order transaction
+    // For guest orders, we'll use a default guest customer ID
+    // In a production environment, you might want to create temporary guest users
+    // For this local implementation, we'll use the existing guest user ID
+    const finalCustomerId = isGuestOrder ? 4 : userId; // Using guest user ID 4 for guest orders
+    
     const order = await Order.create({
       order_number: orderNumber,
-      customer_id: userId,
+      customer_id: finalCustomerId, // Use the determined customer ID
       total_amount: totalAmount,
       delivery_address,
       delivery_notes,
       payment_method,
       delivery_time,
-      status: 'pending' // Initial status
+      status: 'pending', // Initial status
+      is_guest_order: isGuestOrder
     });
     
     // Create order items

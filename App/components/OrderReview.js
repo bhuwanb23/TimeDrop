@@ -2,35 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const OrderReview = ({ formData, onBack, onPlaceOrder, orderItems }) => {
-    const items = [
-        {
-            id: 1,
-            name: 'Premium Wireless Headphones',
-            color: 'Midnight Black',
-            quantity: 1,
-            price: 159.00,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPg2W063-DgGNea5OskRP4nSdi7-MB76EEnwP8acW-NPdhbd5oe7D7lAJu5cbaunk39TE-l_seNUI4Mldqd3zszSfqE2x-DYHI7yD2KBGVs3pxCNgD4x_105_-mzT_t0GzDABnaT9HtxjRyjSsT8LyEixtKKngRYrsbpoluonRWpe44SOPEwL5tygcELtli5pw0EtFb_jk9ULzgGBKAS6Ky2PHHVL49LougWdGLe1y9deDemtdg-jOBx1m5b6owQvaFT8YzVsn7QA'
-        },
-        {
-            id: 2,
-            name: 'Smart Minimalist Watch',
-            color: 'Silver / Leather',
-            quantity: 1,
-            price: 85.00,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCBXZP3iBR2eWYdiI6HsHsDESDMs7q7dZ3mweI9TB9uwHei9NZVepznHcf8wjnWiyWyDMuZBeT7sTGADskINxA7DS2hoPqJTSSHTMuJ9oS6bzqmwXpuiFL_pveqBPgM8eLXmpnbHZasc-MuKeN09OILFGj4TrEr5VxIYPvIQPaEtxawIPkDc8wBPnPUaLlAxlM6RSjc3ypmnu2PH0yNyHWvj8diKAa_prShquosdINSsjNO4UFtC0dj5-M8ECtyVWGhVUpvoDm2l_8'
-        },
-        {
-            id: 3,
-            name: 'Protective Case G1',
-            color: 'Clear',
-            quantity: 1,
-            price: 5.00,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC8fDxbexjiUdEcGLPqI7bWncxMp3FAINabrZVOzoCSCcJyBYiK9dhFHifDiXU4MyrgVYA3bXSmNi7EynDWyIsuaOJigzLt3kbhooJMPmVWfKDnda1_115cFi-ifddxcbwTCCGCGjlBXmaDPIXV9Rp_ss96C2ALY3jYyYafdUqK8vnukR03mo_bmG6th7aKVM5XsYFpvRtORy29SfoScPSHs-GhWufnhzH2j7scfKsHAWRlVF-ZGmNsiihNstIymBFIGwTzbS_MgMA'
-        }
-    ];
+const OrderReview = ({ formData, onBack, onPlaceOrder, cartItems, cartTotal }) => {
+    // Use cart items if available, otherwise use placeholder
+    const items = cartItems && cartItems.length > 0 ? cartItems : [];
 
-    const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    // Calculate totals based on cart items if available
+    const subtotal = cartItems ? cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) : cartTotal || 0;
     const shipping = 0; // Free shipping
     const tax = subtotal * 0.075; // 7.5% tax
     const total = subtotal + shipping + tax;
@@ -80,7 +57,7 @@ const OrderReview = ({ formData, onBack, onPlaceOrder, orderItems }) => {
                 <Text style={styles.sectionTitle}>Order Summary ({items.length} Items)</Text>
                 <View style={styles.itemsContainer}>
                     {items.map(item => (
-                        <View key={item.id} style={styles.itemRow}>
+                        <View key={item.productId || item.id} style={styles.itemRow}>
                             <View style={styles.itemImageContainer}>
                                 <Image 
                                     source={{ uri: item.image }}
@@ -90,11 +67,17 @@ const OrderReview = ({ formData, onBack, onPlaceOrder, orderItems }) => {
                             </View>
                             <View style={styles.itemDetails}>
                                 <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
-                                <Text style={styles.itemDescription}>{item.color} | Qty: {item.quantity}</Text>
+                                <Text style={styles.itemDescription}>{item.color || 'N/A'} | Qty: {item.quantity}</Text>
                                 <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
                             </View>
                         </View>
                     ))}
+                    {items.length === 0 && (
+                        <View style={styles.emptyCartContainer}>
+                            <Text style={styles.emptyCartText}>Your cart is empty</Text>
+                            <Text style={styles.emptyCartSubtext}>Add items to your cart before checking out</Text>
+                        </View>
+                    )}
                 </View>
             </View>
 
@@ -360,6 +343,24 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
         letterSpacing: 0.5,
+    },
+    emptyCartContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 32,
+        paddingHorizontal: 16,
+    },
+    emptyCartText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#6b7280',
+        textAlign: 'center',
+    },
+    emptyCartSubtext: {
+        fontSize: 14,
+        color: '#9ca3af',
+        marginTop: 8,
+        textAlign: 'center',
     },
 });
 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Alert, StyleSheet, SafeAreaView } from 'react-native';
 import { navigate } from '../utils/RootNavigation';
+import { useCart } from '../context/CartContext';
+import apiService from '../services/api';
 import CheckoutHeader from '../components/CheckoutHeader';
 import ShippingAddressForm from '../components/ShippingAddressForm';
 import PaymentMethodForm from '../components/PaymentMethodForm';
@@ -27,6 +29,9 @@ const CheckoutScreen = ({ navigation }) => {
         cvv: '',
         saveCard: false,
     });
+    
+    // Cart context
+    const { items: cartItems, totalAmount: cartTotal, clearCart } = useCart();
 
     const handleStepChange = (step) => {
         // Only allow navigation to completed or current steps
@@ -54,42 +59,93 @@ const CheckoutScreen = ({ navigation }) => {
         setCheckoutData(prev => ({ ...prev, ...newData }));
     };
 
-    const handlePlaceOrder = () => {
+    const handlePlaceOrder = async () => {
         // Validate all required data before placing order
         if (!checkoutData.fullName || !checkoutData.cardholderName) {
             Alert.alert('Missing Information', 'Please complete all required fields');
             return;
         }
-
-        Alert.alert(
-            'Order Placed Successfully!',
-            'Thank you for your order. You will receive a confirmation email shortly.',
-            [
-                {
-                    text: 'OK',
-                    onPress: () => {
-                        // Reset form and navigate to home or orders screen
-                        setCheckoutData({
-                            fullName: '',
-                            phone: '',
-                            address: '',
-                            city: '',
-                            state: '',
-                            zip: '',
-                            saveAddress: false,
-                            paymentMethod: 'card',
-                            cardholderName: '',
-                            cardNumber: '',
-                            expiry: '',
-                            cvv: '',
-                            saveCard: false,
-                        });
-                        setCurrentStep(1);
-                        navigation.navigate('Cart'); // Navigate back to cart screen
-                    }
-                }
-            ]
-        );
+        
+        if (cartItems.length === 0) {
+            Alert.alert('Empty Cart', 'Cannot place an order with an empty cart');
+            return;
+        }
+        
+        try {
+            // Show loading indicator
+            Alert.alert(
+                'Placing Order...',
+                'Please wait while we process your order',
+                []
+            );
+            
+            // Prepare order data
+            const orderData = {
+                items: cartItems.map(item => ({
+                    product_id: item.productId,
+                    quantity: item.quantity,
+                    notes: `Size: ${item.size || 'N/A'}, Color: ${item.color || 'N/A'}`
+                })),
+                delivery_address: {
+                    full_name: checkoutData.fullName,
+                    phone: checkoutData.phone,
+                    address: checkoutData.address,
+                    city: checkoutData.city,
+                    state: checkoutData.state,
+                    zip: checkoutData.zip
+                },
+                delivery_notes: 'Please deliver as soon as possible',
+                payment_method: checkoutData.paymentMethod,
+                total_amount: cartTotal
+            };
+            
+            // Place order via API
+            const response = await apiService.orders.createOrder(orderData);
+            
+            if (response && response.data) {
+                // Clear the cart after successful order placement
+                clearCart();
+                
+                Alert.alert(
+                    'Order Placed Successfully!',
+                    `Thank you for your order. Your order ID is #${response.data.id}. You will receive a confirmation email shortly.`,
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => {
+                                // Reset form and navigate to home
+                                setCheckoutData({
+                                    fullName: '',
+                                    phone: '',
+                                    address: '',
+                                    city: '',
+                                    state: '',
+                                    zip: '',
+                                    saveAddress: false,
+                                    paymentMethod: 'card',
+                                    cardholderName: '',
+                                    cardNumber: '',
+                                    expiry: '',
+                                    cvv: '',
+                                    saveCard: false,
+                                });
+                                setCurrentStep(1);
+                                // Navigate to home screen after successful order
+                                navigation.navigate('CustomerTabs', { screen: 'Home' });
+                            }
+                        }
+                    ]
+                );
+            } else {
+                throw new Error('Invalid response from server');
+            }
+        } catch (error) {
+            console.error('Error placing order:', error);
+            Alert.alert(
+                'Order Failed',
+                `Failed to place order: ${error.message || 'Unknown error occurred'}`
+            );
+        }
     };
 
     const renderCurrentStep = () => {
@@ -117,6 +173,8 @@ const CheckoutScreen = ({ navigation }) => {
                         formData={checkoutData}
                         onBack={handleBack}
                         onPlaceOrder={handlePlaceOrder}
+                        cartItems={cartItems}
+                        cartTotal={cartTotal}
                     />
                 );
             default:

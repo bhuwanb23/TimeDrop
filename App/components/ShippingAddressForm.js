@@ -1,40 +1,44 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { useCart } from '../context/CartContext';
 
 const ShippingAddressForm = ({ formData, onFormDataChange, onNext }) => {
     const [errors, setErrors] = useState({});
 
+    // Cart context
+    const { items: cartItems, totalAmount: cartTotal, totalItems: cartItemCount } = useCart();
+
     const validateForm = () => {
         const newErrors = {};
-        
+
         if (!formData.fullName?.trim()) {
             newErrors.fullName = 'Full name is required';
         }
-        
+
         if (!formData.phone?.trim()) {
             newErrors.phone = 'Phone number is required';
         } else if (!/^\+?[\d\s\-\(\)]+$/.test(formData.phone)) {
             newErrors.phone = 'Please enter a valid phone number';
         }
-        
+
         if (!formData.address?.trim()) {
             newErrors.address = 'Address is required';
         }
-        
+
         if (!formData.city?.trim()) {
             newErrors.city = 'City is required';
         }
-        
+
         if (!formData.state?.trim()) {
             newErrors.state = 'State is required';
         }
-        
+
         if (!formData.zip?.trim()) {
             newErrors.zip = 'ZIP code is required';
         } else if (!/^\d{5}(-\d{4})?$/.test(formData.zip)) {
             newErrors.zip = 'Please enter a valid ZIP code';
         }
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -56,7 +60,7 @@ const ShippingAddressForm = ({ formData, onFormDataChange, onNext }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.sectionTitle}>Shipping Address</Text>
-            
+
             <View style={styles.formContainer}>
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Full Name</Text>
@@ -107,7 +111,7 @@ const ShippingAddressForm = ({ formData, onFormDataChange, onNext }) => {
                         />
                         {errors.city && <Text style={styles.errorText}>{errors.city}</Text>}
                     </View>
-                    
+
                     <View style={[styles.inputGroup, styles.halfWidth]}>
                         <Text style={styles.label}>State</Text>
                         <TextInput
@@ -136,7 +140,7 @@ const ShippingAddressForm = ({ formData, onFormDataChange, onNext }) => {
                 </View>
 
                 <View style={styles.checkboxContainer}>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.checkbox}
                         onPress={() => handleInputChange('saveAddress', !formData.saveAddress)}
                     >
@@ -150,8 +154,8 @@ const ShippingAddressForm = ({ formData, onFormDataChange, onNext }) => {
 
             <View style={styles.orderSummary}>
                 <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Subtotal (3 items)</Text>
-                    <Text style={styles.summaryValue}>$249.00</Text>
+                    <Text style={styles.summaryLabel}>Subtotal ({cartItemCount || 0} items)</Text>
+                    <Text style={styles.summaryValue}>${cartTotal?.toFixed(2) || '0.00'}</Text>
                 </View>
                 <View style={styles.summaryRow}>
                     <Text style={styles.summaryLabel}>Shipping</Text>
@@ -160,12 +164,12 @@ const ShippingAddressForm = ({ formData, onFormDataChange, onNext }) => {
                 <View style={styles.divider} />
                 <View style={styles.summaryRow}>
                     <Text style={styles.summaryTotalLabel}>Total Amount</Text>
-                    <Text style={styles.summaryTotalValue}>$249.00</Text>
+                    <Text style={styles.summaryTotalValue}>${cartTotal?.toFixed(2) || '0.00'}</Text>
                 </View>
             </View>
 
             <View style={styles.buttonContainer}>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.nextButton}
                     onPress={handleNext}
                 >

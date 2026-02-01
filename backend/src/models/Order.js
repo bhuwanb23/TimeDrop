@@ -14,7 +14,7 @@ const Order = sequelize.define('Order', {
   },
   customer_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,  // Changed to allow null for guest orders
     references: {
       model: 'users',
       key: 'id'
