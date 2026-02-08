@@ -1,20 +1,21 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 // Base API configuration
-// For development, use your machine's IP address or 'localhost' depending on your setup
-// For Android emulator, 10.0.2.2 usually refers to host machine's localhost
-// For iOS simulator, localhost typically works
+// For physical device: set EXPO_PUBLIC_API_URL (e.g. http://192.168.1.x:3000/api) in .env or app config
 const getBaseUrl = () => {
-  // For Android emulator, use 10.0.2.2 to reach host machine's localhost
-  // For iOS simulator, use localhost
-  // This assumes you're using Expo DevTools which sets Platform.OS
-  const platform = typeof navigator !== 'undefined' ? 'web' : 'native';
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
   if (__DEV__) {
-    // In development, you may need to change this depending on your target device
-    // Use 'http://10.0.2.2:3000/api' for Android emulator
-    // Use 'http://localhost:3000/api' for iOS simulator
-    return 'http://localhost:3000/api'; // Change this as needed for your environment
+    // Android emulator: 10.0.2.2 is the host machine's localhost
+    // Physical Android/iOS device: use your machine's LAN IP (e.g. http://192.168.1.x:3000/api)
+    if (typeof navigator === 'undefined' && Platform.OS === 'android') {
+      return 'http://10.0.2.2:3000/api';
+    }
+    // Web or iOS simulator
+    return 'http://localhost:3000/api';
   }
   return 'https://your-production-api.com/api';
 };

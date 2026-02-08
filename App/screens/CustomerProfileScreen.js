@@ -86,7 +86,9 @@ const CustomerProfileScreen = ({ navigation }) => {
                             try {
                                 await apiService.auth.logout();
                             } catch (apiError) {
-                                console.error('Backend logout failed:', apiError);
+                                if (apiError.code !== 'ERR_NETWORK') {
+                                    console.error('Backend logout failed:', apiError);
+                                }
                                 // Continue with local cleanup even if backend call fails
                             }
                             

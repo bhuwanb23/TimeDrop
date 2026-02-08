@@ -23,11 +23,13 @@ const LogoutButton = () => {
                         try {
                             console.log('Driver logout pressed - clearing auth and navigating to Login');
                             
-                            // Call backend logout endpoint
+                            // Call backend logout endpoint (optional; local cleanup continues if unreachable)
                             try {
                                 await apiService.auth.logout();
                             } catch (apiError) {
-                                console.error('Backend logout failed:', apiError);
+                                if (apiError.code !== 'ERR_NETWORK') {
+                                    console.error('Backend logout failed:', apiError);
+                                }
                                 // Continue with local cleanup even if backend call fails
                             }
                             
