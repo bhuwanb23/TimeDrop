@@ -88,21 +88,18 @@ const DeliveryScreen = ({ navigation }) => {
                     <>
                         <RouteCard navigation={navigation} />
                         
-                        {/* Today's Queue Header */}
+                        {/* Compact Queue Header */}
                         <View style={styles.queueHeader}>
                             <Text style={styles.queueTitle}>Today's Queue</Text>
-                            <Text style={styles.queueCount}>4 Deliveries Total</Text>
+                            <Text style={styles.queueCount}>4 Deliveries</Text>
                         </View>
 
-                        {/* Delivery Cards */}
+                        {/* Compact Delivery Cards */}
                         <View style={styles.deliveryList}>
                             {activeDeliveries.map((delivery, index) => (
                                 <Animated.View
                                     key={delivery.id}
-                                    style={{
-                                        transform: [{ translateY: 0 }],
-                                        opacity: 1,
-                                    }}
+                                    style={styles.deliveryItem}
                                 >
                                     <DeliveryCard
                                         orderNumber={delivery.orderNumber}
@@ -120,23 +117,24 @@ const DeliveryScreen = ({ navigation }) => {
                     <>
                         <EarningsCard earnings="$142.50" percentage="+12%" />
                         
-                        {/* Recent Deliveries Header */}
+                        {/* Compact Recent Deliveries Header */}
                         <View style={styles.queueHeader}>
                             <Text style={styles.queueTitle}>Recent Deliveries</Text>
                             <Text style={styles.queueCount}>8 Completed</Text>
                         </View>
 
-                        {/* Delivered Cards */}
+                        {/* Compact Delivered Cards */}
                         <View style={styles.deliveryList}>
                             {deliveredOrders.map((delivery, index) => (
-                                <DeliveredCard
-                                    key={delivery.id}
-                                    orderNumber={delivery.orderNumber}
-                                    customerName={delivery.customerName}
-                                    address={delivery.address}
-                                    earnings={delivery.earnings}
-                                    deliveryTime={delivery.deliveryTime}
-                                />
+                                <View key={delivery.id} style={styles.deliveredItem}>
+                                    <DeliveredCard
+                                        orderNumber={delivery.orderNumber}
+                                        customerName={delivery.customerName}
+                                        address={delivery.address}
+                                        earnings={delivery.earnings}
+                                        deliveryTime={delivery.deliveryTime}
+                                    />
+                                </View>
                             ))}
                         </View>
                     </>
@@ -169,29 +167,35 @@ const styles = StyleSheet.create({
     queueHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         paddingHorizontal: 16,
-        paddingTop: 28,
+        paddingTop: 20,
         paddingBottom: 12,
     },
     queueTitle: {
-        fontSize: 20,
-        fontWeight: '800',
+        fontSize: 18,
+        fontWeight: '700',
         color: '#000000',
-        letterSpacing: -0.3,
     },
     queueCount: {
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: 13,
+        fontWeight: '500',
         color: '#64748B',
     },
     deliveryList: {
-        paddingHorizontal: 14,
+        paddingHorizontal: 12,
         paddingBottom: 40,
+        gap: 8,
+    },
+    deliveryItem: {
+        marginBottom: 8,
+    },
+    deliveredItem: {
+        marginBottom: 8,
     },
     qrButtonContainer: {
         position: 'absolute',
-        bottom: 100, // Above the tab bar
+        bottom: 100,
         right: 16,
         zIndex: 20,
     },

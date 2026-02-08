@@ -7,14 +7,14 @@ const EarningsCard = ({ earnings = '$142.50', percentage = '+12%' }) => {
         <View style={styles.container}>
             <View style={styles.content}>
                 <View style={styles.textContainer}>
-                    <Text style={styles.label}>Today's Total Earnings</Text>
+                    <Text style={styles.label}>Today's Earnings</Text>
                     <View style={styles.amountContainer}>
                         <Text style={styles.amount}>{earnings}</Text>
-                        <Text style={styles.percentage}>{percentage} from yesterday</Text>
+                        <Text style={styles.percentage}>{percentage}</Text>
                     </View>
                 </View>
                 <View style={styles.iconContainer}>
-                    <MaterialIcons name="payments" size={32} color="#FFFFFF" />
+                    <MaterialIcons name="payments" size={24} color="#FFFFFF" />
                 </View>
             </View>
         </View>
@@ -24,15 +24,10 @@ const EarningsCard = ({ earnings = '$142.50', percentage = '+12%' }) => {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#135bec',
-        borderRadius: 16,
-        padding: 20,
-        marginHorizontal: 16,
-        marginVertical: 16,
-        shadowColor: '#135bec',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 8,
+        borderRadius: 12,
+        padding: 16,
+        marginHorizontal: 12,
+        marginVertical: 12,
     },
     content: {
         flexDirection: 'row',
@@ -43,11 +38,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     label: {
-        fontSize: 12,
-        fontWeight: '800',
-        color: 'rgba(255, 255, 255, 0.7)',
+        fontSize: 11,
+        fontWeight: '700',
+        color: 'rgba(255, 255, 255, 0.8)',
         textTransform: 'uppercase',
-        letterSpacing: 0.5,
+        letterSpacing: 0.3,
         marginBottom: 4,
     },
     amountContainer: {
@@ -56,21 +51,19 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     amount: {
-        fontSize: 32,
-        fontWeight: '800',
+        fontSize: 24,
+        fontWeight: '700',
         color: '#FFFFFF',
-        letterSpacing: -0.5,
     },
     percentage: {
-        fontSize: 12,
-        fontWeight: '600',
+        fontSize: 11,
+        fontWeight: '500',
         color: 'rgba(255, 255, 255, 0.8)',
     },
     iconContainer: {
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        padding: 12,
-        borderRadius: 12,
-        backdropFilter: 'blur(10px)',
+        padding: 10,
+        borderRadius: 10,
     },
 });
 
