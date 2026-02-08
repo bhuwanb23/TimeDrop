@@ -237,13 +237,16 @@ const RouteMap = () => {
                 style={styles.mapContainer}
                 initialRegion={hasLocationPermission ? region : fallbackRegion}
                 region={hasLocationPermission ? region : fallbackRegion}
-                showsUserLocation={hasLocationPermission}
+                showsUserLocation={!!hasLocationPermission}
                 showsMyLocationButton={false}
                 followsUserLocation={false}
                 showsCompass={true}
                 rotateEnabled={true}
                 pitchEnabled={true}
                 toolbarEnabled={true}
+                scrollEnabled={true}
+                zoomEnabled={true}
+                loadingEnabled={false}
             >
                 {/* User's current location marker */}
                 {currentLocation && (

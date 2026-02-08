@@ -13,12 +13,7 @@
       "backgroundColor": "#ffffff"
     },
     "plugins": [
-      [
-        "react-native-maps",
-        {
-          "apiKey": null
-        }
-      ]
+      "expo-maps"
     ],
     "ios": {
       "supportsTablet": true,
