@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import Svg, { Defs, LinearGradient, Stop, Path } from 'react-native-svg';
 
 const DashboardScreen = () => {
     return (
@@ -46,39 +47,80 @@ const DashboardScreen = () => {
 
                 {/* Main Content */}
                 <View style={styles.mainContent}>
-                    {/* Compact Stats Cards */}
-                    <View style={styles.statsContainer}>
-                        <View style={styles.statCard}>
-                            <Text style={styles.statValue}>$184.50</Text>
-                            <Text style={styles.statLabel}>Today's Earnings</Text>
+                    {/* Beautiful Income Chart Card */}
+                    <View style={styles.incomeCard}>
+                        <View style={styles.cardHeader}>
+                            <Text style={styles.incomeLabel}>Today's Earnings</Text>
+                            <MaterialIcons name="trending-up" size={18} color="#10B981" />
                         </View>
-                        <View style={styles.statCard}>
-                            <Text style={styles.statValue}>14</Text>
-                            <Text style={styles.statLabel}>Completed Trips</Text>
+                        <View style={styles.incomeAmountContainer}>
+                            <Text style={styles.incomeAmount}>$184.50</Text>
+                            <Text style={styles.incomeChange}>+12% vs avg</Text>
+                        </View>
+                        <View style={styles.chartContainer}>
+                            <Svg height="50" width="100%" viewBox="0 0 300 40">
+                                <Defs>
+                                    <LinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <Stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3" />
+                                        <Stop offset="100%" stopColor="#3B82F6" stopOpacity="0" />
+                                    </LinearGradient>
+                                </Defs>
+                                <Path
+                                    d="M0,30 C25,25 50,10 75,15 C100,20 125,35 150,30 C175,25 200,5 225,10 C250,15 275,25 300,20"
+                                    fill="none"
+                                    stroke="#3B82F6"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                />
+                                <Path
+                                    d="M0,30 C25,25 50,10 75,15 C100,20 125,35 150,30 C175,25 200,5 225,10 C250,15 275,25 300,20 L300,40 L0,40 Z"
+                                    fill="url(#gradient)"
+                                />
+                            </Svg>
                         </View>
                     </View>
 
-                    {/* Quick Metrics */}
+                    {/* Stats Cards */}
+                    <View style={styles.statsContainer}>
+                        <View style={styles.statCard}>
+                            <MaterialIcons name="check-circle" size={20} color="#10B981" />
+                            <Text style={styles.statValue}>14</Text>
+                            <Text style={styles.statLabel}>Completed Trips</Text>
+                        </View>
+                        <View style={styles.statCard}>
+                            <MaterialIcons name="schedule" size={20} color="#1E3A8A" />
+                            <Text style={styles.statValue}>8h</Text>
+                            <Text style={styles.statLabel}>Online Today</Text>
+                        </View>
+                    </View>
+
+                    {/* Compact Metrics Row */}
                     <View style={styles.metricsRow}>
                         <View style={styles.metricItem}>
-                            <MaterialIcons name="route" size={18} color="#1E3A8A" />
+                            <View style={styles.metricIconContainer}>
+                                <MaterialIcons name="verified-user" size={16} color="#1E3A8A" />
+                            </View>
                             <View style={styles.metricTextContainer}>
-                                <Text style={styles.metricValue}>98%</Text>
-                                <Text style={styles.metricLabel}>Acceptance</Text>
+                                <Text style={styles.metricValue} numberOfLines={1}>98%</Text>
+                                <Text style={styles.metricLabel} numberOfLines={1}>Acceptance</Text>
                             </View>
                         </View>
                         <View style={styles.metricItem}>
-                            <MaterialIcons name="star" size={18} color="#1E3A8A" />
+                            <View style={styles.metricIconContainer}>
+                                <MaterialIcons name="star" size={16} color="#1E3A8A" />
+                            </View>
                             <View style={styles.metricTextContainer}>
-                                <Text style={styles.metricValue}>4.95</Text>
-                                <Text style={styles.metricLabel}>Rating</Text>
+                                <Text style={styles.metricValue} numberOfLines={1}>4.95</Text>
+                                <Text style={styles.metricLabel} numberOfLines={1}>Rating</Text>
                             </View>
                         </View>
                         <View style={styles.metricItem}>
-                            <MaterialIcons name="schedule" size={18} color="#1E3A8A" />
+                            <View style={styles.metricIconContainer}>
+                                <MaterialIcons name="speed" size={16} color="#1E3A8A" />
+                            </View>
                             <View style={styles.metricTextContainer}>
-                                <Text style={styles.metricValue}>8h</Text>
-                                <Text style={styles.metricLabel}>Online Today</Text>
+                                <Text style={styles.metricValue} numberOfLines={1}>2.4x</Text>
+                                <Text style={styles.metricLabel} numberOfLines={1}>Efficiency</Text>
                             </View>
                         </View>
                     </View>
@@ -226,6 +268,50 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingTop: 16,
     },
+    incomeCard: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 3,
+        elevation: 2,
+    },
+    cardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    incomeLabel: {
+        fontSize: 13,
+        color: '#64748B',
+        fontWeight: '600',
+    },
+    incomeAmountContainer: {
+        flexDirection: 'row',
+        alignItems: 'baseline',
+        gap: 8,
+        marginBottom: 12,
+    },
+    incomeAmount: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1E3A8A',
+    },
+    incomeChange: {
+        fontSize: 11,
+        fontWeight: 'bold',
+        color: '#10B981',
+    },
+    chartContainer: {
+        height: 50,
+        width: '100%',
+    },
     statsContainer: {
         flexDirection: 'row',
         gap: 12,
@@ -239,12 +325,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E2E8F0',
         alignItems: 'center',
+        gap: 8,
     },
     statValue: {
         fontSize: 20,
         fontWeight: 'bold',
         color: '#1E3A8A',
-        marginBottom: 4,
     },
     statLabel: {
         fontSize: 11,
@@ -256,29 +342,38 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
-        padding: 12,
+        padding: 16,
         marginBottom: 16,
         borderWidth: 1,
         borderColor: '#E2E8F0',
     },
     metricItem: {
         flex: 1,
-        flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
+    },
+    metricIconContainer: {
+        width: 32,
+        height: 32,
+        backgroundColor: '#DBEAFE',
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 8,
     },
     metricTextContainer: {
-        flex: 1,
+        alignItems: 'center',
     },
     metricValue: {
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: 'bold',
         color: '#000000',
+        marginBottom: 2,
     },
     metricLabel: {
         fontSize: 10,
         color: '#94A3B8',
         fontWeight: '500',
+        textAlign: 'center',
     },
     activitySection: {
         marginBottom: 16,
