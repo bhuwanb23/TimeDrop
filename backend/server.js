@@ -13,6 +13,7 @@ const routeRoutes = require('./src/routes/routes');
 const whatsappRoutes = require('./src/routes/whatsapp');
 
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
 const app = express();
 
 // Middleware
@@ -104,14 +105,18 @@ const startServer = async () => {
     
     console.log('Database synchronized.');
 
-    // Try to listen on PORT; if in use, try next ports up to PORT+10
+    // Try to listen on HOST:PORT; if port in use, try next ports up to PORT+10
     const tryListen = (port) => {
-      const server = app.listen(port, () => {
-        console.log(`TimeDrop server is running on port ${port}`);
-        console.log(`Health check: http://localhost:${port}/health`);
+      const server = app.listen(port, HOST, () => {
+        const url = `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${port}`;
+        console.log(`TimeDrop server is running on ${HOST}:${port}`);
+        console.log(`Health check: ${url}/health`);
+        if (HOST === '0.0.0.0') {
+          console.log('Reachable on this machine at http://localhost:' + port + ' and on your network at http://<YOUR_IP>:' + port);
+        }
         if (port !== PORT) {
           console.log(`(Port ${PORT} was in use; using ${port} instead.)`);
-          console.log(`If using the app, set EXPO_PUBLIC_API_URL=http://localhost:${port}/api or update api.js base URL.`);
+          console.log(`If using the app, set EXPO_PUBLIC_API_URL=http://<YOUR_IP>:${port}/api in App/.env`);
         }
       });
       server.on('error', (err) => {
