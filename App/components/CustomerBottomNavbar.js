@@ -48,7 +48,6 @@ const CustomerBottomNavbar = ({ activeTab = 'Home', onTabPress }) => {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(20px)',
         borderTopWidth: 1,
         borderTopColor: '#e2e8f0',
         paddingBottom: 20, // Safe area inset

@@ -134,7 +134,6 @@ const CustomerMainTabs = () => {
                 tabBarInactiveTintColor: '#94A3B8',
                 tabBarStyle: {
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    backdropFilter: 'blur(20px)',
                     borderTopWidth: 1,
                     borderTopColor: '#E2E8F0',
                     shadowColor: '#000000',
@@ -191,7 +190,7 @@ const CustomerMainTabs = () => {
                 component={CartScreen}
                 options={{
                     tabBarLabel: 'Cart',
-                    tabBarBadge: cartItemCount > 0 ? cartItemCount : undefined,
+                    tabBarBadge: cartItemCount > 0 ? Number(cartItemCount) : undefined,
                 }}
             />
             <Tab.Screen
