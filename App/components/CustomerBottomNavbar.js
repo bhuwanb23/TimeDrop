@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 const CustomerBottomNavbar = ({ activeTab = 'Home', onTabPress }) => {
     const tabs = [
         { id: 'Home', icon: 'home', label: 'Home' },
-        { id: 'Categories', icon: 'grid-view', label: 'Categories' },
+        { id: 'Orders', icon: 'receipt', label: 'My Orders' },
         { id: 'Wishlist', icon: 'favorite', label: 'Wishlist' },
         { id: 'Cart', icon: 'shopping-cart', label: 'Cart', badge: 2 },
         { id: 'Profile', icon: 'person', label: 'Profile' }

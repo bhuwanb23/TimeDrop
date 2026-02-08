@@ -1,4 +1,5 @@
 require('dotenv').config();
+const bcrypt = require('bcryptjs');
 const { sequelize } = require('./src/config/database');
 const User = require('./src/models/User');
 const Product = require('./src/models/Product');
@@ -16,13 +17,16 @@ async function seedDatabase() {
     await sequelize.sync();
     console.log('Tables synchronized.');
     
+    // Hash the password
+    const driverPasswordHash = await bcrypt.hash('password123', 10);
+    
     // Create sample user
     const sampleUser = await User.findOrCreate({
       where: { email: 'driver@example.com' },
       defaults: {
         name: 'John Driver',
         email: 'driver@example.com',
-        password: 'hashed_password_placeholder', // In real app, this would be bcrypt hashed
+        password: driverPasswordHash,
         phone: '+1234567890',
         role: 'driver',
         status: 'active'
@@ -31,13 +35,16 @@ async function seedDatabase() {
     
     console.log('Sample user created:', sampleUser[0].name);
     
+    // Hash the password
+    const customerPasswordHash = await bcrypt.hash('customer123', 10);
+    
     // Create sample customer
     const sampleCustomer = await User.findOrCreate({
       where: { email: 'customer@example.com' },
       defaults: {
         name: 'Jane Customer',
         email: 'customer@example.com',
-        password: 'hashed_password_placeholder', // In real app, this would be bcrypt hashed
+        password: customerPasswordHash,
         phone: '+0987654321',
         role: 'customer',
         status: 'active'
@@ -45,6 +52,36 @@ async function seedDatabase() {
     });
     
     console.log('Sample customer created:', sampleCustomer[0].name);
+    
+    // Create additional sample users
+    const adminPasswordHash = await bcrypt.hash('admin123', 10);
+    const additionalDriverPasswordHash = await bcrypt.hash('driverpass', 10);
+    
+    const adminUser = await User.findOrCreate({
+      where: { email: 'admin@example.com' },
+      defaults: {
+        name: 'Admin User',
+        email: 'admin@example.com',
+        password: adminPasswordHash,
+        phone: '+1111111111',
+        role: 'admin',
+        status: 'active'
+      }
+    });
+    
+    const additionalDriver = await User.findOrCreate({
+      where: { email: 'driver2@example.com' },
+      defaults: {
+        name: 'Jane Driver',
+        email: 'driver2@example.com',
+        password: additionalDriverPasswordHash,
+        phone: '+2222222222',
+        role: 'driver',
+        status: 'active'
+      }
+    });
+    
+    console.log('Additional users created:', adminUser[0].name, 'and', additionalDriver[0].name);
     
     // Create sample products
     const electronicsCategory = await Category.findOrCreate({
@@ -80,7 +117,7 @@ async function seedDatabase() {
         description: 'High-quality wireless headphones with noise cancellation',
         price: 129.00,
         stock_quantity: 50,
-        image_url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAEdclVWy3M8BxMzFeb1J8f-hS8djSpmXa6b9iE8h9X0A8zLlFO0WmE7ZRrSxnR9-_RWY_1PMTL4TOfjJHRSHdDJn1rdYoASaK6VNdURRjwlX8q5eqYehv8VH3a5CRK9MEDCT4APc6sV1p55Dq4Wecd4F8m8ik8Hu6RTrUZx4pr0tY44g57TsGfQx_Ijy9PGKM4Av2BEK-nsWHj2gVGmBRK67hOY1nqg_tSaKzx960_DQQpAn07KDKG5qhO9UfXeV8BVvLayHEnPgE',
+        image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
         category_id: electronicsCategory[0].id,
         status: 'active',
         rating: 4.5
@@ -90,7 +127,7 @@ async function seedDatabase() {
         description: 'Latest smartwatch with health monitoring features',
         price: 199.00,
         stock_quantity: 30,
-        image_url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAQO437bK_hgQmHBH9VoZkMmbRpEslnGjb9OmHyaCKtH6qe6i0p3Z7EXKX5kMG8Zf5ZGHPHcwIhKYl9g7u-uPA1ui4BoLYK5FDtLaRsCy5lQMSJmucwZ2OqlWzrQXGVtGF39nvi_vlfJ-iTvHpL90HXtzK6OBj-l3Fl3GelEeZItTGgwWBCatUx2yRxYaMYBeM533BOKAf4iFRX_uuMj3JbTaea4Vre3rEApKuXSRO1mAMSisEQP15ykRRaE1sUuqEGc_Ysniz_MIg',
+        image_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
         category_id: electronicsCategory[0].id,
         status: 'active',
         rating: 4.7
@@ -100,7 +137,7 @@ async function seedDatabase() {
         description: 'Modern minimalist desk lamp with adjustable brightness',
         price: 45.00,
         stock_quantity: 25,
-        image_url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDKS0Pgzg5smSaKAiicZemb5MlJn114352m03oR2dmX9Uaiv7VIrAKughWPR8uz77s0QCTcAdt1GugcbACR2JOXd7GdhFTORwRZkbkLdWDm-ufDhZhkioucO-rlgIu3gGouseZl00OlkGV70_iuxXBwIdQvItQKkpMQmfg_kTmbo3IkO-iOfZ8iqmJjoeD2JSPagh2Jc7ewKn1zZD9hdfDS0-N-xYhtOp--7mh1qlmJKcoo5TNsTg6iG7j-nAGmYE72e6leicMG4AU',
+        image_url: 'https://images.unsplash.com/photo-1588345933685-60647725d5c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
         category_id: homeCategory[0].id,
         status: 'active',
         rating: 4.3
@@ -110,7 +147,7 @@ async function seedDatabase() {
         description: 'Premium genuine leather jacket for men',
         price: 120.00,
         stock_quantity: 15,
-        image_url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBBBqBSbJ6tsg-GPkChiFsBu4qV5kOhQe9zicIg2RFU9sohLTWC0nslkxbLPOJ0vAl3OxrvxkpqEKufQcu14lPsMGU_l0zyFTh50UP0GHRqmxwVcPFEZIM-Cra4uQBML6c6Mbq7RjN2yKW63liuwhZt8FQF6L1RdluIbJTYonkZucdwexp2f6vDNB6L8vcnypK_LKcwnxfaut6uOjeMKL9dr3cikoIDPp7_QbwSemyE6U6tXEC1BI9J1KcKnS0vz6uczJX8V_nbeHY',
+        image_url: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
         category_id: fashionCategory[0].id,
         status: 'active',
         rating: 4.6
@@ -120,7 +157,7 @@ async function seedDatabase() {
         description: 'Portable Bluetooth speaker with excellent sound quality',
         price: 79.99,
         stock_quantity: 40,
-        image_url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAEdclVWy3M8BxMzFeb1J8f-hS8djSpmXa6b9iE8h9X0A8zLlFO0WmE7ZRrSxnR9-_RWY_1PMTL4TOfjJHRSHdDJn1rdYoASaK6VNdURRjwlX8q5eqYehv8VH3a5CRK9MEDCT4APc6sV1p55Dq4Wecd4F8m8ik8Hu6RTrUZx4pr0tY44g57TsGfQx_Ijy9PGKM4Av2BEK-nsWHj2gVGmBRK67hOY1nqg_tSaKzx960_DQQpAn07KDKG5qhO9UfXeV8BVvLayHEnPgE',
+        image_url: 'https://images.unsplash.com/photo-1613047508032-34a0d5935d9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
         category_id: electronicsCategory[0].id,
         status: 'active',
         rating: 4.4
