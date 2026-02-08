@@ -16,7 +16,7 @@ const DeliveryDetail = ({
     deliveryData,
     isDelivered = false
 }) => {
-    const slideAnim = useRef(new Animated.Value(300)).current;
+    const slideAnim = useRef(new Animated.Value(800)).current;
 
     React.useEffect(() => {
         if (visible) {
@@ -27,7 +27,7 @@ const DeliveryDetail = ({
             }).start();
         } else {
             Animated.timing(slideAnim, {
-                toValue: 300,
+                toValue: 800,
                 duration: 200,
                 useNativeDriver: true,
             }).start();
@@ -183,8 +183,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        maxHeight: '80%',
-        minHeight: 300,
+        height: '85%', // Increased to 85% height
+        minHeight: 500, // Increased minimum height to 500px
     },
     header: {
         flexDirection: 'row',
@@ -291,6 +291,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 12,
         marginTop: 20,
+        marginBottom: 30, // Increased bottom margin
     },
     callButton: {
         flex: 1,
