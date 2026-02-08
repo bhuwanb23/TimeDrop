@@ -14,7 +14,8 @@ const DeliveryCard = ({
     address, 
     status, 
     isNext = false,
-    isReady = false 
+    isReady = false,
+    onPressDetails
 }) => {
     const buttonScale = useRef(new Animated.Value(1)).current;
     const cardScale = useRef(new Animated.Value(1)).current;
@@ -44,6 +45,10 @@ const DeliveryCard = ({
                 useNativeDriver: true,
             }),
         ]).start();
+        
+        if (isDetails && onPressDetails) {
+            onPressDetails();
+        }
     };
 
     return (
@@ -62,21 +67,21 @@ const DeliveryCard = ({
                     )}
                     <Text style={styles.orderNumber}>#{orderNumber}</Text>
                     <View style={styles.customerRow}>
-                        <Text style={styles.customerName}>{customerName}</Text>
+                        <Text style={styles.customerName} numberOfLines={1}>{customerName}</Text>
                         <View style={styles.actionButtons}>
                             <TouchableOpacity 
                                 style={styles.actionButton}
                                 onPress={() => handleButtonPress()}
                                 activeOpacity={0.7}
                             >
-                                <MaterialIcons name="call" size={14} color="#135bec" />
+                                <MaterialIcons name="call" size={12} color="#135bec" />
                             </TouchableOpacity>
                             <TouchableOpacity 
                                 style={styles.actionButton}
                                 onPress={() => handleButtonPress()}
                                 activeOpacity={0.7}
                             >
-                                <MaterialIcons name="chat-bubble" size={14} color="#135bec" />
+                                <MaterialIcons name="chat-bubble" size={12} color="#135bec" />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -88,7 +93,7 @@ const DeliveryCard = ({
 
             {/* Address */}
             <View style={styles.addressRow}>
-                <MaterialIcons name="location-on" size={16} color="#94A3B8" />
+                <MaterialIcons name="location-on" size={14} color="#94A3B8" />
                 <Text style={styles.addressText} numberOfLines={1}>{address}</Text>
             </View>
 
@@ -124,11 +129,11 @@ const DeliveryCard = ({
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        padding: 16,
+        borderRadius: 10,
+        padding: 12,
         borderWidth: 1,
         borderColor: '#E2E8F0',
-        marginBottom: 12,
+        marginBottom: 8,
         marginHorizontal: 2,
     },
     nextDeliveryBorder: {
@@ -138,26 +143,26 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: 12,
+        marginBottom: 8,
     },
     headerLeft: {
         flex: 1,
-        gap: 6,
+        gap: 4,
     },
     nextDeliveryTag: {
-        fontSize: 9,
+        fontSize: 8,
         fontWeight: '700',
         color: '#FFFFFF',
         backgroundColor: '#135bec',
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 5,
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
         alignSelf: 'flex-start',
         textTransform: 'uppercase',
-        letterSpacing: 0.5,
+        letterSpacing: 0.3,
     },
     orderNumber: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: '700',
         color: '#000000',
     },
@@ -167,88 +172,88 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
     customerName: {
-        fontSize: 13,
+        fontSize: 12,
         color: '#64748B',
         fontWeight: '500',
         flex: 1,
     },
     actionButtons: {
         flexDirection: 'row',
-        gap: 6,
-        marginLeft: 6,
+        gap: 4,
+        marginLeft: 4,
     },
     actionButton: {
-        width: 28,
-        height: 28,
-        borderRadius: 14,
+        width: 24,
+        height: 24,
+        borderRadius: 12,
         backgroundColor: '#F1F5F9',
         alignItems: 'center',
         justifyContent: 'center',
     },
     inTransitBadge: {
         backgroundColor: '#FEF3C7',
-        paddingHorizontal: 10,
-        paddingVertical: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
         borderRadius: 999,
         borderWidth: 1,
         borderColor: '#FDE68A',
     },
     readyBadge: {
         backgroundColor: '#DBEAFE',
-        paddingHorizontal: 10,
-        paddingVertical: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
         borderRadius: 999,
         borderWidth: 1,
         borderColor: '#BFDBFE',
     },
     defaultBadge: {
         backgroundColor: '#F1F5F9',
-        paddingHorizontal: 10,
-        paddingVertical: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
         borderRadius: 999,
         borderWidth: 1,
         borderColor: '#E2E8F0',
     },
     badgeText: {
-        fontSize: 11,
+        fontSize: 9,
         fontWeight: '700',
         color: '#92400E',
-        letterSpacing: 0.3,
+        letterSpacing: 0.2,
     },
     addressRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10,
-        marginBottom: 16,
+        gap: 8,
+        marginBottom: 12,
     },
     addressText: {
-        fontSize: 14,
+        fontSize: 12,
         color: '#475569',
         fontWeight: '500',
         flex: 1,
     },
     buttonRow: {
         flexDirection: 'row',
-        gap: 10,
+        gap: 8,
     },
     detailsButton: {
         flex: 1,
-        paddingVertical: 10,
-        borderRadius: 10,
+        paddingVertical: 8,
+        borderRadius: 8,
         borderWidth: 2,
         borderColor: '#E2E8F0',
         alignItems: 'center',
         backgroundColor: '#FFFFFF',
     },
     detailsButtonText: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '600',
         color: '#000000',
     },
     updateButton: {
         flex: 1,
-        paddingVertical: 10,
-        borderRadius: 10,
+        paddingVertical: 8,
+        borderRadius: 8,
         backgroundColor: '#F1F5F9',
         alignItems: 'center',
     },
@@ -258,7 +263,7 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(19, 91, 236, 0.6)',
     },
     updateButtonText: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '600',
         color: '#334155',
     },

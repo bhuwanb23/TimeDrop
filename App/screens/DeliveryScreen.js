@@ -14,9 +14,13 @@ import QRScannerButton from '../components/QRScannerButton';
 import EarningsCard from '../components/EarningsCard';
 import DeliveredCard from '../components/DeliveredCard';
 import DownloadButton from '../components/DownloadButton';
+import DeliveryDetail from '../components/DeliveryDetail';
 
 const DeliveryScreen = ({ navigation }) => {
     const [activeTab, setActiveTab] = useState('Active');
+    const [showDetail, setShowDetail] = useState(false);
+    const [selectedDelivery, setSelectedDelivery] = useState(null);
+    const [isDeliveredDetail, setIsDeliveredDetail] = useState(false);
     
     // Sample delivery data for Active tab
     const activeDeliveries = [
@@ -74,6 +78,17 @@ const DeliveryScreen = ({ navigation }) => {
         }
     ];
 
+    const handleShowDetail = (delivery, isDelivered = false) => {
+        setSelectedDelivery(delivery);
+        setIsDeliveredDetail(isDelivered);
+        setShowDetail(true);
+    };
+
+    const handleCloseDetail = () => {
+        setShowDetail(false);
+        setSelectedDelivery(null);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <DeliveryHeader activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -91,7 +106,7 @@ const DeliveryScreen = ({ navigation }) => {
                         {/* Compact Queue Header */}
                         <View style={styles.queueHeader}>
                             <Text style={styles.queueTitle}>Today's Queue</Text>
-                            <Text style={styles.queueCount}>4 Deliveries</Text>
+                            <Text style={styles.queueCount}>4</Text>
                         </View>
 
                         {/* Compact Delivery Cards */}
@@ -108,6 +123,7 @@ const DeliveryScreen = ({ navigation }) => {
                                         status={delivery.status}
                                         isNext={delivery.isNext}
                                         isReady={delivery.isReady}
+                                        onPressDetails={() => handleShowDetail(delivery, false)}
                                     />
                                 </Animated.View>
                             ))}
@@ -120,7 +136,7 @@ const DeliveryScreen = ({ navigation }) => {
                         {/* Compact Recent Deliveries Header */}
                         <View style={styles.queueHeader}>
                             <Text style={styles.queueTitle}>Recent Deliveries</Text>
-                            <Text style={styles.queueCount}>8 Completed</Text>
+                            <Text style={styles.queueCount}>8</Text>
                         </View>
 
                         {/* Compact Delivered Cards */}
@@ -133,6 +149,7 @@ const DeliveryScreen = ({ navigation }) => {
                                         address={delivery.address}
                                         earnings={delivery.earnings}
                                         deliveryTime={delivery.deliveryTime}
+                                        onPressDetails={() => handleShowDetail(delivery, true)}
                                     />
                                 </View>
                             ))}
@@ -149,6 +166,14 @@ const DeliveryScreen = ({ navigation }) => {
                     <DownloadButton onPress={() => console.log('Download pressed')} />
                 )}
             </View>
+
+            {/* Delivery Detail Modal */}
+            <DeliveryDetail
+                visible={showDetail}
+                onClose={handleCloseDetail}
+                deliveryData={selectedDelivery}
+                isDelivered={isDeliveredDetail}
+            />
         </SafeAreaView>
     );
 };
@@ -168,30 +193,30 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingTop: 20,
-        paddingBottom: 12,
+        paddingHorizontal: 12,
+        paddingTop: 16,
+        paddingBottom: 8,
     },
     queueTitle: {
-        fontSize: 18,
-        fontWeight: '700',
+        fontSize: 16,
+        fontWeight: '600',
         color: '#000000',
     },
     queueCount: {
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: '500',
         color: '#64748B',
     },
     deliveryList: {
         paddingHorizontal: 12,
         paddingBottom: 40,
-        gap: 8,
+        gap: 6,
     },
     deliveryItem: {
-        marginBottom: 8,
+        marginBottom: 6,
     },
     deliveredItem: {
-        marginBottom: 8,
+        marginBottom: 6,
     },
     qrButtonContainer: {
         position: 'absolute',
