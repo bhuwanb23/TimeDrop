@@ -103,11 +103,28 @@ const startServer = async () => {
     }
     
     console.log('Database synchronized.');
-    
-    app.listen(PORT, () => {
-      console.log(`TimeDrop server is running on port ${PORT}`);
-      console.log(`Health check: http://localhost:${PORT}/health`);
-    });
+
+    // Try to listen on PORT; if in use, try next ports up to PORT+10
+    const tryListen = (port) => {
+      const server = app.listen(port, () => {
+        console.log(`TimeDrop server is running on port ${port}`);
+        console.log(`Health check: http://localhost:${port}/health`);
+        if (port !== PORT) {
+          console.log(`(Port ${PORT} was in use; using ${port} instead.)`);
+          console.log(`If using the app, set EXPO_PUBLIC_API_URL=http://localhost:${port}/api or update api.js base URL.`);
+        }
+      });
+      server.on('error', (err) => {
+        if (err.code === 'EADDRINUSE' && port < PORT + 10) {
+          console.log(`Port ${port} in use, trying ${port + 1}...`);
+          tryListen(port + 1);
+        } else {
+          console.error(`Cannot bind to port ${port}. Stop the process using it (e.g. taskkill /PID <pid> /F) or set PORT in .env.`);
+          process.exit(1);
+        }
+      });
+    };
+    tryListen(PORT);
   } catch (error) {
     console.error('Unable to connect to database:', error);
     console.error('Error details:', error.message);

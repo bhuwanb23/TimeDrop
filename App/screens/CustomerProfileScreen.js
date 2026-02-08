@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navigationRef } from '../utils/RootNavigation';
+import apiService from '../services/api';
 
 const CustomerProfileScreen = ({ navigation }) => {
     const nav = useNavigation();

@@ -3,18 +3,37 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 // Base API configuration
-// For physical device: set EXPO_PUBLIC_API_URL (e.g. http://192.168.1.x:3000/api) in .env or app config
+// For physical device: set EXPO_PUBLIC_API_URL in .env, or we use the same host as the Expo dev server
 const getBaseUrl = () => {
   if (process.env.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL;
   }
   if (__DEV__) {
-    // Android emulator: 10.0.2.2 is the host machine's localhost
-    // Physical Android/iOS device: use your machine's LAN IP (e.g. http://192.168.1.x:3000/api)
-    if (typeof navigator === 'undefined' && Platform.OS === 'android') {
-      return 'http://10.0.2.2:3000/api';
+    // On native (Expo Go / device): use same host as Metro bundler so backend is reachable
+    if (typeof navigator === 'undefined') {
+      try {
+        const Constants = require('expo-constants').default;
+        const raw = Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
+        let host = null;
+        if (raw) {
+          if (raw.startsWith('http') || raw.startsWith('exp')) {
+            host = new URL(raw).hostname;
+          } else {
+            host = raw.split(':')[0];
+          }
+        }
+        if (host) {
+          return `http://${host}:3000/api`;
+        }
+      } catch (_) {}
+      // Android emulator: 10.0.2.2 is the host machine's localhost
+      if (Platform.OS === 'android') {
+        return 'http://10.0.2.2:3000/api';
+      }
+      // iOS simulator or fallback
+      return 'http://localhost:3000/api';
     }
-    // Web or iOS simulator
+    // Web
     return 'http://localhost:3000/api';
   }
   return 'https://your-production-api.com/api';
