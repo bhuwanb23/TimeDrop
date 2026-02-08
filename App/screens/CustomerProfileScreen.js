@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { navigationRef } from '../utils/RootNavigation';
 
 const CustomerProfileScreen = ({ navigation }) => {
+    const nav = useNavigation();
     // Sample user data
     const [userData] = useState({
         name: 'Alexandra Simmons',
@@ -64,13 +69,56 @@ const CustomerProfileScreen = ({ navigation }) => {
         Alert.alert('Feature Coming Soon', `${setting.title} feature will be available in the next update.`);
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         Alert.alert(
             'Log Out',
             'Are you sure you want to log out?',
             [
                 { text: 'Cancel', style: 'cancel' },
-                { text: 'Log Out', style: 'destructive', onPress: () => navigation.navigate('Login') }
+                { 
+                    text: 'Log Out', 
+                    style: 'destructive', 
+                    onPress: async () => {
+                        try {
+                            console.log('Customer logout pressed - clearing auth and navigating to Login');
+                            
+                            // Call backend logout endpoint
+                            try {
+                                await apiService.auth.logout();
+                            } catch (apiError) {
+                                console.error('Backend logout failed:', apiError);
+                                // Continue with local cleanup even if backend call fails
+                            }
+                            
+                            // Clear any stored authentication tokens
+                            await AsyncStorage.removeItem('token');
+                            
+                            // Reset navigation stack to Login screen
+                            if (navigationRef && navigationRef.current) {
+                                navigationRef.current.dispatch(
+                                    CommonActions.reset({
+                                        index: 0,
+                                        routes: [{ name: 'Login' }],
+                                    })
+                                );
+                            } else {
+                                // Fallback navigation
+                                navigation.navigate('Login');
+                            }
+                            
+                            console.log('Customer navigation to Login successful');
+                        } catch (error) {
+                            console.error('Customer logout failed:', error);
+                            
+                            // Final fallback: try direct navigation
+                            try {
+                                navigation.navigate('Login');
+                            } catch (navError) {
+                                console.error('Final navigation attempt failed:', navError);
+                            }
+                        }
+                    }
+                }
             ]
         );
     };
