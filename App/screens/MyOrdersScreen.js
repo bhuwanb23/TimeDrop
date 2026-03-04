@@ -139,7 +139,7 @@ const MyOrdersScreen = () => {
                     <View style={styles.deliveryInfo}>
                         <MaterialIcons name="location-on" size={16} color="#64748B" />
                         <Text style={styles.deliveryAddress} numberOfLines={1}>
-                            {order.delivery_address.full_name}, {order.delivery_address.city}
+                            {order.delivery_address?.street}, {order.delivery_address?.city}
                         </Text>
                     </View>
                 )}

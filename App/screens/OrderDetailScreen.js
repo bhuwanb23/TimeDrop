@@ -273,13 +273,13 @@ const OrderDetailScreen = () => {
                         <View style={styles.infoDetails}>
                             <Text style={styles.infoLabel}>Delivery Address</Text>
                             <Text style={styles.infoValue}>
-                                {order.delivery_address?.full_name}
+                                {order.delivery_address?.street}
                             </Text>
                             <Text style={styles.infoValue}>
-                                {order.delivery_address?.address}, {order.delivery_address?.city}
+                                {order.delivery_address?.city}, {order.delivery_address?.state} {order.delivery_address?.zip}
                             </Text>
                             <Text style={styles.infoValue}>
-                                {order.delivery_address?.state} {order.delivery_address?.zip}
+                                {order.delivery_address?.country}
                             </Text>
                         </View>
                     </View>
@@ -289,7 +289,7 @@ const OrderDetailScreen = () => {
                         <View style={styles.infoDetails}>
                             <Text style={styles.infoLabel}>Phone</Text>
                             <Text style={styles.infoValue}>
-                                {order.delivery_address?.phone}
+                                {order.delivery_address?.phone || 'Not provided'}
                             </Text>
                         </View>
                     </View>

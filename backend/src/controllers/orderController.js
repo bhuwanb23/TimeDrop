@@ -110,7 +110,7 @@ const createOrder = async (req, res) => {
     
     // For local project without authentication, use a default customer ID
     // In a real implementation, you would have proper user authentication
-    const DEFAULT_CUSTOMER_ID = 4; // Using the guest customer we created
+    const DEFAULT_CUSTOMER_ID = 2; // Using the customer user created in seed
     
     // For the local project, we'll use the default customer ID for all orders
     

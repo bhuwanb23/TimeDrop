@@ -14,7 +14,7 @@ const getAllProducts = async (req, res) => {
     }
     
     if (search) {
-      whereClause.name = { [Op.iLike]: `%${search}%` }; // Using iLike for case-insensitive search
+      whereClause.name = { [Op.like]: `%${search}%` }; // SQLite uses LIKE (case-insensitive by default)
     }
     
     // Define sort order
