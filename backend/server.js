@@ -11,6 +11,8 @@ const orderRoutes = require('./src/routes/orders');
 const deliveryRoutes = require('./src/routes/deliveries');
 const routeRoutes = require('./src/routes/routes');
 const whatsappRoutes = require('./src/routes/whatsapp');
+const categoryRoutes = require('./src/routes/categories');
+const wishlistRoutes = require('./src/routes/wishlist');
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -36,6 +38,8 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/deliveries', deliveryRoutes);
 app.use('/api/routes', routeRoutes);
 app.use('/api/webhooks', whatsappRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -54,6 +58,7 @@ app.get('/', (req, res) => {
       orders: '/api/orders',
       deliveries: '/api/deliveries',
       routes: '/api/routes',
+      categories: '/api/categories',
       whatsapp: '/api/webhooks'
     }
   });

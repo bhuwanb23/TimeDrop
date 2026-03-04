@@ -83,33 +83,55 @@ async function seedDatabase() {
     
     console.log('Additional users created:', adminUser[0].name, 'and', additionalDriver[0].name);
     
-    // Create sample products
-    const electronicsCategory = await Category.findOrCreate({
-      where: { name: 'Electronics' },
-      defaults: {
+    // Create sample categories with better images
+    const categoriesData = [
+      {
         name: 'Electronics',
-        description: 'Electronic devices and accessories',
+        description: 'Electronic devices, gadgets, and accessories',
+        image_url: 'https://images.unsplash.com/photo-1468495244123-6c6ef332ad7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
         status: 'active'
-      }
-    });
-    
-    const homeCategory = await Category.findOrCreate({
-      where: { name: 'Home' },
-      defaults: {
-        name: 'Home',
-        description: 'Home and kitchen items',
+      },
+      {
+        name: 'Home & Living',
+        description: 'Home decor, furniture, and kitchen items',
+        image_url: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
         status: 'active'
-      }
-    });
-    
-    const fashionCategory = await Category.findOrCreate({
-      where: { name: 'Fashion' },
-      defaults: {
+      },
+      {
         name: 'Fashion',
-        description: 'Clothing and accessories',
+        description: 'Clothing, shoes, and accessories',
+        image_url: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        status: 'active'
+      },
+      {
+        name: 'Beauty & Health',
+        description: 'Cosmetics, skincare, and wellness products',
+        image_url: 'https://images.unsplash.com/photo-1596462502278-27bfdd403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        status: 'active'
+      },
+      {
+        name: 'Sports & Outdoors',
+        description: 'Sports equipment, outdoor gear, and fitness products',
+        image_url: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
         status: 'active'
       }
-    });
+    ];
+    
+    for (const categoryData of categoriesData) {
+      const [category, created] = await Category.findOrCreate({
+        where: { name: categoryData.name },
+        defaults: categoryData
+      });
+      
+      if (created) {
+        console.log(`Created category: ${category.name}`);
+      } else {
+        console.log(`Category already exists: ${category.name}`);
+      }
+    }
+    
+    // Fetch all categories to use for product assignment
+    const categories = await Category.findAll();
     
     const sampleProducts = [
       {
@@ -118,7 +140,7 @@ async function seedDatabase() {
         price: 129.00,
         stock_quantity: 50,
         image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-        category_id: electronicsCategory[0].id,
+        category_id: categories.find(c => c.name === 'Electronics').id,
         status: 'active',
         rating: 4.5
       },
@@ -128,7 +150,7 @@ async function seedDatabase() {
         price: 199.00,
         stock_quantity: 30,
         image_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-        category_id: electronicsCategory[0].id,
+        category_id: categories.find(c => c.name === 'Electronics').id,
         status: 'active',
         rating: 4.7
       },
@@ -138,7 +160,7 @@ async function seedDatabase() {
         price: 45.00,
         stock_quantity: 25,
         image_url: 'https://images.unsplash.com/photo-1588345933685-60647725d5c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-        category_id: homeCategory[0].id,
+        category_id: categories.find(c => c.name === 'Home & Living').id,
         status: 'active',
         rating: 4.3
       },
@@ -148,7 +170,7 @@ async function seedDatabase() {
         price: 120.00,
         stock_quantity: 15,
         image_url: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-        category_id: fashionCategory[0].id,
+        category_id: categories.find(c => c.name === 'Fashion').id,
         status: 'active',
         rating: 4.6
       },
@@ -158,7 +180,7 @@ async function seedDatabase() {
         price: 79.99,
         stock_quantity: 40,
         image_url: 'https://images.unsplash.com/photo-1613047508032-34a0d5935d9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-        category_id: electronicsCategory[0].id,
+        category_id: categories.find(c => c.name === 'Electronics').id,
         status: 'active',
         rating: 4.4
       }

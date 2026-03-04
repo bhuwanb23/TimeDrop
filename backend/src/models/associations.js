@@ -5,11 +5,13 @@ const OrderItem = require('./OrderItem');
 const Delivery = require('./Delivery');
 const Category = require('./Category');
 const Address = require('./Address');
+const Wishlist = require('./Wishlist');
 
 // User associations
 User.hasMany(Order, { foreignKey: 'customer_id', as: 'orders' });
 User.hasMany(Delivery, { foreignKey: 'driver_id', as: 'deliveries' });
 User.hasMany(Address, { foreignKey: 'user_id', as: 'addresses' });
+User.hasMany(Wishlist, { foreignKey: 'user_id', as: 'wishlist' });
 
 // Category associations
 Category.hasMany(Product, { foreignKey: 'category_id', as: 'products' });
@@ -18,6 +20,7 @@ Category.belongsTo(Category, { as: 'parent', foreignKey: 'parent_category_id' })
 // Product associations
 Product.belongsTo(Category, { foreignKey: 'category_id', as: 'category' });
 Product.hasMany(OrderItem, { foreignKey: 'product_id', as: 'order_items' });
+Product.hasMany(Wishlist, { foreignKey: 'product_id', as: 'wishlist_items' });
 
 // Order associations
 Order.belongsTo(User, { foreignKey: 'customer_id', as: 'customer' });
@@ -36,6 +39,10 @@ Delivery.belongsTo(User, { foreignKey: 'driver_id', as: 'driver' });
 Address.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 Address.hasMany(Order, { foreignKey: 'delivery_address_id', as: 'orders' });
 
+// Wishlist associations
+Wishlist.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+Wishlist.belongsTo(Product, { foreignKey: 'product_id', as: 'product' });
+
 module.exports = {
   User,
   Product,
@@ -43,5 +50,6 @@ module.exports = {
   OrderItem,
   Delivery,
   Category,
-  Address
+  Address,
+  Wishlist
 };

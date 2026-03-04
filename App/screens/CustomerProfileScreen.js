@@ -9,38 +9,9 @@ import apiService from '../services/api';
 
 const CustomerProfileScreen = ({ navigation }) => {
     const nav = useNavigation();
-    // Sample user data
-    const [userData] = useState({
-        name: 'Alexandra Simmons',
-        email: 'alexandra.s@email.com',
-        avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBrksukvMVYO5Q6a9zTk1EntLphWzglV8iXR22uEsH1E93hcgkePQKs2z_vcSlY_NX_LGw5DHt2F9LDXesxA6QDJfrTNpr427WlycSN_lFPS5oT8v1V4pEVdNl_ffNbgegz7CipSTzevitU5IqK5u6wOOlrhwZt5eeC3hNonmG6v3qVV7lckG4yE2W6USiLGt3tJ6f6MaWCO6GtdXLQ5p9O9id3FxJ9Jo5dB73CPWDlhCuvhRCuzd7smGNwX03DMdsNN0IpRuVjJA4',
-        isVerified: true,
-        memberSince: 'Jan 2023'
-    });
-
-    // Sample recent orders
-    const [recentOrders] = useState([
-        {
-            id: 'ORD-9921',
-            date: 'Oct 24, 2023',
-            amount: 129.00,
-            status: 'delivered',
-            statusText: 'Delivered',
-            statusColor: '#16a34a',
-            statusBg: '#dcfce7',
-            productImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDoe8o8ZMTNCUvZN8T4eorsLBuHFYplPICjBmK4BfMtveiQ3je3i4aCLoYsn6QErP7kwtBNIEYYWHQxaBxTEW1Y3-TUeYFf2uBisFDXRGke5dImK9tgwtaHtaVkgq-S5W8_xNM-JgE21yC6j40nSjkiBiJEUDm0MEDHOVhxg9V4ibets5seiiwpaQvOdzp4mzQsBfLl-a0uvNmma5OuDzskZF6feTmYgF0VJ47kpyfZMvkeVLppYfgf7dmOy3UpDxCAnX94lQRJJNc'
-        },
-        {
-            id: 'ORD-8842',
-            date: 'Oct 21, 2023',
-            amount: 45.50,
-            status: 'transit',
-            statusText: 'In Transit',
-            statusColor: '#2563eb',
-            statusBg: '#dbeafe',
-            productImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC8EVn8wt7wHKAAKSMjxwqtqD88jVu6Sdg1bggcsIIp8LeT3QxBl0SOpYbEB2wSPnC_XaFROl_C-4P8vGiqetyrnl33g6ogKVDd74z-H9sG6PtRIpe7t2ML-yvwSpARpD6NYjjLGdJHDiJ_tqM6oihnIYKeObxtgxfafL5w2jBknoTaOMdEq0UpOAUxmAB0qBYCSYxwCPPSywukYH3p_RdbOSt3FNurLTfFHX4fKc6pxlCEMXVsJ6NeT-RZB-bBPrhhBVo1kShlDGU'
-        }
-    ]);
+    const [userData, setUserData] = useState(null);
+    const [recentOrders, setRecentOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     // Quick actions
     const quickActions = [

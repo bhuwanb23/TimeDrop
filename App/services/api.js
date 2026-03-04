@@ -183,6 +183,84 @@ const productAPI = {
   }
 };
 
+// CATEGORY ENDPOINTS
+const categoryAPI = {
+  getCategories: async (params = {}) => {
+    const cacheKey = generateCacheKey('/categories', params);
+    const cachedData = getCachedData(cacheKey);
+    
+    if (cachedData) {
+      return { data: cachedData, fromCache: true };
+    }
+    
+    const response = await api.get('/categories', { params });
+    setCachedData(cacheKey, response.data);
+    return response;
+  },
+  
+  getCategoryById: async (id) => {
+    const cacheKey = generateCacheKey(`/categories/${id}`);
+    const cachedData = getCachedData(cacheKey);
+    
+    if (cachedData) {
+      return { data: cachedData, fromCache: true };
+    }
+    
+    const response = await api.get(`/categories/${id}`);
+    setCachedData(cacheKey, response.data);
+    return response;
+  },
+  
+  getProductsByCategory: async (id, params = {}) => {
+    const response = await api.get(`/categories/${id}/products`, { params });
+    return response;
+  },
+  
+  // Clear category cache when needed
+  clearCategoryCache: () => {
+    for (const key of apiCache.keys()) {
+      if (key.startsWith('/categories')) {
+        apiCache.delete(key);
+      }
+    }
+  }
+};
+
+// WISHLIST ENDPOINTS
+const wishlistAPI = {
+  getWishlist: async (params = {}) => {
+    const response = await api.get('/wishlist', { params });
+    return response;
+  },
+  
+  addToWishlist: async (productId, notes, priority) => {
+    const response = await api.post('/wishlist', {
+      productId,
+      notes,
+      priority
+    });
+    return response;
+  },
+  
+  removeFromWishlist: async (id) => {
+    const response = await api.delete(`/wishlist/${id}`);
+    return response;
+  },
+  
+  updateWishlistItem: async (id, notes, priority) => {
+    const response = await api.put(`/wishlist/${id}`, {
+      notes,
+      priority
+    });
+    return response;
+  },
+  
+  clearWishlist: async () => {
+    const response = await api.delete('/wishlist/clear/all');
+    return response;
+  }
+};
+
 // ORDER ENDPOINTS
 const orderAPI = {
   getOrders: async (params = {}) => {
@@ -207,6 +285,8 @@ const apiService = {
   auth: authAPI,
   products: productAPI,
   orders: orderAPI,
+  categories: categoryAPI,
+  wishlist: wishlistAPI,
   
   // Utility function to set token
   setAuthToken: async (token) => {
