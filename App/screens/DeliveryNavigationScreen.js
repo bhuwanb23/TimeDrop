@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import { MapView, Marker, Polyline } from 'expo-maps';
 import RouteCalculator, { getDistanceText, getDurationText, generateRoutePoints } from '../utils/RouteCalculator';
 import ExternalNavigation from '../utils/ExternalNavigation';
 
@@ -67,8 +67,8 @@ const DeliveryNavigationScreen = () => {
             setRegion({
                 latitude: midLat,
                 longitude: midLng,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.05
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.1
             });
 
             setLoading(false);
@@ -186,7 +186,10 @@ const DeliveryNavigationScreen = () => {
             {/* Map View */}
             <MapView
                 style={styles.map}
-                region={region}
+                cameraPosition={{
+                    center: region,
+                    zoom: 12
+                }}
                 showsUserLocation={true}
                 showsMyLocationButton={true}
                 showsCompass={true}
