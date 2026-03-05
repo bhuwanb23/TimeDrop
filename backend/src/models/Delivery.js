@@ -77,6 +77,11 @@ const Delivery = sequelize.define('Delivery', {
   duration: {
     type: DataTypes.INTEGER, // in minutes
     allowNull: true
+  },
+  earnings: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0.00
   }
 }, {
   tableName: 'deliveries',
