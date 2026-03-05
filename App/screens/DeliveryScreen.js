@@ -18,7 +18,6 @@ import EarningsCard from '../components/EarningsCard';
 import DeliveredCard from '../components/DeliveredCard';
 import DownloadButton from '../components/DownloadButton';
 import DeliveryDetail from '../components/DeliveryDetail';
-import apiService from '../services/api';
 
 const DeliveryScreen = ({ navigation }) => {
     const [activeTab, setActiveTab] = useState('Active');
@@ -27,14 +26,93 @@ const DeliveryScreen = ({ navigation }) => {
     const [isDeliveredDetail, setIsDeliveredDetail] = useState(false);
     
     // Loading and error states
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
     
-    // Delivery data from API
-    const [activeDeliveries, setActiveDeliveries] = useState([]);
-    const [deliveredOrders, setDeliveredOrders] = useState([]);
-    const [totalEarnings, setTotalEarnings] = useState(0);
+    // Mock delivery data - NO BACKEND CONNECTIONS
+    const [activeDeliveries, setActiveDeliveries] = useState([
+        {
+            id: 1,
+            orderNumber: 'ORD-98210',
+            customerName: 'John Doe',
+            address: '123 Main St, San Francisco, CA',
+            status: 'in_transit',
+            isNext: true,
+            isReady: true,
+            _raw: {
+                id: 1,
+                order_number: 'ORD-98210',
+                pickup_location: { address: '456 Warehouse Ave' },
+                dropoff_location: { address: '123 Main St, San Francisco, CA' },
+                status: 'in_transit'
+            }
+        },
+        {
+            id: 2,
+            orderNumber: 'ORD-98215',
+            customerName: 'Jane Smith',
+            address: '789 Oak Rd, San Francisco, CA',
+            status: 'assigned',
+            isNext: false,
+            isReady: true,
+            _raw: {
+                id: 2,
+                order_number: 'ORD-98215',
+                pickup_location: { address: '321 Storage Blvd' },
+                dropoff_location: { address: '789 Oak Rd, San Francisco, CA' },
+                status: 'assigned'
+            }
+        },
+        {
+            id: 3,
+            orderNumber: 'ORD-98220',
+            customerName: 'Bob Wilson',
+            address: '555 Pine St, San Francisco, CA',
+            status: 'pending',
+            isNext: false,
+            isReady: false,
+            _raw: {
+                id: 3,
+                order_number: 'ORD-98220',
+                pickup_location: { address: '888 Depot Ln' },
+                dropoff_location: { address: '555 Pine St, San Francisco, CA' },
+                status: 'pending'
+            }
+        }
+    ]);
+    
+    const [deliveredOrders, setDeliveredOrders] = useState([
+        {
+            id: 10,
+            orderNumber: 'ORD-98201',
+            customerName: 'Alice Brown',
+            address: '222 Elm St, San Francisco, CA',
+            earnings: '$12.40',
+            deliveryTime: '10:30 AM',
+            _raw: { id: 10, order_number: 'ORD-98201', earnings: 12.40 }
+        },
+        {
+            id: 11,
+            orderNumber: 'ORD-98205',
+            customerName: 'Charlie Davis',
+            address: '333 Cedar Ave, San Francisco, CA',
+            earnings: '$18.75',
+            deliveryTime: '11:45 AM',
+            _raw: { id: 11, order_number: 'ORD-98205', earnings: 18.75 }
+        },
+        {
+            id: 12,
+            orderNumber: 'ORD-98208',
+            customerName: 'Eva Martinez',
+            address: '444 Birch Blvd, San Francisco, CA',
+            earnings: '$15.20',
+            deliveryTime: '01:15 PM',
+            _raw: { id: 12, order_number: 'ORD-98208', earnings: 15.20 }
+        }
+    ]);
+    
+    const [totalEarnings, setTotalEarnings] = useState(46.35);
 
     const handleShowDetail = (delivery, isDelivered = false) => {
         // Use raw delivery data if available, otherwise use formatted data
@@ -47,159 +125,6 @@ const DeliveryScreen = ({ navigation }) => {
     const handleCloseDetail = () => {
         setShowDetail(false);
         setSelectedDelivery(null);
-    };
-
-    // Load deliveries from API
-    const loadDeliveries = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            
-            // Fetch active deliveries (driver ID 1 for local dev)
-            const activeResponse = await apiService.deliveries.getDeliveries({
-                driverId: 1,
-                status: 'in_transit'
-            });
-            
-            if (activeResponse.data && activeResponse.data.data) {
-                const formattedActive = activeResponse.data.data.deliveries.map(delivery => ({
-                    id: delivery.id,
-                    orderNumber: delivery.order?.order_number || 'N/A',
-                    customerName: delivery.order?.customer?.name || 'Customer',
-                    address: formatAddress(delivery.dropoff_location),
-                    status: delivery.status,
-                    isNext: false,
-                    isReady: delivery.status === 'assigned',
-                    _raw: delivery // Keep raw data for detail view
-                }));
-                setActiveDeliveries(formattedActive);
-            }
-            
-            // Fetch delivered orders
-            const deliveredResponse = await apiService.deliveries.getDeliveries({
-                driverId: 1,
-                status: 'delivered'
-            });
-            
-            if (deliveredResponse.data && deliveredResponse.data.data) {
-                const formattedDelivered = deliveredResponse.data.data.deliveries.map(delivery => ({
-                    id: delivery.id,
-                    orderNumber: delivery.order?.order_number || 'N/A',
-                    customerName: delivery.order?.customer?.name || 'Customer',
-                    address: formatAddress(delivery.dropoff_location),
-                    earnings: delivery.earnings ? `$${delivery.earnings.toFixed(2)}` : '$0.00',
-                    deliveryTime: new Date(delivery.actual_delivery_time || delivery.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    _raw: delivery // Keep raw data for detail view
-                }));
-                setDeliveredOrders(formattedDelivered);
-                
-                // Calculate total earnings
-                const total = deliveredResponse.data.data.deliveries.reduce((sum, d) => sum + (d.earnings || 0), 0);
-                setTotalEarnings(total);
-            }
-            
-        } catch (err) {
-            console.error('Error loading deliveries:', err);
-            setError(err.message || 'Failed to load deliveries');
-            // Use mock data as fallback
-            setMockData();
-        } finally {
-            setLoading(false);
-            setRefreshing(false);
-        }
-    };
-    
-    // Format address from JSON or string
-    const formatAddress = (address) => {
-        if (!address) return 'Address not available';
-        
-        try {
-            // If it's a JSON string, parse it
-            const addr = typeof address === 'string' ? JSON.parse(address) : address;
-            
-            if (addr.street && addr.city) {
-                return `${addr.street}, ${addr.city}`;
-            } else if (typeof address === 'string') {
-                return address;
-            }
-            return 'Address not available';
-        } catch (e) {
-            return typeof address === 'string' ? address : 'Address not available';
-        }
-    };
-    
-    // Set mock data as fallback
-    const setMockData = () => {
-        setActiveDeliveries([
-            {
-                id: 1,
-                orderNumber: '98210',
-                customerName: 'Sarah Jenkins',
-                address: '452 Oak Avenue, Downtown Core',
-                status: 'in-transit',
-                isNext: true,
-                _raw: {}
-            },
-            {
-                id: 2,
-                orderNumber: '98211',
-                customerName: 'TechHub Office',
-                address: '1200 Innovation Way, Suite 400',
-                status: 'assigned',
-                isReady: true,
-                _raw: {}
-            },
-            {
-                id: 3,
-                orderNumber: '98215',
-                customerName: 'Marco Rossi',
-                address: '89 Sunset Blvd, Apt 4C',
-                status: 'assigned',
-                isReady: true,
-                _raw: {}
-            }
-        ]);
-        
-        setDeliveredOrders([
-            {
-                id: 1,
-                orderNumber: '98205',
-                customerName: 'Michael Chen',
-                address: '722 West End Ave, Apt 12B',
-                earnings: '$18.50',
-                deliveryTime: '11:42 AM',
-                _raw: {}
-            },
-            {
-                id: 2,
-                orderNumber: '98198',
-                customerName: 'Urban Eats Deli',
-                address: '45 Market St, Commercial Entrance',
-                earnings: '$24.00',
-                deliveryTime: '10:15 AM',
-                _raw: {}
-            },
-            {
-                id: 3,
-                orderNumber: '98182',
-                customerName: 'Emily Watson',
-                address: '12 Victoria Rd, Northside',
-                earnings: '$12.75',
-                deliveryTime: '09:30 AM',
-                _raw: {}
-            }
-        ]);
-        
-        setTotalEarnings(55.25);
-    };
-    
-    useEffect(() => {
-        loadDeliveries();
-    }, []);
-
-    const onRefresh = () => {
-        setRefreshing(true);
-        loadDeliveries();
     };
 
     return (

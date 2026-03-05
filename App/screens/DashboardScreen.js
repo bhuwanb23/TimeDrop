@@ -12,46 +12,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import Svg, { Defs, LinearGradient, Stop, Path } from 'react-native-svg';
-import apiService from '../services/api';
 
 const DashboardScreen = () => {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [statistics, setStatistics] = useState(null);
     const [error, setError] = useState(null);
 
-    // Load driver statistics from backend
-    const loadStatistics = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            
-            const response = await apiService.deliveries.getStatistics();
-            
-            if (response.data && response.data.data) {
-                setStatistics(response.data.data);
-            }
-            
-            setError(null);
-        } catch (err) {
-            console.error('Error loading statistics:', err);
-            setError(err.message || 'Failed to load statistics');
-        } finally {
-            setLoading(false);
-            setRefreshing(false);
-        }
-    };
-
-    useEffect(() => {
-        loadStatistics();
-    }, []);
-
-    const onRefresh = () => {
-        setRefreshing(true);
-        loadStatistics();
-    };
-
-    // Mock data for fallback if API doesn't return data
+    // Mock data - NO BACKEND CONNECTIONS
     const mockData = {
         todayEarnings: 184.50,
         completedTrips: 14,
@@ -64,7 +32,16 @@ const DashboardScreen = () => {
         ]
     };
 
-    const stats = statistics || mockData;
+    // Use mock data only
+    const stats = mockData;
+
+    // Simple refresh handler - no API calls
+    const onRefresh = () => {
+        setRefreshing(true);
+        // Just simulate refresh, no actual data loading
+        setTimeout(() => setRefreshing(false), 1000);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             {loading ? (
@@ -76,8 +53,8 @@ const DashboardScreen = () => {
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                     <View style={styles.errorContainer}>
                         <Text style={styles.errorText}>{error}</Text>
-                        <TouchableOpacity style={styles.retryButton} onPress={loadStatistics}>
-                            <Text style={styles.retryButtonText}>Retry</Text>
+                        <TouchableOpacity style={styles.retryButton} onPress={() => setError(null)}>
+                            <Text style={styles.retryButtonText}>Dismiss</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
