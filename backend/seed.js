@@ -379,7 +379,7 @@ async function seedDatabase() {
         customer_id: customerUser.id,
         total_amount: 150.00,
         status: 'delivered',
-        payment_method: 'card',
+        payment_method: 'credit_card',
         payment_status: 'paid',
         delivery_address: JSON.stringify({
           street: '722 West End Ave, Apt 12B',
