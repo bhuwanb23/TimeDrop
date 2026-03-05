@@ -21,6 +21,7 @@ import WishlistScreen from './screens/WishlistScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import MyOrdersScreen from './screens/MyOrdersScreen';
 import OrderDetailScreen from './screens/OrderDetailScreen';
+import DeliveryNavigationScreen from './screens/DeliveryNavigationScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -268,6 +269,13 @@ const RootNavigator = () => {
             <Stack.Screen
                 name="OrderDetail"
                 component={OrderDetailScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen 
+                name="DeliveryNavigation" 
+                component={DeliveryNavigationScreen}
                 options={{
                     headerShown: false,
                 }}

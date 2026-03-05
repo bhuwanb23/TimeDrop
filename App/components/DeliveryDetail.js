@@ -9,6 +9,7 @@ import {
     ScrollView,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const DeliveryDetail = ({ 
     visible, 
@@ -17,6 +18,7 @@ const DeliveryDetail = ({
     isDelivered = false
 }) => {
     const slideAnim = useRef(new Animated.Value(800)).current;
+    const navigation = useNavigation(); // Add navigation hook
 
     React.useEffect(() => {
         if (visible) {
@@ -154,6 +156,20 @@ const DeliveryDetail = ({
 
                         {/* Action Buttons */}
                         <View style={styles.buttonContainer}>
+                            {!isDelivered && (
+                                <TouchableOpacity 
+                                    style={styles.startButton}
+                                    onPress={() => {
+                                        onClose();
+                                        navigation.navigate('DeliveryNavigation', { 
+                                            delivery: deliveryData._raw || deliveryData 
+                                        });
+                                    }}
+                                >
+                                    <MaterialIcons name="directions" size={20} color="#FFFFFF" />
+                                    <Text style={styles.startButtonText}>Start Delivery</Text>
+                                </TouchableOpacity>
+                            )}
                             <TouchableOpacity style={styles.callButton}>
                                 <MaterialIcons name="call" size={20} color="#FFFFFF" />
                                 <Text style={styles.callButtonText}>Call Customer</Text>
@@ -292,6 +308,29 @@ const styles = StyleSheet.create({
         gap: 12,
         marginTop: 20,
         marginBottom: 30, // Increased bottom margin
+        flexWrap: 'wrap', // Allow wrapping for the extra button
+    },
+    startButton: {
+        flex: 1,
+        minWidth: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        backgroundColor: '#10B981',
+        paddingVertical: 16,
+        borderRadius: 12,
+        marginBottom: 12,
+        shadowColor: '#10B981',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+    startButtonText: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#FFFFFF',
     },
     callButton: {
         flex: 1,
