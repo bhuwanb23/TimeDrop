@@ -4,7 +4,6 @@ const Delivery = require('../models/Delivery');
 const Order = require('../models/Order');
 const User = require('../models/User');
 const { getDriverStatistics, getAllDeliveries, getDeliveryById, assignDelivery, updateDeliveryStatus } = require('../controllers/deliveryController');
-const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
 // Helper function to get deliveries by driver
 const getDeliveriesByDriver = async (req, res) => {
@@ -68,14 +67,13 @@ const getDeliveriesByDriver = async (req, res) => {
   }
 };
 
-// Public routes (accessible to authenticated users)
-// For local project without authentication, removing authenticateToken temporarily
+// All routes are public for local development (no authentication)
 router.get('/statistics', getDriverStatistics); // Get driver stats/dashboard data
 router.get('/', getAllDeliveries);
 router.get('/:id', getDeliveryById);
 router.get('/driver/:driverId', getDeliveriesByDriver); // Get deliveries by driver ID
 
-// Protected routes - only for admin and drivers
+// Write operations (also public for local development)
 router.post('/assign', assignDelivery);
 router.put('/:id/status', updateDeliveryStatus);
 
