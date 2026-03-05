@@ -1,0 +1,121 @@
+# ⚡ INSTALLATION COMMAND
+
+## Required Command to Install Dependencies
+
+Run this command in the `App` directory:
+
+```bash
+cd c:\Users\bhuwan.bhawarlal\Desktop\projects\TimeDrop\App
+npm install react-native-maps-directions
+```
+
+---
+
+## Alternative (If npm is not in PATH)
+
+If you get an error that `npm` is not recognized, use the full path:
+
+```bash
+# Find your Node.js installation path, typically:
+"C:\Program Files\nodejs\npm.cmd" install react-native-maps-directions
+```
+
+Or install using PowerShell:
+
+```powershell
+Set-Location c:\Users\bhuwan.bhawarlal\Desktop\projects\TimeDrop\App
+& "C:\Program Files\nodejs\npm.cmd" install react-native-maps-directions
+```
+
+---
+
+## IMPORTANT NOTES
+
+### ⚠️ The feature WORKS WITHOUT installing anything!
+
+The implementation uses built-in `react-native-maps` which is **already installed**. 
+
+The `react-native-maps-directions` package is **OPTIONAL** and only needed if you want enhanced routing features in the future.
+
+### Current Implementation (Works Now):
+- ✅ Straight-line distance calculation
+- ✅ Basic route visualization
+- ✅ External navigation app integration
+- ✅ All features functional
+
+### With Optional Package (Future Enhancement):
+- 🔄 Curved route lines following roads
+- 🔄 More accurate distance calculations
+- 🔄 Better visual appearance
+
+---
+
+## Verification Steps
+
+After installation, verify it works:
+
+1. **Check package.json:**
+   ```bash
+   # Should show react-native-maps-directions in dependencies
+   type package.json
+   ```
+
+2. **Restart Expo:**
+   ```bash
+   npm start
+   # Press 'r' to reload
+   ```
+
+3. **Test the feature:**
+   - Open app
+   - Go to Delivery tab
+   - Tap any delivery
+   - Tap "Start Delivery"
+   - Map should display with route
+
+---
+
+## If Installation Fails
+
+### Error: "npm not recognized"
+**Solution:** Use full path to npm as shown above, or install Node.js from https://nodejs.org/
+
+### Error: "EACCES permission denied"
+**Solution:** Run terminal/command prompt as Administrator
+
+### Error: "Network timeout"
+**Solution:** Check internet connection, try again or use:
+```bash
+npm install react-native-maps-directions --registry=https://registry.npmmirror.com
+```
+
+---
+
+## No Installation Required for Basic Features
+
+**You can test the feature RIGHT NOW without installing anything!**
+
+Just run:
+```bash
+npm start
+```
+
+And navigate to a delivery → Start Delivery → See the map!
+
+The optional package is only for enhanced visuals in future updates.
+
+---
+
+## Next Steps After Installation
+
+1. ✅ Feature is already working
+2. 🔄 (Optional) Install the package for future enhancements
+3. 📝 Test all functionality
+4. 🚀 Deploy to production
+
+---
+
+**Questions? Check these files:**
+- `NAVIGATION_SETUP_GUIDE.md` - Step-by-step guide
+- `IMPLEMENTATION_SUMMARY.md` - Technical details
+- `DELIVERY_NAVIGATION_FEATURE.md` - Complete documentation
