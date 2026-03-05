@@ -1,26 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl, ActivityIndicator, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { navigate } from '../utils/RootNavigation';
-import apiService from '../services/api';
 import { useCart } from '../context/CartContext';
 
-// Debounce utility function
-const debounce = (func, delay) => {
-    let timeoutId;
-    return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => func.apply(null, args), delay);
-    };
-};
-
-
 const ProductCatalogScreen = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [products, setProducts] = useState([
+        { id: 1, name: 'Product 1', price: 29.99, image_url: 'https://via.placeholder.com/300', description: 'Great product' },
+        { id: 2, name: 'Product 2', price: 49.99, image_url: 'https://via.placeholder.com/300', description: 'Amazing product' },
+        { id: 3, name: 'Product 3', price: 19.99, image_url: 'https://via.placeholder.com/300', description: 'Best seller' }
+    ]);
+    const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
@@ -32,75 +25,12 @@ const ProductCatalogScreen = () => {
     const [sortOrder, setSortOrder] = useState('DESC');
     const [favorites, setFavorites] = useState(new Set());
     const navigation = useNavigation();
-
-    // Cart context
     const { addItem, items: cartItems } = useCart();
 
-    useEffect(() => {
-        loadProducts(1, true);
-    }, []);
-
-    const loadProducts = async (pageNum = 1, isInitialLoad = false, reset = false) => {
-        try {
-            if (isInitialLoad) {
-                setLoading(true);
-            } else if (pageNum > 1) {
-                setIsLoadingMore(true);
-            } else if (reset) {
-                setProducts([]);
-            }
-
-            const params = {
-                page: pageNum,
-                limit: 12, // Load 12 products per page
-                search: searchQuery || undefined,
-                category: selectedCategory || undefined,
-                sortBy: sortBy,
-                sortOrder: sortOrder
-            };
-
-            const response = await apiService.products.getProducts(params);
-
-            if (response.data && response.data.data && response.data.data.products) {
-                const newProducts = response.data.data.products;
-
-                if (reset || pageNum === 1) {
-                    setProducts(newProducts);
-                } else {
-                    setProducts(prev => [...prev, ...newProducts]);
-                }
-
-                // Check if there are more products to load
-                const total = response.data.data.total || 0;
-                const currentTotal = pageNum === 1 ? newProducts.length : products.length + newProducts.length;
-                setHasMore(currentTotal < total);
-            } else {
-                // Handle case where response format is different
-                console.warn('Unexpected response format:', response.data);
-                if (reset || pageNum === 1) {
-                    setProducts([]);
-                }
-            }
-
-            setError(null);
-        } catch (err) {
-            console.error('Error loading products:', err);
-            setError(err.message || 'Failed to load products');
-
-            // Provide fallback error message to user
-            if (isInitialLoad) {
-                Alert.alert('Error', 'Could not load products. Please try again later.');
-            }
-        } finally {
-            setLoading(false);
-            setIsLoadingMore(false);
-            setRefreshing(false);
-        }
-    };
-
+    // Simple refresh handler - no API calls
     const onRefresh = () => {
         setRefreshing(true);
-        loadProducts(1, false, true); // Load page 1, not initial load, reset data
+        setTimeout(() => setRefreshing(false), 1000);
     };
 
     const handleAddToCart = async (product) => {
