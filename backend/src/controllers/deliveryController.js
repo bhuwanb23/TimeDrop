@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
 const getDriverStatistics = async (req, res) => {
   try {
     // For local project without authentication, use default driver ID
-    const driverId = req.user ? req.user.id : 1; // Default to first driver user
+    const driverId = 1; // Always use first driver user for local development
     
     // Get today's date range
     const today = new Date();
@@ -112,9 +112,9 @@ const getAllDeliveries = async (req, res) => {
       whereClause.driver_id = driverId;
     }
     
-    // For drivers, only show their own deliveries
-    if (req.user.role === 'driver') {
-      whereClause.driver_id = req.user.id;
+    // For local development, always use driver ID 1 if no driverId specified
+    if (!driverId) {
+      whereClause.driver_id = 1;
     }
     
     // Fetch deliveries with pagination
