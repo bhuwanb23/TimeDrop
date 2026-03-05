@@ -72,6 +72,40 @@ defaults: {
 
 ---
 
+### Issue 3: OrderItem Missing Required Price Fields ❌
+**Error:**
+```
+notNull Violation: OrderItem.unit_price cannot be null
+notNull Violation: OrderItem.total_price cannot be null
+```
+
+**Cause:** The OrderItem model requires `unit_price` and `total_price` fields, but we were using just `price`.
+
+**Solution:** Changed to use correct field names and calculate total:
+
+```javascript
+// Before (BROKEN):
+await OrderItem.create({
+  order_id: order.id,
+  product_id: randomProduct.id,
+  quantity: Math.floor(Math.random() * 2) + 1,
+  price: randomProduct.price  // ❌ Wrong field name
+});
+
+// After (FIXED):
+const quantity = Math.floor(Math.random() * 2) + 1;
+const unitPrice = parseFloat(randomProduct.price);
+await OrderItem.create({
+  order_id: order.id,
+  product_id: randomProduct.id,
+  quantity: quantity,
+  unit_price: unitPrice,                    // ✅ Correct field name
+  total_price: unitPrice * quantity         // ✅ Calculate total
+});
+```
+
+---
+
 ## ✅ Files Modified
 
 **File:** `backend/seed.js`
@@ -83,6 +117,8 @@ defaults: {
 4. ✅ Added `apartment: 'Apt 4B'` to address
 5. ✅ Added `phone: '+0987654321'` to address
 6. ✅ Removed `rating` field from all 5 products
+7. ✅ Fixed OrderItem creation with correct field names (`unit_price`, `total_price`)
+8. ✅ Added calculation for `total_price = unit_price * quantity`
 
 ---
 
