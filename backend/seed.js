@@ -297,11 +297,14 @@ async function seedDatabase() {
           const randomProduct = products[Math.floor(Math.random() * products.length)];
           if (!selectedProducts.includes(randomProduct)) {
             selectedProducts.push(randomProduct);
+            const quantity = Math.floor(Math.random() * 2) + 1;
+            const unitPrice = parseFloat(randomProduct.price);
             await OrderItem.create({
               order_id: order.id,
               product_id: randomProduct.id,
-              quantity: Math.floor(Math.random() * 2) + 1,
-              price: randomProduct.price
+              quantity: quantity,
+              unit_price: unitPrice,
+              total_price: unitPrice * quantity
             });
           }
         }
