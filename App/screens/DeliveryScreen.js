@@ -127,6 +127,12 @@ const DeliveryScreen = ({ navigation }) => {
         setSelectedDelivery(null);
     };
 
+    // Simple refresh handler - no API calls
+    const onRefresh = () => {
+        setRefreshing(true);
+        setTimeout(() => setRefreshing(false), 1000);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <DeliveryHeader activeTab={activeTab} setActiveTab={setActiveTab} />
