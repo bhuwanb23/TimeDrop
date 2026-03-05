@@ -7,10 +7,11 @@ import {
     Alert,
     ActivityIndicator,
     SafeAreaView,
+    Platform,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { MapView, Marker, Polyline } from 'expo-maps';
+import { AppleMaps, GoogleMaps } from 'expo-maps';
 import RouteCalculator, { getDistanceText, getDurationText, generateRoutePoints } from '../utils/RouteCalculator';
 import ExternalNavigation from '../utils/ExternalNavigation';
 
@@ -21,7 +22,8 @@ const DeliveryNavigationScreen = () => {
 
     const [loading, setLoading] = useState(true);
     const [routeData, setRouteData] = useState(null);
-    const [region, setRegion] = useState(null);
+    const [centerLocation, setCenterLocation] = useState({ latitude: 37.7749, longitude: -122.4194 }); // Default SF
+    const [zoom, setZoom] = useState(12);
 
     useEffect(() => {
         if (delivery) {
@@ -60,16 +62,15 @@ const DeliveryNavigationScreen = () => {
                 dropoff: dropoffCoords
             });
 
-            // Set map region to show both points
+            // Set map center to show both points
             const midLat = (pickupCoords.latitude + dropoffCoords.latitude) / 2;
             const midLng = (pickupCoords.longitude + dropoffCoords.longitude) / 2;
             
-            setRegion({
+            setCenterLocation({
                 latitude: midLat,
-                longitude: midLng,
-                latitudeDelta: 0.1,
-                longitudeDelta: 0.1
+                longitude: midLng
             });
+            setZoom(13);
 
             setLoading(false);
         } catch (error) {
@@ -167,9 +168,61 @@ const DeliveryNavigationScreen = () => {
         );
     }
 
-    if (!routeData || !region) {
+    if (!routeData || !centerLocation) {
         return null;
     }
+
+    // Prepare markers based on platform
+    const pickupMarker = {
+        coordinate: routeData.pickup,
+        title: `Pickup - Order #${delivery.orderNumber}`,
+        snippet: routeData.pickup.address || 'Pickup location'
+    };
+
+    const dropoffMarker = {
+        coordinate: routeData.dropoff,
+        title: `Dropoff - Order #${delivery.orderNumber}`,
+        snippet: routeData.dropoff.address || 'Delivery location'
+    };
+
+    // Render map based on platform
+    const renderMap = () => {
+        if (Platform.OS === 'ios') {
+            return (
+                <AppleMaps.View
+                    style={styles.map}
+                    cameraPosition={{
+                        centerCoordinate: [centerLocation.longitude, centerLocation.latitude],
+                        zoomLevel: zoom
+                    }}
+                    showsUserLocation={true}
+                    showsUserTrackingButton={true}
+                    annotations={[pickupMarker, dropoffMarker]}
+                />
+            );
+        } else if (Platform.OS === 'android') {
+            return (
+                <GoogleMaps.View
+                    style={styles.map}
+                    cameraPosition={{
+                        target: [centerLocation.longitude, centerLocation.latitude],
+                        zoom: zoom
+                    }}
+                    showsMyLocationButton={true}
+                    markers={[pickupMarker, dropoffMarker]}
+                />
+            );
+        } else {
+            // Web fallback - show message
+            return (
+                <View style={[styles.map, styles.webFallback]}>
+                    <MaterialIcons name="map" size={64} color="#94A3B8" />
+                    <Text style={styles.webFallbackText}>Map view is available on iOS and Android devices only</Text>
+                    <Text style={styles.webFallbackSubtext}>Use Navigate button to open external maps</Text>
+                </View>
+            );
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -184,60 +237,7 @@ const DeliveryNavigationScreen = () => {
             </View>
 
             {/* Map View */}
-            <MapView
-                style={styles.map}
-                cameraPosition={{
-                    center: region,
-                    zoom: 12
-                }}
-                showsUserLocation={true}
-                showsMyLocationButton={true}
-                showsCompass={true}
-                rotateEnabled={true}
-                pitchEnabled={true}
-            >
-                {/* Pickup Location Marker */}
-                <Marker
-                    coordinate={routeData.pickup}
-                    title={`Pickup - Order #${delivery.orderNumber}`}
-                    description={routeData.pickup.address || 'Pickup location'}
-                    pinColor="#10B981"
-                >
-                    <View style={styles.markerContainer}>
-                        <View style={styles.pickupMarker}>
-                            <MaterialIcons name="store" size={20} color="#FFFFFF" />
-                        </View>
-                        <View style={styles.markerLabel}>
-                            <Text style={styles.markerLabelText}>A</Text>
-                        </View>
-                    </View>
-                </Marker>
-
-                {/* Dropoff Location Marker */}
-                <Marker
-                    coordinate={routeData.dropoff}
-                    title={`Dropoff - Order #${delivery.orderNumber}`}
-                    description={routeData.dropoff.address || 'Delivery location'}
-                    pinColor="#EF4444"
-                >
-                    <View style={styles.markerContainer}>
-                        <View style={styles.dropoffMarker}>
-                            <MaterialIcons name="flag" size={20} color="#FFFFFF" />
-                        </View>
-                        <View style={[styles.markerLabel, styles.dropoffLabel]}>
-                            <Text style={styles.markerLabelText}>B</Text>
-                        </View>
-                    </View>
-                </Marker>
-
-                {/* Route Line */}
-                <Polyline
-                    coordinates={routeData.routePoints}
-                    strokeColor="#1152d4"
-                    strokeWidth={5}
-                    lineDashPattern={[10, 5]}
-                />
-            </MapView>
+            {renderMap()}
 
             {/* Bottom Info Card */}
             <View style={styles.bottomCard}>
@@ -324,6 +324,23 @@ const styles = StyleSheet.create({
     },
     map: {
         flex: 1,
+    },
+    webFallback: {
+        backgroundColor: '#F1F5F9',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 16,
+    },
+    webFallbackText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#64748B',
+        textAlign: 'center',
+    },
+    webFallbackSubtext: {
+        fontSize: 14,
+        color: '#94A3B8',
+        textAlign: 'center',
     },
     markerContainer: {
         flexDirection: 'row',
