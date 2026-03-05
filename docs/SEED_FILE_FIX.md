@@ -142,28 +142,42 @@ await OrderItem.create({
 SequelizeForeignKeyConstraintError: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
 ```
 
-**Cause:** Trying to create deliveries with order_id or driver_id that don't exist in the database yet.
+**Cause:** Trying to create deliveries with order_id or driver_id that don't exist in the database yet. Also occurred when creating completed delivery with non-existent order ID 999.
 
-**Solution:** Ensure orders and users are created BEFORE deliveries, and verify IDs are valid:
+**Solution:** Ensure orders and users are created BEFORE deliveries, and verify IDs are valid. For completed deliveries, create a real order first:
 
 ```javascript
-// Make sure createdOrders array has valid orders
-console.log(`Created ${createdOrders.length} orders`);
-
-// Verify driver user exists
-const driverUser = await User.findOne({ where: { email: 'driver@example.com' } });
-if (!driverUser) {
-  throw new Error('Driver user not found!');
-}
-
-// Then create deliveries with valid references
-const sampleDeliveries = [
-  {
-    order_id: createdOrders[0].id,  // ✅ Valid order ID
-    driver_id: driverUser.id,        // ✅ Valid driver ID
-    status: 'in_transit'
+// Before (BROKEN):
+const completedDelivery = await Delivery.findOrCreate({
+  where: { order_id: 999 }, // ❌ Order 999 doesn't exist
+  defaults: {
+    order_id: 999,
+    status: 'delivered'
   }
-];
+});
+
+// After (FIXED):
+// First create a real order for the completed delivery
+const [completedOrder] = await Order.findOrCreate({
+  where: { order_number: 'ORD-999' },
+  defaults: {
+    order_number: 'ORD-999',
+    customer_id: customerUser.id,
+    total_amount: 150.00,
+    status: 'delivered',
+    delivery_address: JSON.stringify({...})
+  }
+});
+
+// Then create the delivery with valid order reference
+const completedDelivery = await Delivery.findOrCreate({
+  where: { order_id: completedOrder.id }, // ✅ Uses real order ID
+  defaults: {
+    order_id: completedOrder.id,
+    driver_id: driverUser.id,
+    status: 'delivered'
+  }
+});
 ```
 
 ---
