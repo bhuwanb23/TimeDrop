@@ -7,12 +7,21 @@ import {
     Alert,
     ActivityIndicator,
     SafeAreaView,
+    Platform,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
 import RouteCalculator, { getDistanceText, getDurationText, generateRoutePoints } from '../utils/RouteCalculator';
 import ExternalNavigation from '../utils/ExternalNavigation';
+
+// Import react-native-maps only for iOS/Android
+let MapView, Marker, Polyline;
+if (Platform.OS !== 'web') {
+    const RNMaps = require('react-native-maps');
+    MapView = RNMaps.default;
+    Marker = RNMaps.Marker;
+    Polyline = RNMaps.Polyline;
+}
 
 const DeliveryNavigationScreen = () => {
     const navigation = useNavigation();
@@ -176,6 +185,95 @@ const DeliveryNavigationScreen = () => {
         return null;
     }
 
+    // Render map for iOS/Android, fallback for web
+    const renderMap = () => {
+        if (Platform.OS === 'web') {
+            // Web doesn't support react-native-maps, show fallback UI
+            return (
+                <View style={[styles.map, styles.webFallback]}>
+                    <MaterialIcons name="directions-car" size={80} color="#94A3B8" />
+                    <Text style={styles.webFallbackTitle}>Map View</Text>
+                    <Text style={styles.webFallbackText}>
+                        Map visualization is available on mobile devices only.
+                    </Text>
+                    <Text style={styles.webFallbackSubtext}>
+                        Use the Navigate button below to open directions in your browser.
+                    </Text>
+                    
+                    {/* Quick Stats for Web */}
+                    <View style={styles.webStats}>
+                        <View style={styles.webStatItem}>
+                            <MaterialIcons name="route" size={24} color="#1152d4" />
+                            <Text style={styles.webStatLabel}>Distance</Text>
+                            <Text style={styles.webStatValue}>{getDistanceText(routeData.distance)}</Text>
+                        </View>
+                        <View style={styles.webStatDivider} />
+                        <View style={styles.webStatItem}>
+                            <MaterialIcons name="access-time" size={24} color="#1152d4" />
+                            <Text style={styles.webStatLabel}>Duration</Text>
+                            <Text style={styles.webStatValue}>{getDurationText(routeData.duration)}</Text>
+                        </View>
+                    </View>
+                </View>
+            );
+        } else {
+            // iOS/Android - show full map
+            return (
+                <MapView
+                    style={styles.map}
+                    region={region}
+                    showsUserLocation={true}
+                    showsMyLocationButton={true}
+                    showsCompass={true}
+                    rotateEnabled={true}
+                    pitchEnabled={true}
+                >
+                    {/* Pickup Location Marker */}
+                    <Marker
+                        coordinate={routeData.pickup}
+                        title={`Pickup - Order #${delivery.orderNumber}`}
+                        description={routeData.pickup.address || 'Pickup location'}
+                        pinColor="#10B981"
+                    >
+                        <View style={styles.markerContainer}>
+                            <View style={styles.pickupMarker}>
+                                <MaterialIcons name="store" size={20} color="#FFFFFF" />
+                            </View>
+                            <View style={styles.markerLabel}>
+                                <Text style={styles.markerLabelText}>A</Text>
+                            </View>
+                        </View>
+                    </Marker>
+
+                    {/* Dropoff Location Marker */}
+                    <Marker
+                        coordinate={routeData.dropoff}
+                        title={`Dropoff - Order #${delivery.orderNumber}`}
+                        description={routeData.dropoff.address || 'Delivery location'}
+                        pinColor="#EF4444"
+                    >
+                        <View style={styles.markerContainer}>
+                            <View style={styles.dropoffMarker}>
+                                <MaterialIcons name="flag" size={20} color="#FFFFFF" />
+                            </View>
+                            <View style={[styles.markerLabel, styles.dropoffLabel]}>
+                                <Text style={styles.markerLabelText}>B</Text>
+                            </View>
+                        </View>
+                    </Marker>
+
+                    {/* Route Line */}
+                    <Polyline
+                        coordinates={routeData.routePoints}
+                        strokeColor="#1152d4"
+                        strokeWidth={5}
+                        lineDashPattern={[10, 5]}
+                    />
+                </MapView>
+            );
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             {/* Back Button */}
@@ -188,58 +286,8 @@ const DeliveryNavigationScreen = () => {
                 </TouchableOpacity>
             </View>
 
-            {/* Map View */}
-            <MapView
-                style={styles.map}
-                region={region}
-                showsUserLocation={true}
-                showsMyLocationButton={true}
-                showsCompass={true}
-                rotateEnabled={true}
-                pitchEnabled={true}
-            >
-                {/* Pickup Location Marker */}
-                <Marker
-                    coordinate={routeData.pickup}
-                    title={`Pickup - Order #${delivery.orderNumber}`}
-                    description={routeData.pickup.address || 'Pickup location'}
-                    pinColor="#10B981"
-                >
-                    <View style={styles.markerContainer}>
-                        <View style={styles.pickupMarker}>
-                            <MaterialIcons name="store" size={20} color="#FFFFFF" />
-                        </View>
-                        <View style={styles.markerLabel}>
-                            <Text style={styles.markerLabelText}>A</Text>
-                        </View>
-                    </View>
-                </Marker>
-
-                {/* Dropoff Location Marker */}
-                <Marker
-                    coordinate={routeData.dropoff}
-                    title={`Dropoff - Order #${delivery.orderNumber}`}
-                    description={routeData.dropoff.address || 'Delivery location'}
-                    pinColor="#EF4444"
-                >
-                    <View style={styles.markerContainer}>
-                        <View style={styles.dropoffMarker}>
-                            <MaterialIcons name="flag" size={20} color="#FFFFFF" />
-                        </View>
-                        <View style={[styles.markerLabel, styles.dropoffLabel]}>
-                            <Text style={styles.markerLabelText}>B</Text>
-                        </View>
-                    </View>
-                </Marker>
-
-                {/* Route Line */}
-                <Polyline
-                    coordinates={routeData.routePoints}
-                    strokeColor="#1152d4"
-                    strokeWidth={5}
-                    lineDashPattern={[10, 5]}
-                />
-            </MapView>
+            {/* Map View - Platform Specific */}
+            {renderMap()}
 
             {/* Bottom Info Card */}
             <View style={styles.bottomCard}>
@@ -326,6 +374,65 @@ const styles = StyleSheet.create({
     },
     map: {
         flex: 1,
+    },
+    webFallback: {
+        backgroundColor: '#F8FAFC',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 40,
+        gap: 20,
+    },
+    webFallbackTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#0F172A',
+    },
+    webFallbackText: {
+        fontSize: 16,
+        color: '#64748B',
+        textAlign: 'center',
+        lineHeight: 24,
+    },
+    webFallbackSubtext: {
+        fontSize: 14,
+        color: '#94A3B8',
+        textAlign: 'center',
+    },
+    webStats: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 24,
+        marginTop: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+        width: '90%',
+        maxWidth: 400,
+    },
+    webStatItem: {
+        flex: 1,
+        alignItems: 'center',
+        gap: 8,
+    },
+    webStatLabel: {
+        fontSize: 12,
+        color: '#64748B',
+        fontWeight: '500',
+    },
+    webStatValue: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#0F172A',
+    },
+    webStatDivider: {
+        width: 1,
+        height: 40,
+        backgroundColor: '#E2E8F0',
+        marginHorizontal: 20,
     },
     markerContainer: {
         flexDirection: 'row',
