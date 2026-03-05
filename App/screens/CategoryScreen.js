@@ -1,58 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Alert, ActivityIndicator, RefreshControl, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, ScrollView, StyleSheet, ActivityIndicator, RefreshControl, Text } from 'react-native';
 import CategoryHeader from '../components/CategoryHeader';
 import CategoryCard from '../components/CategoryCard';
-import apiService from '../services/api';
 
 const CategoryScreen = ({ navigation }) => {
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [categories, setCategories] = useState([
+        { id: 1, name: 'Electronics', image_url: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400', description: 'Phones, laptops, gadgets' },
+        { id: 2, name: 'Fashion', image_url: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=400', description: 'Clothing, shoes, accessories' },
+        { id: 3, name: 'Home & Garden', image_url: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400', description: 'Furniture, decor, tools' },
+        { id: 4, name: 'Sports', image_url: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400', description: 'Equipment, apparel, gear' },
+        { id: 5, name: 'Books', image_url: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400', description: 'Fiction, non-fiction, textbooks' },
+        { id: 6, name: 'Toys', image_url: 'https://images.unsplash.com/photo-1558877385-83a29c333f52?w=400', description: 'Games, puzzles, educational' }
+    ]);
+    const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
 
-    // Load categories from backend
-    const loadCategories = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            
-            const response = await apiService.categories.getCategories({
-                page: 1,
-                limit: 20,
-                status: 'active'
-            });
-            
-            if (response.data && response.data.data && response.data.data.categories) {
-                setCategories(response.data.data.categories);
-            }
-            
-            setError(null);
-        } catch (err) {
-            console.error('Error loading categories:', err);
-            setError(err.message || 'Failed to load categories');
-            
-            // Show error alert only if not refreshing
-            if (!refreshing) {
-                Alert.alert('Error', 'Could not load categories. Please check your connection.');
-            }
-        } finally {
-            setLoading(false);
-            setRefreshing(false);
-        }
-    };
-
-    useEffect(() => {
-        loadCategories();
-    }, []);
-
+    // Simple refresh handler - no API calls
     const onRefresh = () => {
         setRefreshing(true);
-        loadCategories();
+        setTimeout(() => setRefreshing(false), 1000);
     };
 
     const handleCategoryPress = (category) => {
         console.log('Category pressed:', category.name);
-        // Navigate to products filtered by this category
         navigation.navigate('CustomerMainTabs', { 
             screen: 'Home',
             params: { categoryId: category.id, categoryName: category.name }
