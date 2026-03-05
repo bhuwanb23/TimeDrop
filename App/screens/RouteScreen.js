@@ -55,7 +55,10 @@ const RouteScreen = ({ navigation }) => {
             <RouteBottomSheet 
                 deliveries={deliveries}
                 error={error}
-                onRetry={loadRouteData}
+                onRetry={() => {
+                    // No retry needed with mock data
+                    setError(null);
+                }}
             />
         </SafeAreaView>
     );
