@@ -1,6 +1,101 @@
 const Delivery = require('../models/Delivery');
 const Order = require('../models/Order');
 const User = require('../models/User');
+const { Op } = require('sequelize');
+
+const getDriverStatistics = async (req, res) => {
+  try {
+    // For local project without authentication, use default driver ID
+    const driverId = req.user ? req.user.id : 1; // Default to first driver user
+    
+    // Get today's date range
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // Fetch statistics for today
+    const todayDeliveries = await Delivery.count({
+      where: {
+        driver_id: driverId,
+        createdAt: {
+          [Op.gte]: today,
+          [Op.lt]: tomorrow
+        }
+      }
+    });
+    
+    const todayEarnings = await Delivery.sum('earnings', {
+      where: {
+        driver_id: driverId,
+        status: 'delivered',
+        createdAt: {
+          [Op.gte]: today,
+          [Op.lt]: tomorrow
+        }
+      }
+    });
+    
+    // Calculate completed trips (all time)
+    const completedTrips = await Delivery.count({
+      where: {
+        driver_id: driverId,
+        status: 'delivered'
+      }
+    });
+    
+    // Calculate total earnings (all time)
+    const totalEarnings = await Delivery.sum('earnings', {
+      where: {
+        driver_id: driverId,
+        status: 'delivered'
+      }
+    });
+    
+    // Get active deliveries count
+    const activeDeliveries = await Delivery.count({
+      where: {
+        driver_id: driverId,
+        status: { [Op.in]: ['assigned', 'picked_up', 'in_transit'] }
+      }
+    });
+    
+    // Calculate acceptance rate (mock calculation - in real app would track offered vs accepted)
+    const acceptanceRate = 98;
+    
+    // Calculate rating (mock - in real app would have ratings table)
+    const rating = 4.95;
+    
+    // Get recent activity (last 5 deliveries)
+    const recentActivity = await Delivery.findAll({
+      where: { driver_id: driverId },
+      include: [{
+        model: Order,
+        as: 'order',
+        attributes: ['id', 'order_number', 'total_amount']
+      }],
+      limit: 5,
+      order: [['createdAt', 'DESC']]
+    });
+    
+    res.status(200).json({
+      message: 'Driver statistics retrieved successfully',
+      data: {
+        todayEarnings: todayEarnings || 0,
+        todayDeliveries,
+        completedTrips,
+        totalEarnings: totalEarnings || 0,
+        activeDeliveries,
+        acceptanceRate,
+        rating,
+        recentActivity
+      }
+    });
+  } catch (error) {
+    console.error('Get driver statistics error:', error);
+    res.status(500).json({ error: 'Failed to retrieve driver statistics' });
+  }
+};
 
 const getAllDeliveries = async (req, res) => {
   try {
@@ -243,6 +338,7 @@ const updateDeliveryStatus = async (req, res) => {
 };
 
 module.exports = {
+  getDriverStatistics,
   getAllDeliveries,
   getDeliveryById,
   assignDelivery,

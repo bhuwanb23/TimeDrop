@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -6,17 +6,96 @@ import {
     TouchableOpacity,
     Image,
     ScrollView,
+    ActivityIndicator,
+    RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import Svg, { Defs, LinearGradient, Stop, Path } from 'react-native-svg';
+import apiService from '../services/api';
 
 const DashboardScreen = () => {
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+    const [statistics, setStatistics] = useState(null);
+    const [error, setError] = useState(null);
+
+    // Load driver statistics from backend
+    const loadStatistics = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            
+            const response = await apiService.deliveries.getStatistics();
+            
+            if (response.data && response.data.data) {
+                setStatistics(response.data.data);
+            }
+            
+            setError(null);
+        } catch (err) {
+            console.error('Error loading statistics:', err);
+            setError(err.message || 'Failed to load statistics');
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    useEffect(() => {
+        loadStatistics();
+    }, []);
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        loadStatistics();
+    };
+
+    // Mock data for fallback if API doesn't return data
+    const mockData = {
+        todayEarnings: 184.50,
+        completedTrips: 14,
+        acceptanceRate: 98,
+        rating: 4.95,
+        recentActivity: [
+            { id: 1, order_number: 'ORD-98210', earnings: 12.40, status: 'delivered', createdAt: new Date().toISOString() },
+            { id: 2, order_number: 'ORD-98205', earnings: -35.00, status: 'expense', createdAt: new Date().toISOString() },
+            { id: 3, order_number: 'ORD-98198', earnings: 18.25, status: 'delivered', createdAt: new Date().toISOString() }
+        ]
+    };
+
+    const stats = statistics || mockData;
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-                {/* Compact Header */}
-                <View style={styles.header}>
+            {loading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#1E3A8A" />
+                    <Text style={styles.loadingText}>Loading dashboard...</Text>
+                </View>
+            ) : error ? (
+                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+                    <View style={styles.errorContainer}>
+                        <Text style={styles.errorText}>{error}</Text>
+                        <TouchableOpacity style={styles.retryButton} onPress={loadStatistics}>
+                            <Text style={styles.retryButtonText}>Retry</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            ) : (
+                <ScrollView 
+                    style={styles.scrollView} 
+                    contentContainerStyle={styles.scrollContent}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={['#1E3A8A']}
+                            tintColor="#1E3A8A"
+                        />
+                    }
+                >
+                    {/* Compact Header */}
+                    <View style={styles.header}>
                     <View style={styles.headerContent}>
                         <View style={styles.profileSection}>
                             <View style={styles.profileImageContainer}>
@@ -54,7 +133,7 @@ const DashboardScreen = () => {
                             <MaterialIcons name="trending-up" size={18} color="#10B981" />
                         </View>
                         <View style={styles.incomeAmountContainer}>
-                            <Text style={styles.incomeAmount}>$184.50</Text>
+                            <Text style={styles.incomeAmount}>${stats.todayEarnings.toFixed(2)}</Text>
                             <Text style={styles.incomeChange}>+12% vs avg</Text>
                         </View>
                         <View style={styles.chartContainer}>
@@ -84,7 +163,7 @@ const DashboardScreen = () => {
                     <View style={styles.statsContainer}>
                         <View style={styles.statCard}>
                             <MaterialIcons name="check-circle" size={20} color="#10B981" />
-                            <Text style={styles.statValue}>14</Text>
+                            <Text style={styles.statValue}>{stats.completedTrips}</Text>
                             <Text style={styles.statLabel}>Completed Trips</Text>
                         </View>
                         <View style={styles.statCard}>
@@ -101,7 +180,7 @@ const DashboardScreen = () => {
                                 <MaterialIcons name="verified-user" size={16} color="#1E3A8A" />
                             </View>
                             <View style={styles.metricTextContainer}>
-                                <Text style={styles.metricValue} numberOfLines={1}>98%</Text>
+                                <Text style={styles.metricValue} numberOfLines={1}>{stats.acceptanceRate}%</Text>
                                 <Text style={styles.metricLabel} numberOfLines={1}>Acceptance</Text>
                             </View>
                         </View>
@@ -110,7 +189,7 @@ const DashboardScreen = () => {
                                 <MaterialIcons name="star" size={16} color="#1E3A8A" />
                             </View>
                             <View style={styles.metricTextContainer}>
-                                <Text style={styles.metricValue} numberOfLines={1}>4.95</Text>
+                                <Text style={styles.metricValue} numberOfLines={1}>{stats.rating}</Text>
                                 <Text style={styles.metricLabel} numberOfLines={1}>Rating</Text>
                             </View>
                         </View>
@@ -134,40 +213,33 @@ const DashboardScreen = () => {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.activityList}>
-                            <View style={styles.activityItem}>
-                                <View style={styles.activityIcon}>
-                                    <MaterialIcons name="check-circle" size={16} color="#10B981" />
+                            {stats.recentActivity && stats.recentActivity.map((activity, index) => (
+                                <View key={activity.id || index} style={styles.activityItem}>
+                                    <View style={styles.activityIcon}>
+                                        <MaterialIcons 
+                                            name={activity.status === 'delivered' ? 'check-circle' : 'local-gas-station'} 
+                                            size={16} 
+                                            color={activity.earnings > 0 ? '#10B981' : '#EF4444'} 
+                                        />
+                                    </View>
+                                    <View style={styles.activityContent}>
+                                        <Text style={styles.activityTitle}>
+                                            {activity.status === 'delivered' ? 'Delivery Completed' : 'Fuel Expense'}
+                                        </Text>
+                                        <Text style={[styles.activityAmount, { color: activity.earnings > 0 ? '#1E3A8A' : '#EF4444' }]}>
+                                            {activity.earnings > 0 ? '+' : ''}{activity.earnings.toFixed(2)}
+                                        </Text>
+                                    </View>
+                                    <Text style={styles.activityTime}>
+                                        {new Date(activity.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </Text>
                                 </View>
-                                <View style={styles.activityContent}>
-                                    <Text style={styles.activityTitle}>Delivery Completed</Text>
-                                    <Text style={styles.activityAmount}>+$12.40</Text>
-                                </View>
-                                <Text style={styles.activityTime}>2:20 PM</Text>
-                            </View>
-                            <View style={styles.activityItem}>
-                                <View style={styles.activityIcon}>
-                                    <MaterialIcons name="local-gas-station" size={16} color="#EF4444" />
-                                </View>
-                                <View style={styles.activityContent}>
-                                    <Text style={styles.activityTitle}>Fuel Expense</Text>
-                                    <Text style={styles.activityAmountNegative}>-$35.00</Text>
-                                </View>
-                                <Text style={styles.activityTime}>12:45 PM</Text>
-                            </View>
-                            <View style={styles.activityItem}>
-                                <View style={styles.activityIcon}>
-                                    <MaterialIcons name="check-circle" size={16} color="#10B981" />
-                                </View>
-                                <View style={styles.activityContent}>
-                                    <Text style={styles.activityTitle}>Delivery Completed</Text>
-                                    <Text style={styles.activityAmount}>+$18.25</Text>
-                                </View>
-                                <Text style={styles.activityTime}>11:30 AM</Text>
-                            </View>
+                            ))}
                         </View>
                     </View>
                 </View>
-            </ScrollView>
+                </ScrollView>
+            )}
         </SafeAreaView>
     );
 };

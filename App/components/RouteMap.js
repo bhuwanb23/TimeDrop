@@ -72,7 +72,7 @@ try {
     MapLegend = ({ children }) => <View>{children}</View>;
 }
 
-const RouteMap = () => {
+const RouteMap = ({ deliveries = [], onDeliverySelect }) => {
     const [region, setRegion] = useState({
         latitude: 37.78825, // Default to somewhere central
         longitude: -122.4324, // San Francisco as default
@@ -83,12 +83,9 @@ const RouteMap = () => {
     const [hasLocationPermission, setHasLocationPermission] = useState(false);
 
     const [currentLocation, setCurrentLocation] = useState(null);
-    const [destinations, setDestinations] = useState([
-        // Sample destinations - in a real app, these would come from delivery data
-        { latitude: 37.7890, longitude: -122.4314, id: 1, name: 'Delivery 1' },
-        { latitude: 37.7870, longitude: -122.4344, id: 2, name: 'Delivery 2' },
-        { latitude: 37.7850, longitude: -122.4304, id: 3, name: 'Delivery 3' },
-    ]);
+    
+    // Use deliveries from props if available, otherwise use empty array
+    const [destinations, setDestinations] = useState([]);
 
     // Overlay visibility states
     const [showRouteInfo, setShowRouteInfo] = useState(true);
@@ -111,7 +108,7 @@ const RouteMap = () => {
 
     useEffect(() => {
         checkLocationPermission();
-
+        
         return () => {
             // Cleanup subscription on unmount
             if (locationSubscription && typeof locationSubscription.remove === 'function') {
@@ -119,6 +116,24 @@ const RouteMap = () => {
             }
         };
     }, []);
+    
+    // Update destinations when deliveries prop changes
+    useEffect(() => {
+        if (deliveries && deliveries.length > 0) {
+            const formattedDestinations = deliveries.map(delivery => ({
+                latitude: delivery.coordinates.latitude,
+                longitude: delivery.coordinates.longitude,
+                id: delivery.id,
+                name: delivery.orderNumber || `Delivery ${delivery.id}`,
+                customerName: delivery.customerName,
+                address: delivery.address,
+                status: delivery.status,
+                priority: delivery.priority,
+                _raw: delivery._raw
+            }));
+            setDestinations(formattedDestinations);
+        }
+    }, [deliveries]);
     
     // Calculate route statistics when location or destinations change
     useEffect(() => {
@@ -291,11 +306,14 @@ const RouteMap = () => {
                             latitude: dest.latitude,
                             longitude: dest.longitude,
                         }}
-                        title={`Delivery ${index + 1}`}
+                        title={`${dest.name} - ${dest.customerName || ''}`}
+                        description={dest.address}
                         type={index === 0 ? 'next' : index === 1 ? 'pending' : 'completed'}
                         onPress={() => {
-                            console.log(`Delivery ${index + 1} pressed`);
-                            // Add navigation or action here
+                            console.log(`Delivery ${index + 1} pressed:`, dest);
+                            if (onDeliverySelect) {
+                                onDeliverySelect(dest._raw || dest);
+                            }
                         }}
                         isActive={index === 0} // Highlight the next delivery
                     />

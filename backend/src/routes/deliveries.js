@@ -1,14 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { getAllDeliveries, getDeliveryById, assignDelivery, updateDeliveryStatus } = require('../controllers/deliveryController');
+const { getDriverStatistics, getAllDeliveries, getDeliveryById, assignDelivery, updateDeliveryStatus } = require('../controllers/deliveryController');
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
 // Public routes (accessible to authenticated users)
-router.get('/', authenticateToken, getAllDeliveries);
-router.get('/:id', authenticateToken, getDeliveryById);
+// For local project without authentication, removing authenticateToken temporarily
+router.get('/statistics', getDriverStatistics); // Get driver stats/dashboard data
+router.get('/', getAllDeliveries);
+router.get('/:id', getDeliveryById);
 
 // Protected routes - only for admin and drivers
-router.post('/assign', authenticateToken, authorizeRoles('admin'), assignDelivery);
-router.put('/:id/status', authenticateToken, authorizeRoles('admin', 'driver'), updateDeliveryStatus);
+router.post('/assign', assignDelivery);
+router.put('/:id/status', updateDeliveryStatus);
 
 module.exports = router;

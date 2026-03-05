@@ -280,6 +280,29 @@ const orderAPI = {
   }
 };
 
+// DELIVERY/DRIVER ENDPOINTS
+const deliveryAPI = {
+  getStatistics: async () => {
+    return api.get('/deliveries/statistics');
+  },
+  
+  getDeliveries: async (params = {}) => {
+    return api.get('/deliveries', { params });
+  },
+  
+  getDeliveryById: async (id) => {
+    return api.get(`/deliveries/${id}`);
+  },
+  
+  assignDelivery: async (orderId, driverId) => {
+    return api.post('/deliveries/assign', { orderId, driverId });
+  },
+  
+  updateDeliveryStatus: async (id, statusData) => {
+    return api.put(`/deliveries/${id}/status`, statusData);
+  }
+};
+
 // COMBINED API SERVICE
 const apiService = {
   auth: authAPI,
@@ -287,6 +310,7 @@ const apiService = {
   orders: orderAPI,
   categories: categoryAPI,
   wishlist: wishlistAPI,
+  deliveries: deliveryAPI,
   
   // Utility function to set token
   setAuthToken: async (token) => {

@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
-const RouteBottomSheet = () => {
+const RouteBottomSheet = ({ deliveries = [], error, onRetry }) => {
+    // Calculate remaining stops and time
+    const remainingStops = deliveries.length;
+    const estimatedTime = remainingStops > 0 ? `${remainingStops * 30}M` : '0M'; // Mock calculation: 30 min per stop
+    
     return (
         <View 
             style={[styles.container, { 
@@ -19,7 +23,9 @@ const RouteBottomSheet = () => {
             <View style={styles.header}>
                 <View>
                     <Text style={styles.headerTitle}>Today's Route</Text>
-                    <Text style={styles.headerSubtitle}>8 STOPS REMAINING • 4H 20M</Text>
+                    <Text style={styles.headerSubtitle}>
+                        {remainingStops} STOPS REMAINING • {estimatedTime}
+                    </Text>
                 </View>
                 <View style={styles.optimizedBadge}>
                     <MaterialIcons name="bolt" size={14} color="#1152d4" />
@@ -28,60 +34,60 @@ const RouteBottomSheet = () => {
             </View>
 
             {/* Stops List */}
-            <ScrollView style={styles.stopsContainer}>
-                {/* Stop 1 - Next */}
-                <View style={styles.stopItem}>
-                    <View style={styles.stopIndicator}>
-                        <View style={styles.stopNumberContainer}>
-                            <Text style={styles.stopNumber}>1</Text>
-                        </View>
-                        <View style={styles.stopLineGradient} />
-                    </View>
-                    <View style={styles.stopContent}>
-                        <View style={styles.stopHeader}>
-                            <View style={styles.stopTitleContainer}>
-                                <Text style={styles.stopTitle}>284 Market St</Text>
-                                <MaterialIcons name="priority-high" size={16} color="#f59e0b" />
+            {error ? (
+                <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                    <TouchableOpacity onPress={onRetry} style={styles.retryButton}>
+                        <Text style={styles.retryButtonText}>Retry</Text>
+                    </TouchableOpacity>
+                </View>
+            ) : deliveries.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                    <MaterialIcons name="route" size={48} color="#94A3B8" />
+                    <Text style={styles.emptyText}>No active deliveries</Text>
+                    <Text style={styles.emptySubtext}>Check back later for new routes</Text>
+                </View>
+            ) : (
+                <ScrollView style={styles.stopsContainer}>
+                    {deliveries.map((delivery, index) => (
+                        <View key={delivery.id} style={styles.stopItem}>
+                            <View style={styles.stopIndicator}>
+                                <View style={index === 0 ? styles.stopNumberContainer : styles.stopNumberContainerInactive}>
+                                    <Text style={index === 0 ? styles.stopNumber : styles.stopNumberInactive}>
+                                        {index + 1}
+                                    </Text>
+                                </View>
+                                {index < deliveries.length - 1 && (
+                                    <View style={index === 0 ? styles.stopLineGradient : styles.stopLineInactive} />
+                                )}
                             </View>
-                            <Text style={styles.nextBadge}>NEXT</Text>
+                            <View style={styles.stopContent}>
+                                <View style={styles.stopHeader}>
+                                    <View style={styles.stopTitleContainer}>
+                                        <Text style={styles.stopTitle} numberOfLines={1}>
+                                            {delivery.customerName || `Stop ${index + 1}`}
+                                        </Text>
+                                        {index === 0 && (
+                                            <MaterialIcons name="priority-high" size={16} color="#f59e0b" />
+                                        )}
+                                        {delivery.priority === 'high' && index !== 0 && (
+                                            <MaterialIcons name="bolt" size={16} color="#1152d4" />
+                                        )}
+                                    </View>
+                                    {index === 0 && (
+                                        <View style={styles.nextBadge}>
+                                            <Text style={styles.nextBadgeText}>NEXT</Text>
+                                        </View>
+                                    )}
+                                </View>
+                                <Text style={styles.stopDetails}>
+                                    {delivery.orderNumber || 'N/A'} • {delivery.address}
+                                </Text>
+                            </View>
                         </View>
-                        <Text style={styles.stopDetails}>ETA 2:15 PM • <Text style={styles.orderNumber}>#8821</Text></Text>
-                    </View>
-                </View>
-
-                {/* Stop 2 - Express */}
-                <View style={styles.stopItem}>
-                    <View style={styles.stopIndicator}>
-                        <View style={styles.stopNumberContainerInactive}>
-                            <Text style={styles.stopNumberInactive}>2</Text>
-                        </View>
-                        <View style={styles.stopLineInactive} />
-                    </View>
-                    <View style={styles.stopContent}>
-                        <View style={styles.stopTitleContainer}>
-                            <Text style={styles.stopTitle}>721 Valencia Blvd</Text>
-                            <MaterialIcons name="bolt" size={16} color="#1152d4" />
-                        </View>
-                        <Text style={styles.stopDetails}>ETA 2:40 PM • <Text style={styles.expressText}>Express Delivery</Text></Text>
-                    </View>
-                </View>
-
-                {/* Stop 3 - Signature */}
-                <View style={styles.stopItem}>
-                    <View style={styles.stopIndicator}>
-                        <View style={styles.stopNumberContainerInactive}>
-                            <Text style={styles.stopNumberInactive}>3</Text>
-                        </View>
-                    </View>
-                    <View style={styles.stopContent}>
-                        <View style={styles.stopTitleContainer}>
-                            <Text style={styles.stopTitle}>1502 Mission St</Text>
-                            <MaterialIcons name="edit" size={16} color="#94a3b8" />
-                        </View>
-                        <Text style={styles.stopDetails}>ETA 3:05 PM • <Text style={styles.signatureText}>Signature Required</Text></Text>
-                    </View>
-                </View>
-            </ScrollView>
+                    ))}
+                </ScrollView>
+            )}
 
             {/* Bottom Action Buttons */}
             <View style={styles.bottomActions}>
@@ -257,12 +263,14 @@ const styles = StyleSheet.create({
     },
     nextBadge: {
         backgroundColor: '#dbeafe',
-        color: '#1d4ed8',
-        fontSize: 9,
-        fontWeight: '800',
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 6,
+    },
+    nextBadgeText: {
+        fontSize: 9,
+        fontWeight: '800',
+        color: '#1d4ed8',
         letterSpacing: 0.5,
         textTransform: 'uppercase',
     },
@@ -271,37 +279,46 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: '#64748B',
     },
-    orderNumber: {
-        fontWeight: 'normal',
-        color: '#94a3b8',
-    },
-    expressText: {
-        color: 'rgba(17, 82, 212, 0.7)',
-    },
-    signatureText: {
-        fontWeight: 'normal',
-        color: '#94a3b8',
-    },
-    rightActions: {
-        flexDirection: 'row',
-        width: 120,
-        paddingHorizontal: 12,
-    },
-    actionButton: {
+    emptyContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        padding: 24,
+    },
+    emptyText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#111318',
+        marginTop: 16,
+    },
+    emptySubtext: {
+        fontSize: 14,
+        color: '#64748B',
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 24,
+    },
+    errorText: {
+        fontSize: 14,
+        color: '#EF4444',
+        textAlign: 'center',
+        marginBottom: 16,
+    },
+    retryButton: {
+        backgroundColor: '#1152d4',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
         borderRadius: 8,
-        marginHorizontal: 4,
     },
-    arrivedButton: {
-        backgroundColor: '#dbeafe',
-    },
-    infoButton: {
-        backgroundColor: '#d1fae5',
-    },
-    cancelButton: {
-        backgroundColor: '#fee2e2',
+    retryButtonText: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '600',
     },
     bottomActions: {
         flexDirection: 'row',
