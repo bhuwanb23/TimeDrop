@@ -35,6 +35,13 @@ const DashboardScreen = () => {
     // Use mock data only
     const stats = mockData;
 
+    // Simple refresh handler - no API calls
+    const onRefresh = () => {
+        setRefreshing(true);
+        // Just simulate refresh, no actual data loading
+        setTimeout(() => setRefreshing(false), 1000);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             {loading ? (
@@ -46,8 +53,8 @@ const DashboardScreen = () => {
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                     <View style={styles.errorContainer}>
                         <Text style={styles.errorText}>{error}</Text>
-                        <TouchableOpacity style={styles.retryButton} onPress={loadStatistics}>
-                            <Text style={styles.retryButtonText}>Retry</Text>
+                        <TouchableOpacity style={styles.retryButton} onPress={() => setError(null)}>
+                            <Text style={styles.retryButtonText}>Dismiss</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
