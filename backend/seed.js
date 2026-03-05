@@ -371,10 +371,30 @@ async function seedDatabase() {
     }
     
     // Create some completed deliveries for statistics
-    const completedDelivery = await Delivery.findOrCreate({
-      where: { order_id: 999 }, // Use non-existent order ID to avoid conflicts
+    // First, create a sample order for the completed delivery
+    const [completedOrder] = await Order.findOrCreate({
+      where: { order_number: 'ORD-999' },
       defaults: {
-        order_id: 999,
+        order_number: 'ORD-999',
+        customer_id: customerUser.id,
+        total_amount: 150.00,
+        status: 'delivered',
+        payment_method: 'card',
+        payment_status: 'paid',
+        delivery_address: JSON.stringify({
+          street: '722 West End Ave, Apt 12B',
+          city: 'Richmond District',
+          state: 'CA',
+          zip_code: '94118',
+          country: 'USA'
+        })
+      }
+    });
+    
+    const completedDelivery = await Delivery.findOrCreate({
+      where: { order_id: completedOrder.id },
+      defaults: {
+        order_id: completedOrder.id,
         driver_id: driverUser.id,
         status: 'delivered',
         pickup_location: JSON.stringify({
