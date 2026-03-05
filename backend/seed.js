@@ -327,8 +327,7 @@ async function seedDatabase() {
           zip_code: '94100',
           country: 'USA'
         }),
-        dropoff_location: createdOrders[0].delivery_address,
-        earnings: 12.40
+        dropoff_location: createdOrders[0].delivery_address
       },
       {
         order_id: createdOrders[1].id,
@@ -341,8 +340,7 @@ async function seedDatabase() {
           zip_code: '94100',
           country: 'USA'
         }),
-        dropoff_location: createdOrders[1].delivery_address,
-        earnings: 15.00
+        dropoff_location: createdOrders[1].delivery_address
       },
       {
         order_id: createdOrders[2].id,
@@ -355,8 +353,7 @@ async function seedDatabase() {
           zip_code: '94100',
           country: 'USA'
         }),
-        dropoff_location: createdOrders[2].delivery_address,
-        earnings: 8.50
+        dropoff_location: createdOrders[2].delivery_address
       }
     ];
     
@@ -394,7 +391,6 @@ async function seedDatabase() {
           zip_code: '94118',
           country: 'USA'
         }),
-        earnings: 18.50,
         actual_delivery_time: new Date()
       }
     });

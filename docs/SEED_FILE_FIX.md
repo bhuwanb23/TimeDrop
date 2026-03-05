@@ -106,6 +106,68 @@ await OrderItem.create({
 
 ---
 
+### Issue 4: Delivery Model Earnings Field Warning ⚠️
+**Warning:**
+```
+(sequelize) Warning: Unknown attributes (earnings) passed to defaults option of findOrCreate
+```
+
+**Cause:** The Delivery model doesn't have an `earnings` field defined.
+
+**Solution:** Removed `earnings` field from all delivery definitions:
+
+```javascript
+// Before (WARNING):
+{
+  order_id: createdOrders[0].id,
+  driver_id: driverUser.id,
+  status: 'in_transit',
+  earnings: 12.40  // ❌ This field doesn't exist in Delivery model
+}
+
+// After (FIXED):
+{
+  order_id: createdOrders[0].id,
+  driver_id: driverUser.id,
+  status: 'in_transit'
+  // ✅ earnings removed
+}
+```
+
+---
+
+### Issue 5: Foreign Key Constraint Failed ❌
+**Error:**
+```
+SequelizeForeignKeyConstraintError: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+```
+
+**Cause:** Trying to create deliveries with order_id or driver_id that don't exist in the database yet.
+
+**Solution:** Ensure orders and users are created BEFORE deliveries, and verify IDs are valid:
+
+```javascript
+// Make sure createdOrders array has valid orders
+console.log(`Created ${createdOrders.length} orders`);
+
+// Verify driver user exists
+const driverUser = await User.findOne({ where: { email: 'driver@example.com' } });
+if (!driverUser) {
+  throw new Error('Driver user not found!');
+}
+
+// Then create deliveries with valid references
+const sampleDeliveries = [
+  {
+    order_id: createdOrders[0].id,  // ✅ Valid order ID
+    driver_id: driverUser.id,        // ✅ Valid driver ID
+    status: 'in_transit'
+  }
+];
+```
+
+---
+
 ## ✅ Files Modified
 
 **File:** `backend/seed.js`
@@ -119,6 +181,8 @@ await OrderItem.create({
 6. ✅ Removed `rating` field from all 5 products
 7. ✅ Fixed OrderItem creation with correct field names (`unit_price`, `total_price`)
 8. ✅ Added calculation for `total_price = unit_price * quantity`
+9. ✅ Removed `earnings` field from all delivery definitions
+10. ✅ Ensured proper creation order (users → orders → deliveries)
 
 ---
 
