@@ -7,21 +7,12 @@ import {
     Alert,
     ActivityIndicator,
     SafeAreaView,
-    Platform,
+    ScrollView,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import RouteCalculator, { getDistanceText, getDurationText, generateRoutePoints } from '../utils/RouteCalculator';
+import RouteCalculator, { getDistanceText, getDurationText } from '../utils/RouteCalculator';
 import ExternalNavigation from '../utils/ExternalNavigation';
-
-// Import react-native-maps only for iOS/Android
-let MapView, Marker, Polyline;
-if (Platform.OS !== 'web') {
-    const RNMaps = require('react-native-maps');
-    MapView = RNMaps.default;
-    Marker = RNMaps.Marker;
-    Polyline = RNMaps.Polyline;
-}
 
 const DeliveryNavigationScreen = () => {
     const navigation = useNavigation();
@@ -30,12 +21,7 @@ const DeliveryNavigationScreen = () => {
 
     const [loading, setLoading] = useState(true);
     const [routeData, setRouteData] = useState(null);
-    const [region, setRegion] = useState({
-        latitude: 37.7749,
-        longitude: -122.4194,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.1
-    });
+    const [turnByTurnInstructions, setTurnByTurnInstructions] = useState([]);
 
     useEffect(() => {
         if (delivery) {
@@ -64,12 +50,12 @@ const DeliveryNavigationScreen = () => {
             // Calculate route
             const calculatedRoute = await RouteCalculator.calculateRoute(pickupCoords, dropoffCoords);
             
-            // Generate route points for visualization
-            const routePoints = generateRoutePoints(pickupCoords, dropoffCoords);
+            // Generate turn-by-turn instructions (mock data for now)
+            const instructions = generateTurnByTurnInstructions(delivery, pickupCoords, dropoffCoords);
+            setTurnByTurnInstructions(instructions);
 
             setRouteData({
                 ...calculatedRoute,
-                routePoints,
                 pickup: pickupCoords,
                 dropoff: dropoffCoords
             });
@@ -141,6 +127,76 @@ const DeliveryNavigationScreen = () => {
         };
     };
 
+    // Generate turn-by-turn navigation instructions
+    const generateTurnByTurnInstructions = (delivery, pickup, dropoff) => {
+        // Mock turn-by-turn instructions
+        return [
+            {
+                id: 1,
+                instruction: 'Head north on Main St',
+                distance: '0.2 km',
+                icon: 'arrow-upward',
+                type: 'start'
+            },
+            {
+                id: 2,
+                instruction: 'Turn right onto Oak Ave',
+                distance: '0.5 km',
+                icon: 'turn-right',
+                type: 'turn'
+            },
+            {
+                id: 3,
+                instruction: 'Continue straight for 1.2 km',
+                distance: '1.2 km',
+                icon: 'straight',
+                type: 'straight'
+            },
+            {
+                id: 4,
+                instruction: 'Turn left onto Market St',
+                distance: '0.8 km',
+                icon: 'turn-left',
+                type: 'turn'
+            },
+            {
+                id: 5,
+                instruction: 'Turn right onto Delivery Rd',
+                distance: '0.3 km',
+                icon: 'turn-right',
+                type: 'turn'
+            },
+            {
+                id: 6,
+                instruction: `Arrive at ${delivery.orderNumber} - ${pickup.address || 'Pickup Location'}`,
+                distance: '0 m',
+                icon: 'store',
+                type: 'pickup'
+            },
+            {
+                id: 7,
+                instruction: 'Head to customer location',
+                distance: '0.1 km',
+                icon: 'arrow-upward',
+                type: 'start'
+            },
+            {
+                id: 8,
+                instruction: 'Turn left onto Customer Ave',
+                distance: '0.4 km',
+                icon: 'turn-left',
+                type: 'turn'
+            },
+            {
+                id: 9,
+                instruction: `Arrive at destination - ${dropoff.address || 'Dropoff Location'}`,
+                distance: '0 m',
+                icon: 'flag',
+                type: 'destination'
+            }
+        ];
+    };
+
     const handleNavigate = () => {
         if (!routeData) return;
 
@@ -181,102 +237,37 @@ const DeliveryNavigationScreen = () => {
         );
     }
 
-    if (!routeData || !region) {
+    if (!routeData) {
         return null;
     }
 
-    // Render map for iOS/Android, fallback for web
-    const renderMap = () => {
-        if (Platform.OS === 'web') {
-            // Web doesn't support react-native-maps, show fallback UI
-            return (
-                <View style={[styles.map, styles.webFallback]}>
-                    <MaterialIcons name="directions-car" size={80} color="#94A3B8" />
-                    <Text style={styles.webFallbackTitle}>Map View</Text>
-                    <Text style={styles.webFallbackText}>
-                        Map visualization is available on mobile devices only.
-                    </Text>
-                    <Text style={styles.webFallbackSubtext}>
-                        Use the Navigate button below to open directions in your browser.
-                    </Text>
-                    
-                    {/* Quick Stats for Web */}
-                    <View style={styles.webStats}>
-                        <View style={styles.webStatItem}>
-                            <MaterialIcons name="route" size={24} color="#1152d4" />
-                            <Text style={styles.webStatLabel}>Distance</Text>
-                            <Text style={styles.webStatValue}>{getDistanceText(routeData.distance)}</Text>
-                        </View>
-                        <View style={styles.webStatDivider} />
-                        <View style={styles.webStatItem}>
-                            <MaterialIcons name="access-time" size={24} color="#1152d4" />
-                            <Text style={styles.webStatLabel}>Duration</Text>
-                            <Text style={styles.webStatValue}>{getDurationText(routeData.duration)}</Text>
-                        </View>
-                    </View>
-                </View>
-            );
-        } else {
-            // iOS/Android - show full map
-            return (
-                <MapView
-                    style={styles.map}
-                    region={region}
-                    showsUserLocation={true}
-                    showsMyLocationButton={true}
-                    showsCompass={true}
-                    rotateEnabled={true}
-                    pitchEnabled={true}
-                >
-                    {/* Pickup Location Marker */}
-                    <Marker
-                        coordinate={routeData.pickup}
-                        title={`Pickup - Order #${delivery.orderNumber}`}
-                        description={routeData.pickup.address || 'Pickup location'}
-                        pinColor="#10B981"
-                    >
-                        <View style={styles.markerContainer}>
-                            <View style={styles.pickupMarker}>
-                                <MaterialIcons name="store" size={20} color="#FFFFFF" />
-                            </View>
-                            <View style={styles.markerLabel}>
-                                <Text style={styles.markerLabelText}>A</Text>
-                            </View>
-                        </View>
-                    </Marker>
+    // Get icon for instruction type
+    const getInstructionIcon = (type) => {
+        const icons = {
+            start: 'navigation',
+            turn: 'turn-right',
+            straight: 'straight',
+            pickup: 'store',
+            destination: 'flag'
+        };
+        return icons[type] || 'circle';
+    };
 
-                    {/* Dropoff Location Marker */}
-                    <Marker
-                        coordinate={routeData.dropoff}
-                        title={`Dropoff - Order #${delivery.orderNumber}`}
-                        description={routeData.dropoff.address || 'Delivery location'}
-                        pinColor="#EF4444"
-                    >
-                        <View style={styles.markerContainer}>
-                            <View style={styles.dropoffMarker}>
-                                <MaterialIcons name="flag" size={20} color="#FFFFFF" />
-                            </View>
-                            <View style={[styles.markerLabel, styles.dropoffLabel]}>
-                                <Text style={styles.markerLabelText}>B</Text>
-                            </View>
-                        </View>
-                    </Marker>
-
-                    {/* Route Line */}
-                    <Polyline
-                        coordinates={routeData.routePoints}
-                        strokeColor="#1152d4"
-                        strokeWidth={5}
-                        lineDashPattern={[10, 5]}
-                    />
-                </MapView>
-            );
-        }
+    // Get color for instruction type
+    const getInstructionColor = (type) => {
+        const colors = {
+            start: '#10B981',
+            turn: '#1152d4',
+            straight: '#64748B',
+            pickup: '#F59E0B',
+            destination: '#EF4444'
+        };
+        return colors[type] || '#64748B';
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* Back Button */}
+            {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity 
                     style={styles.backButton}
@@ -284,10 +275,67 @@ const DeliveryNavigationScreen = () => {
                 >
                     <MaterialIcons name="arrow-back-ios" size={20} color="#0f172a" />
                 </TouchableOpacity>
+                <Text style={styles.headerTitle}>Navigation Instructions</Text>
+                <View style={styles.headerPlaceholder} />
             </View>
 
-            {/* Map View - Platform Specific */}
-            {renderMap()}
+            {/* Route Summary Card */}
+            <View style={styles.routeSummary}>
+                <View style={styles.summaryItem}>
+                    <MaterialIcons name="route" size={24} color="#1152d4" />
+                    <Text style={styles.summaryLabel}>Distance</Text>
+                    <Text style={styles.summaryValue}>{getDistanceText(routeData.distance)}</Text>
+                </View>
+                <View style={styles.summaryDivider} />
+                <View style={styles.summaryItem}>
+                    <MaterialIcons name="access-time" size={24} color="#1152d4" />
+                    <Text style={styles.summaryLabel}>Duration</Text>
+                    <Text style={styles.summaryValue}>{getDurationText(routeData.duration)}</Text>
+                </View>
+                <View style={styles.summaryDivider} />
+                <View style={styles.summaryItem}>
+                    <MaterialIcons name="confirmation-number" size={24} color="#1152d4" />
+                    <Text style={styles.summaryLabel}>Order</Text>
+                    <Text style={styles.summaryValue}>#{delivery.orderNumber}</Text>
+                </View>
+            </View>
+
+            {/* Turn-by-Turn Instructions */}
+            <ScrollView style={styles.instructionsContainer} showsVerticalScrollIndicator={false}>
+                <Text style={styles.instructionsTitle}>Turn-by-Turn Directions</Text>
+                
+                {turnByTurnInstructions.map((instruction, index) => (
+                    <View key={instruction.id} style={styles.instructionCard}>
+                        <View style={[
+                            styles.instructionIconContainer,
+                            { backgroundColor: `${getInstructionColor(instruction.type)}20` }
+                        ]}>
+                            <MaterialIcons 
+                                name={getInstructionIcon(instruction.type)} 
+                                size={28} 
+                                color={getInstructionColor(instruction.type)} 
+                            />
+                        </View>
+                        <View style={styles.instructionContent}>
+                            <Text style={styles.instructionStep}>Step {index + 1}</Text>
+                            <Text style={styles.instructionText}>{instruction.instruction}</Text>
+                            <Text style={styles.instructionDistance}>{instruction.distance}</Text>
+                        </View>
+                        {instruction.type === 'pickup' && (
+                            <View style={styles.pickupBadge}>
+                                <MaterialIcons name="store" size={16} color="#F59E0B" />
+                                <Text style={styles.pickupBadgeText}>Pickup Point</Text>
+                            </View>
+                        )}
+                        {instruction.type === 'destination' && (
+                            <View style={styles.destinationBadge}>
+                                <MaterialIcons name="flag" size={16} color="#EF4444" />
+                                <Text style={styles.destinationBadgeText}>Destination</Text>
+                            </View>
+                        )}
+                    </View>
+                ))}
+            </ScrollView>
 
             {/* Bottom Info Card */}
             <View style={styles.bottomCard}>
@@ -351,146 +399,145 @@ const styles = StyleSheet.create({
         color: '#64748B',
     },
     header: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         padding: 16,
         paddingTop: 16,
+        backgroundColor: '#ffffff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E2E8F0',
     },
     backButton: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: '#F1F5F9',
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
     },
-    map: {
-        flex: 1,
-    },
-    webFallback: {
-        backgroundColor: '#F8FAFC',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 40,
-        gap: 20,
-    },
-    webFallbackTitle: {
-        fontSize: 24,
+    headerTitle: {
+        fontSize: 18,
         fontWeight: 'bold',
         color: '#0F172A',
     },
-    webFallbackText: {
-        fontSize: 16,
-        color: '#64748B',
-        textAlign: 'center',
-        lineHeight: 24,
+    headerPlaceholder: {
+        width: 40,
     },
-    webFallbackSubtext: {
-        fontSize: 14,
-        color: '#94A3B8',
-        textAlign: 'center',
-    },
-    webStats: {
+    routeSummary: {
         flexDirection: 'row',
-        alignItems: 'center',
         backgroundColor: '#FFFFFF',
+        margin: 16,
+        padding: 16,
         borderRadius: 16,
-        padding: 24,
-        marginTop: 20,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 4,
-        width: '90%',
-        maxWidth: 400,
     },
-    webStatItem: {
+    summaryItem: {
         flex: 1,
         alignItems: 'center',
         gap: 8,
     },
-    webStatLabel: {
+    summaryLabel: {
         fontSize: 12,
         color: '#64748B',
         fontWeight: '500',
     },
-    webStatValue: {
-        fontSize: 18,
+    summaryValue: {
+        fontSize: 16,
         fontWeight: 'bold',
         color: '#0F172A',
     },
-    webStatDivider: {
+    summaryDivider: {
         width: 1,
-        height: 40,
         backgroundColor: '#E2E8F0',
-        marginHorizontal: 20,
+        marginHorizontal: 8,
     },
-    markerContainer: {
+    instructionsContainer: {
+        flex: 1,
+        paddingHorizontal: 16,
+    },
+    instructionsTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#0F172A',
+        marginBottom: 16,
+        marginTop: 8,
+    },
+    instructionCard: {
         flexDirection: 'row',
         alignItems: 'center',
-    },
-    pickupMarker: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#10B981',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 3,
-        borderColor: '#FFFFFF',
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    dropoffMarker: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#EF4444',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 3,
-        borderColor: '#FFFFFF',
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    markerLabel: {
-        width: 24,
-        height: 24,
+        backgroundColor: '#FFFFFF',
         borderRadius: 12,
-        backgroundColor: '#10B981',
+        padding: 16,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+        position: 'relative',
+    },
+    instructionIconContainer: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
         alignItems: 'center',
         justifyContent: 'center',
-        marginLeft: 4,
-        borderWidth: 2,
-        borderColor: '#FFFFFF',
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
+        marginRight: 16,
+        flexShrink: 0,
     },
-    dropoffLabel: {
-        backgroundColor: '#EF4444',
+    instructionContent: {
+        flex: 1,
     },
-    markerLabelText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#FFFFFF',
+    instructionStep: {
+        fontSize: 12,
+        color: '#94A3B8',
+        fontWeight: '500',
+        marginBottom: 4,
+    },
+    instructionText: {
+        fontSize: 15,
+        color: '#0F172A',
+        fontWeight: '600',
+        marginBottom: 4,
+        lineHeight: 20,
+    },
+    instructionDistance: {
+        fontSize: 13,
+        color: '#64748B',
+        fontWeight: '500',
+    },
+    pickupBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FEF3C7',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+        gap: 6,
+    },
+    pickupBadgeText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#92400E',
+    },
+    destinationBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FEE2E2',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+        gap: 6,
+    },
+    destinationBadgeText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#991B1B',
     },
     bottomCard: {
         position: 'absolute',
