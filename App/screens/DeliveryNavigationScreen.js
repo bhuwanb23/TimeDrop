@@ -129,70 +129,127 @@ const DeliveryNavigationScreen = () => {
 
     // Generate turn-by-turn navigation instructions
     const generateTurnByTurnInstructions = (delivery, pickup, dropoff) => {
-        // Mock turn-by-turn instructions
+        // Detailed turn-by-turn instructions for delivery
         return [
             {
                 id: 1,
-                instruction: 'Head north on Main St',
+                instruction: 'Head north on Market St toward 4th St',
                 distance: '0.2 km',
                 icon: 'arrow-upward',
-                type: 'start'
+                type: 'start',
+                detail: 'Start from TechHub Warehouse'
             },
             {
                 id: 2,
-                instruction: 'Turn right onto Oak Ave',
-                distance: '0.5 km',
+                instruction: 'Turn right onto 4th St',
+                distance: '0.3 km',
                 icon: 'turn-right',
-                type: 'turn'
+                type: 'turn',
+                detail: 'Continue for 2 blocks'
             },
             {
                 id: 3,
-                instruction: 'Continue straight for 1.2 km',
-                distance: '1.2 km',
-                icon: 'straight',
-                type: 'straight'
+                instruction: 'Turn left onto Mission St',
+                distance: '0.5 km',
+                icon: 'turn-left',
+                type: 'turn',
+                detail: 'Watch for traffic lights'
             },
             {
                 id: 4,
-                instruction: 'Turn left onto Market St',
-                distance: '0.8 km',
-                icon: 'turn-left',
-                type: 'turn'
+                instruction: 'Continue straight through intersection',
+                distance: '0.4 km',
+                icon: 'straight',
+                type: 'straight',
+                detail: 'Stay in right lane'
             },
             {
                 id: 5,
-                instruction: 'Turn right onto Delivery Rd',
-                distance: '0.3 km',
+                instruction: 'Turn right onto Valencia St',
+                distance: '0.6 km',
                 icon: 'turn-right',
-                type: 'turn'
+                type: 'turn',
+                detail: 'Pass by the park on your left'
             },
             {
                 id: 6,
-                instruction: `Arrive at ${delivery.orderNumber} - ${pickup.address || 'Pickup Location'}`,
-                distance: '0 m',
-                icon: 'store',
-                type: 'pickup'
+                instruction: 'Turn left onto 16th St',
+                distance: '0.3 km',
+                icon: 'turn-left',
+                type: 'turn',
+                detail: 'Residential area - reduce speed'
             },
             {
                 id: 7,
-                instruction: 'Head to customer location',
-                distance: '0.1 km',
-                icon: 'arrow-upward',
-                type: 'start'
+                instruction: 'Arrive at pickup location',
+                distance: '0 m',
+                icon: 'store',
+                type: 'pickup',
+                detail: `${pickup.address || 'Pickup Point'} - Collect order #${delivery.orderNumber}`
             },
             {
                 id: 8,
-                instruction: 'Turn left onto Customer Ave',
+                instruction: 'Head south on Guerrero St',
                 distance: '0.4 km',
-                icon: 'turn-left',
-                type: 'turn'
+                icon: 'arrow-upward',
+                type: 'start',
+                detail: 'Proceed to customer location'
             },
             {
                 id: 9,
-                instruction: `Arrive at destination - ${dropoff.address || 'Dropoff Location'}`,
-                distance: '0 m',
+                instruction: 'Turn right onto 18th St',
+                distance: '0.5 km',
+                icon: 'turn-right',
+                type: 'turn',
+                detail: 'Continue through Mission District'
+            },
+            {
+                id: 10,
+                instruction: 'Turn left onto South Van Ness Ave',
+                distance: '0.7 km',
+                icon: 'turn-left',
+                type: 'turn',
+                detail: 'Major road - use caution'
+            },
+            {
+                id: 11,
+                instruction: 'Continue onto Van Ness Ave',
+                distance: '0.8 km',
+                icon: 'straight',
+                type: 'straight',
+                detail: 'Stay straight for 4 blocks'
+            },
+            {
+                id: 12,
+                instruction: 'Turn right onto Oak St',
+                distance: '0.3 km',
+                icon: 'turn-right',
+                type: 'turn',
+                detail: 'Entering Hayes Valley'
+            },
+            {
+                id: 13,
+                instruction: 'Turn left onto Fillmore St',
+                distance: '0.2 km',
+                icon: 'turn-left',
+                type: 'turn',
+                detail: 'Shopping district ahead'
+            },
+            {
+                id: 14,
+                instruction: 'Destination will be on your right',
+                distance: '0.1 km',
                 icon: 'flag',
-                type: 'destination'
+                type: 'destination',
+                detail: `${dropoff.address || 'Dropoff Point'} - Customer: ${delivery.customerName}`
+            },
+            {
+                id: 15,
+                instruction: 'Arrived! Complete the delivery',
+                distance: '0 m',
+                icon: 'check-circle',
+                type: 'destination',
+                detail: 'Mark as delivered after handoff'
             }
         ];
     };
@@ -319,6 +376,7 @@ const DeliveryNavigationScreen = () => {
                         <View style={styles.instructionContent}>
                             <Text style={styles.instructionStep}>Step {index + 1}</Text>
                             <Text style={styles.instructionText}>{instruction.instruction}</Text>
+                            <Text style={styles.instructionDetail}>{instruction.detail}</Text>
                             <Text style={styles.instructionDistance}>{instruction.distance}</Text>
                         </View>
                         {instruction.type === 'pickup' && (
@@ -505,6 +563,12 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginBottom: 4,
         lineHeight: 20,
+    },
+    instructionDetail: {
+        fontSize: 13,
+        color: '#64748B',
+        fontWeight: '500',
+        marginBottom: 4,
     },
     instructionDistance: {
         fontSize: 13,
