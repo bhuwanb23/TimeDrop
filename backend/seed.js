@@ -145,8 +145,7 @@ async function seedDatabase() {
         stock_quantity: 50,
         image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
         category_id: categories.find(c => c.name === 'Electronics').id,
-        status: 'active',
-        rating: 4.5
+        status: 'active'
       },
       {
         name: 'Smart Watch Series 7',
@@ -155,8 +154,7 @@ async function seedDatabase() {
         stock_quantity: 30,
         image_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
         category_id: categories.find(c => c.name === 'Electronics').id,
-        status: 'active',
-        rating: 4.7
+        status: 'active'
       },
       {
         name: 'Minimalist Lamp',
@@ -165,8 +163,7 @@ async function seedDatabase() {
         stock_quantity: 25,
         image_url: 'https://images.unsplash.com/photo-1588345933685-60647725d5c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
         category_id: categories.find(c => c.name === 'Home & Living').id,
-        status: 'active',
-        rating: 4.3
+        status: 'active'
       },
       {
         name: 'Leather Jacket',
@@ -175,8 +172,7 @@ async function seedDatabase() {
         stock_quantity: 15,
         image_url: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
         category_id: categories.find(c => c.name === 'Fashion').id,
-        status: 'active',
-        rating: 4.6
+        status: 'active'
       },
       {
         name: 'Bluetooth Speaker',
@@ -185,8 +181,7 @@ async function seedDatabase() {
         stock_quantity: 40,
         image_url: 'https://images.unsplash.com/photo-1613047508032-34a0d5935d9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
         category_id: categories.find(c => c.name === 'Electronics').id,
-        status: 'active',
-        rating: 4.4
+        status: 'active'
       }
     ];
     
@@ -221,11 +216,16 @@ async function seedDatabase() {
       },
       defaults: {
         user_id: customerUser.id,
+        type: 'home',
+        first_name: 'Jane',
+        last_name: 'Customer',
         street: '123 Main Street',
+        apartment: 'Apt 4B',
         city: 'San Francisco',
         state: 'CA',
         zip_code: '94102',
         country: 'USA',
+        phone: '+0987654321',
         is_default: true
       }
     });
