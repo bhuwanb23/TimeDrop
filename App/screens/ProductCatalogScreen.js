@@ -9,9 +9,126 @@ import { useCart } from '../context/CartContext';
 
 const ProductCatalogScreen = () => {
     const [products, setProducts] = useState([
-        { id: 1, name: 'Product 1', price: 29.99, image_url: 'https://via.placeholder.com/300', description: 'Great product' },
-        { id: 2, name: 'Product 2', price: 49.99, image_url: 'https://via.placeholder.com/300', description: 'Amazing product' },
-        { id: 3, name: 'Product 3', price: 19.99, image_url: 'https://via.placeholder.com/300', description: 'Best seller' }
+        { 
+            id: 1, 
+            name: 'Wireless Bluetooth Headphones', 
+            price: 79.99, 
+            image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400', 
+            description: 'Premium noise-cancelling wireless headphones with 30-hour battery life',
+            category: 'Electronics',
+            stock: 45,
+            rating: 4.8
+        },
+        { 
+            id: 2, 
+            name: 'Smart Watch Series 7', 
+            price: 399.99, 
+            image_url: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400', 
+            description: 'Advanced fitness tracking, ECG, and always-on Retina display',
+            category: 'Electronics',
+            stock: 23,
+            rating: 4.9
+        },
+        { 
+            id: 3, 
+            name: 'Organic Cotton T-Shirt', 
+            price: 29.99, 
+            image_url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400', 
+            description: 'Comfortable and sustainable 100% organic cotton t-shirt',
+            category: 'Fashion',
+            stock: 120,
+            rating: 4.5
+        },
+        { 
+            id: 4, 
+            name: 'Professional Camera Lens', 
+            price: 899.99, 
+            image_url: 'https://images.unsplash.com/photo-1617005082133-548c4dd27f35?w=400', 
+            description: '50mm f/1.8 prime lens for stunning portraits',
+            category: 'Electronics',
+            stock: 12,
+            rating: 4.9
+        },
+        { 
+            id: 5, 
+            name: 'Running Shoes Pro', 
+            price: 129.99, 
+            image_url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', 
+            description: 'Lightweight performance running shoes with responsive cushioning',
+            category: 'Sports',
+            stock: 67,
+            rating: 4.7
+        },
+        { 
+            id: 6, 
+            name: 'Minimalist Desk Lamp', 
+            price: 49.99, 
+            image_url: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400', 
+            description: 'LED desk lamp with adjustable brightness and color temperature',
+            category: 'Home & Garden',
+            stock: 89,
+            rating: 4.6
+        },
+        { 
+            id: 7, 
+            name: 'Yoga Mat Premium', 
+            price: 39.99, 
+            image_url: 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=400', 
+            description: 'Extra thick eco-friendly yoga mat with carrying strap',
+            category: 'Sports',
+            stock: 156,
+            rating: 4.8
+        },
+        { 
+            id: 8, 
+            name: 'Stainless Steel Water Bottle', 
+            price: 24.99, 
+            image_url: 'https://images.unsplash.com/photo-1602143407151-011141951e7a?w=400', 
+            description: 'Insulated water bottle keeps drinks cold for 24 hours',
+            category: 'Sports',
+            stock: 234,
+            rating: 4.7
+        },
+        { 
+            id: 9, 
+            name: 'Leather Wallet', 
+            price: 59.99, 
+            image_url: 'https://images.unsplash.com/photo-1627123424574-18bd08331092?w=400', 
+            description: 'Genuine leather bifold wallet with RFID protection',
+            category: 'Fashion',
+            stock: 78,
+            rating: 4.6
+        },
+        { 
+            id: 10, 
+            name: 'Portable Bluetooth Speaker', 
+            price: 89.99, 
+            image_url: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400', 
+            description: 'Waterproof speaker with 360° sound and 12-hour playtime',
+            category: 'Electronics',
+            stock: 92,
+            rating: 4.8
+        },
+        { 
+            id: 11, 
+            name: 'Bestseller Novel Collection', 
+            price: 34.99, 
+            image_url: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400', 
+            description: 'Box set of 5 award-winning novels',
+            category: 'Books',
+            stock: 43,
+            rating: 4.9
+        },
+        { 
+            id: 12, 
+            name: 'Gaming Mouse RGB', 
+            price: 69.99, 
+            image_url: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400', 
+            description: 'High-precision gaming mouse with customizable RGB lighting',
+            category: 'Electronics',
+            stock: 56,
+            rating: 4.7
+        }
     ]);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
