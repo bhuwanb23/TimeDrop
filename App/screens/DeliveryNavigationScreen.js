@@ -240,7 +240,7 @@ const DeliveryNavigationScreen = ({ route, navigation }) => {
                             <View style={styles.productDetails}>
                                 <Text style={styles.productName}>{item.name}</Text>
                                 <Text style={styles.productQuantity}>Qty: {item.quantity}</Text>
-                                <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
+                                <Text style={styles.productPrice}>${item.price ? item.price.toFixed(2) : '0.00'}</Text>
                             </View>
                         </View>
                     ))}
