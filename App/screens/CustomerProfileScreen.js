@@ -1,224 +1,114 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { CommonActions } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { navigationRef } from '../utils/RootNavigation';
-import apiService from '../services/api';
 
 const CustomerProfileScreen = ({ navigation }) => {
-    const nav = useNavigation();
-    const [userData, setUserData] = useState(null);
-    const [recentOrders, setRecentOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [user] = useState({
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        phone: '+1 (555) 123-4567',
+        memberSince: 'January 2024',
+        avatar: null
+    });
 
-    // Quick actions
-    const quickActions = [
-        { id: 'orders', title: 'Orders', icon: 'package-2', screen: 'OrderHistory' },
-        { id: 'wishlist', title: 'Wishlist', icon: 'favorite', screen: 'Wishlist' }
-    ];
-
-    // Account settings
-    const accountSettings = [
-        { id: 'personal', title: 'Personal Information', icon: 'person', screen: 'EditProfile' },
-        { id: 'addresses', title: 'Shipping Addresses', icon: 'location-on', screen: 'Addresses' },
-        { id: 'payments', title: 'Payment Methods', icon: 'payments', screen: 'PaymentMethods' },
-        { id: 'notifications', title: 'Notifications', icon: 'notifications', screen: 'Notifications' },
-        { id: 'security', title: 'Security & Password', icon: 'security', screen: 'Security' }
-    ];
-
-    // Handler functions
-    const handleQuickActionPress = (screen) => {
-        Alert.alert('Feature Coming Soon', `${screen} feature will be available in the next update.`);
-    };
-
-    const handleOrderPress = (order) => {
-        Alert.alert('Order Details', `Viewing details for order ${order.id}`);
-    };
-
-    const handleSettingPress = (setting) => {
-        Alert.alert('Feature Coming Soon', `${setting.title} feature will be available in the next update.`);
-    };
-
-    const handleLogout = async () => {
+    const handleLogout = () => {
         Alert.alert(
-            'Log Out',
-            'Are you sure you want to log out?',
+            'Logout',
+            'Are you sure you want to logout?',
             [
                 { text: 'Cancel', style: 'cancel' },
                 { 
-                    text: 'Log Out', 
-                    style: 'destructive', 
-                    onPress: async () => {
-                        try {
-                            console.log('Customer logout pressed - clearing auth and navigating to Login');
-                            
-                            // Call backend logout endpoint
-                            try {
-                                await apiService.auth.logout();
-                            } catch (apiError) {
-                                if (apiError.code !== 'ERR_NETWORK') {
-                                    console.error('Backend logout failed:', apiError);
-                                }
-                                // Continue with local cleanup even if backend call fails
-                            }
-                            
-                            // Clear any stored authentication tokens
-                            await AsyncStorage.removeItem('token');
-                            
-                            // Reset navigation stack to Login screen
-                            if (navigationRef && navigationRef.current) {
-                                navigationRef.current.dispatch(
-                                    CommonActions.reset({
-                                        index: 0,
-                                        routes: [{ name: 'Login' }],
-                                    })
-                                );
-                            } else {
-                                // Fallback navigation
-                                navigation.navigate('Login');
-                            }
-                            
-                            console.log('Customer navigation to Login successful');
-                        } catch (error) {
-                            console.error('Customer logout failed:', error);
-                            
-                            // Final fallback: try direct navigation
-                            try {
-                                navigation.navigate('Login');
-                            } catch (navError) {
-                                console.error('Final navigation attempt failed:', navError);
-                            }
-                        }
+                    text: 'Logout', 
+                    onPress: () => {
+                        navigation.navigate('Login');
                     }
                 }
             ]
         );
     };
 
-    const handleEditProfile = () => {
-        Alert.alert('Edit Profile', 'Profile editing feature coming soon.');
-    };
-
-    // Component: Profile Header
-    const ProfileHeader = () => (
-        <View style={styles.header}>
-            <TouchableOpacity onPress={handleEditProfile} style={styles.avatarContainer}>
-                <View style={styles.avatarWrapper}>
-                    <Image 
-                        source={{ uri: userData.avatar }}
-                        style={styles.avatar}
-                        resizeMode="cover"
-                    />
-                    {userData.isVerified && (
-                        <View style={styles.verificationBadge}>
-                            <MaterialIcons name="verified" size={16} color="#ffffff" />
-                        </View>
-                    )}
-                </View>
-            </TouchableOpacity>
-            <Text style={styles.userName}>{userData.name}</Text>
-            <Text style={styles.userEmail}>{userData.email}</Text>
-            <Text style={styles.memberSince}>Member since {userData.memberSince}</Text>
-        </View>
-    );
-
-    // Component: Quick Action Button
-    const QuickActionButton = ({ action }) => (
-        <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => handleQuickActionPress(action.screen)}
-        >
-            <View style={styles.actionIconContainer}>
-                <MaterialIcons name={action.icon} size={24} color="#1e3a8a" />
-            </View>
-            <Text style={styles.actionText}>{action.title}</Text>
-        </TouchableOpacity>
-    );
-
-    // Component: Order Item
-    const OrderItem = ({ order }) => (
-        <TouchableOpacity 
-            style={styles.orderItem}
-            onPress={() => handleOrderPress(order)}
-        >
-            <View style={styles.orderImageContainer}>
-                <Image 
-                    source={{ uri: order.productImage }}
-                    style={styles.orderImage}
-                    resizeMode="contain"
-                />
-            </View>
-            <View style={styles.orderDetails}>
-                <View style={styles.orderHeader}>
-                    <Text style={styles.orderId} numberOfLines={1}>{order.id}</Text>
-                    <View style={[styles.statusBadge, { backgroundColor: order.statusBg }]}>
-                        <Text style={[styles.statusText, { color: order.statusColor }]}>
-                            {order.statusText}
-                        </Text>
-                    </View>
-                </View>
-                <Text style={styles.orderMeta}>{order.date} • ${order.amount.toFixed(2)}</Text>
-            </View>
-        </TouchableOpacity>
-    );
-
-    // Component: Setting Item
-    const SettingItem = ({ setting }) => (
-        <TouchableOpacity 
-            style={styles.settingItem}
-            onPress={() => handleSettingPress(setting)}
-        >
-            <MaterialIcons name={setting.icon} size={24} color="#94a3b8" style={styles.settingIcon} />
-            <Text style={styles.settingText}>{setting.title}</Text>
-            <MaterialIcons name="chevron-right" size={24} color="#cbd5e1" />
-        </TouchableOpacity>
-    );
+    const menuItems = [
+        { id: 1, icon: 'person-outline', label: 'Edit Profile', action: () => Alert.alert('Edit Profile', 'Profile editing would go here') },
+        { id: 2, icon: 'location-on', label: 'Saved Addresses', action: () => Alert.alert('Addresses', 'Address management would go here') },
+        { id: 3, icon: 'payment', label: 'Payment Methods', action: () => Alert.alert('Payment', 'Payment management would go here') },
+        { id: 4, icon: 'notifications', label: 'Notifications', action: () => Alert.alert('Notifications', 'Notification settings would go here') },
+        { id: 5, icon: 'help-outline', label: 'Help & Support', action: () => Alert.alert('Support', 'Support would go here') },
+        { id: 6, icon: 'privacy-tip', label: 'Privacy Policy', action: () => Alert.alert('Privacy', 'Privacy policy would go here') },
+    ];
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-                <ProfileHeader />
-                
-                {/* Quick Actions */}
-                <View style={styles.quickActionsContainer}>
-                    {quickActions.map(action => (
-                        <QuickActionButton key={action.id} action={action} />
-                    ))}
+                {/* Header */}
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <MaterialIcons name="arrow-back" size={24} color="#1F2937" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>My Profile</Text>
+                    <View style={styles.placeholder} />
                 </View>
 
-                {/* Recent Orders */}
-                <View style={styles.section}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Recent Orders</Text>
-                        <TouchableOpacity onPress={() => handleQuickActionPress('OrderHistory')}>
-                            <Text style={styles.viewAllText}>View all</Text>
+                {/* Profile Info Card */}
+                <View style={styles.profileCard}>
+                    <View style={styles.avatarContainer}>
+                        <View style={styles.avatarPlaceholder}>
+                            <MaterialIcons name="person" size={48} color="#1e3b8a" />
+                        </View>
+                    </View>
+                    <Text style={styles.userName}>{user.name}</Text>
+                    <Text style={styles.userEmail}>{user.email}</Text>
+                    <View style={styles.memberSince}>
+                        <MaterialIcons name="event" size={14} color="#6B7280" />
+                        <Text style={styles.memberSinceText}>Member since {user.memberSince}</Text>
+                    </View>
+                </View>
+
+                {/* Stats Section */}
+                <View style={styles.statsContainer}>
+                    <View style={styles.statItem}>
+                        <Text style={styles.statValue}>12</Text>
+                        <Text style={styles.statLabel}>Orders</Text>
+                    </View>
+                    <View style={styles.statDivider} />
+                    <View style={styles.statItem}>
+                        <Text style={styles.statValue}>3</Text>
+                        <Text style={styles.statLabel}>Wishlist</Text>
+                    </View>
+                    <View style={styles.statDivider} />
+                    <View style={styles.statItem}>
+                        <Text style={styles.statValue}>$1,234</Text>
+                        <Text style={styles.statLabel}>Saved</Text>
+                    </View>
+                </View>
+
+                {/* Menu Items */}
+                <View style={styles.menuSection}>
+                    {menuItems.map((item) => (
+                        <TouchableOpacity 
+                            key={item.id} 
+                            style={styles.menuItem}
+                            onPress={item.action}
+                        >
+                            <View style={styles.menuLeft}>
+                                <MaterialIcons name={item.icon} size={24} color="#6B7280" />
+                                <Text style={styles.menuLabel}>{item.label}</Text>
+                            </View>
+                            <MaterialIcons name="chevron-right" size={24} color="#D1D5DB" />
                         </TouchableOpacity>
-                    </View>
-                    <View style={styles.ordersContainer}>
-                        {recentOrders.map(order => (
-                            <OrderItem key={order.id} order={order} />
-                        ))}
-                    </View>
-                </View>
-
-                {/* Account Settings */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Account Settings</Text>
-                    <View style={styles.settingsCard}>
-                        {accountSettings.map(setting => (
-                            <SettingItem key={setting.id} setting={setting} />
-                        ))}
-                    </View>
+                    ))}
                 </View>
 
                 {/* Logout Button */}
                 <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                    <Text style={styles.logoutText}>Log Out</Text>
+                    <MaterialIcons name="logout" size={24} color="#EF4444" />
+                    <Text style={styles.logoutText}>Logout</Text>
                 </TouchableOpacity>
+
+                {/* App Version */}
+                <Text style={styles.versionText}>TimeDrop v1.0.0</Text>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 };
 
