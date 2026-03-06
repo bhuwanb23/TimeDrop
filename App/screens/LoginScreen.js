@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 const LoginScreen = () => {
     const [userType, setUserType] = useState('driver'); // 'driver' or 'customer'
@@ -99,8 +99,8 @@ const LoginScreen = () => {
                                 style={[styles.tab, userType === 'driver' && styles.tabActive]}
                                 onPress={() => setUserType('driver')}
                             >
-                                <MaterialIcons 
-                                    name="local-shipping" 
+                                <Ionicons 
+                                    name="car-sport" 
                                     size={20} 
                                     color={userType === 'driver' ? '#fff' : '#6B7280'} 
                                 />
@@ -111,8 +111,8 @@ const LoginScreen = () => {
                                 style={[styles.tab, userType === 'customer' && styles.tabActive]}
                                 onPress={() => setUserType('customer')}
                             >
-                                <MaterialIcons 
-                                    name="shopping-bag" 
+                                <Ionicons 
+                                    name="bag-handle-outline" 
                                     size={20} 
                                     color={userType === 'customer' ? '#fff' : '#6B7280'} 
                                 />
@@ -127,7 +127,7 @@ const LoginScreen = () => {
                         {/* Phone Number Input */}
                         <View style={styles.inputGroup}>
                             <View style={styles.inputWrapper}>
-                                <MaterialIcons name="phone-android" size={20} color="#1e3b8a" style={styles.inputIcon} />
+                                <Ionicons name="call-outline" size={20} color="#1e3b8a" style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Phone Number"
@@ -143,7 +143,7 @@ const LoginScreen = () => {
                         {/* Password Input */}
                         <View style={styles.inputGroup}>
                             <View style={styles.inputWrapper}>
-                                <MaterialIcons name="lock-outline" size={20} color="#1e3b8a" style={styles.inputIcon} />
+                                <Ionicons name="lock-closed-outline" size={20} color="#1e3b8a" style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Password"
@@ -157,8 +157,8 @@ const LoginScreen = () => {
                                     style={styles.eyeButton}
                                     onPress={() => setIsPasswordVisible(!isPasswordVisible)}
                                 >
-                                    <MaterialIcons
-                                        name={isPasswordVisible ? 'visibility-off' : 'visibility'}
+                                    <Ionicons
+                                        name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
                                         size={20}
                                         color="#6B7280"
                                     />
@@ -168,14 +168,14 @@ const LoginScreen = () => {
 
                         {/* Forgot Password */}
                         <TouchableOpacity style={styles.forgotPasswordButton} onPress={handleForgotPassword}>
-                            <MaterialIcons name="help-outline" size={14} color="#1e3b8a" />
+                            <Ionicons name="help-circle-outline" size={14} color="#1e3b8a" />
                             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                         </TouchableOpacity>
 
                         {/* Login Button - Gradient Style */}
                         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                             <Text style={styles.loginButtonText}>Sign In</Text>
-                            <MaterialIcons name="arrow-forward" size={20} color="#fff" style={styles.loginButtonIcon} />
+                            <Ionicons name="arrow-forward-outline" size={20} color="#fff" style={styles.loginButtonIcon} />
                         </TouchableOpacity>
                     </View>
 
@@ -189,13 +189,13 @@ const LoginScreen = () => {
                     {/* Social Logins - Circular Buttons */}
                     <View style={styles.socialContainer}>
                         <TouchableOpacity style={styles.socialButtonCircle} onPress={handleGoogleLogin}>
-                            <MaterialIcons name="g-mobiledata" size={28} color="#DB4437" />
+                            <Ionicons name="logo-google" size={28} color="#DB4437" />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.socialButtonCircle} onPress={handleFacebookLogin}>
-                            <MaterialIcons name="facebook" size={28} color="#4267B2" />
+                            <Ionicons name="logo-facebook" size={28} color="#4267B2" />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.socialButtonCircle} onPress={handleSignUp}>
-                            <MaterialIcons name="mail-outline" size={28} color="#1e3b8a" />
+                            <Ionicons name="mail-outline" size={28} color="#1e3b8a" />
                         </TouchableOpacity>
                     </View>
 
@@ -209,7 +209,7 @@ const LoginScreen = () => {
 
                     {/* Sample Credentials Info */}
                     <View style={styles.credentialsInfo}>
-                        <MaterialIcons name="info-outline" size={16} color="#6B7280" />
+                        <Ionicons name="information-circle-outline" size={16} color="#6B7280" />
                         <Text style={styles.credentialsInfoText}>
                             Demo: {userType === 'driver' ? '1234567890' : '9876543210'} / password123
                         </Text>
