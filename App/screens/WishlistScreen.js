@@ -1,207 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Alert, ActivityIndicator, RefreshControl, Text } from 'react-native';
-import WishlistHeader from '../components/WishlistHeader';
-import WishlistItem from '../components/WishlistItem';
-import apiService from '../services/api';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, RefreshControl, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
+// Removed: import apiService from '../services/api';
 
-const WishlistScreen = ({ navigation }) => {
-    const [wishlistItems, setWishlistItems] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
-    const [error, setError] = useState(null);
-
-    const handleRemoveItem = async (itemId) => {
-        try {
-            await apiService.wishlist.removeFromWishlist(itemId);
-            setWishlistItems(prevItems => 
-                prevItems.filter(item => item.id !== itemId)
-            );
-            Alert.alert('Success', 'Item removed from wishlist');
-        } catch (error) {
-            console.error('Error removing item:', error);
-            Alert.alert('Error', 'Failed to remove item from wishlist');
+const WishlistScreen = () => {
+    const navigation = useNavigation();
+    
+    // Mock wishlist data
+    const [wishlistItems, setWishlistItems] = useState([
+        { 
+            id: 1, 
+            name: 'Wireless Bluetooth Headphones', 
+            price: 79.99, 
+            image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+            inStock: true
+        },
+        { 
+            id: 2, 
+            name: 'Smart Watch Series 7', 
+            price: 399.99, 
+            image_url: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400',
+            inStock: true
+        },
+        { 
+            id: 3, 
+            name: 'Professional Camera Lens', 
+            price: 899.99, 
+            image_url: 'https://images.unsplash.com/photo-1617005082133-548c4dd27f35?w=400',
+            inStock: false
+        },
+        { 
+            id: 4, 
+            name: 'Running Shoes Pro', 
+            price: 129.99, 
+            image_url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+            inStock: true
         }
+    ]);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
+    // Simple refresh handler - no API calls
+    const onRefresh = () => {
+        setRefreshing(true);
+        setTimeout(() => setRefreshing(false), 1000);
     };
 
-    const handleMoveToCart = (item) => {
-        // Here you would add the item to cart using cart context
-        console.log('Moving to cart:', item.product?.name || item.name);
-        // Remove from wishlist after moving to cart
-        handleRemoveItem(item.id);
-    };
-
-    const handleClearAll = async () => {
+    const handleRemoveItem = (itemId) => {
         Alert.alert(
-            'Clear Wishlist',
-            'Are you sure you want to remove all items from your wishlist?',
+            'Remove Item',
+            'Are you sure you want to remove this item?',
             [
                 { text: 'Cancel', style: 'cancel' },
                 { 
-                    text: 'Clear All', 
-                    style: 'destructive', 
-                    onPress: async () => {
-                        try {
-                            await apiService.wishlist.clearWishlist();
-                            setWishlistItems([]);
-                            Alert.alert('Success', 'Wishlist cleared');
-                        } catch (error) {
-                            console.error('Error clearing wishlist:', error);
-                            Alert.alert('Error', 'Failed to clear wishlist');
-                        }
+                    text: 'Remove', 
+                    style: 'destructive',
+                    onPress: () => {
+                        setWishlistItems(prev => prev.filter(item => item.id !== itemId));
                     }
                 }
             ]
         );
     };
 
-    // Load wishlist from backend
-    const loadWishlist = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            
-            const response = await apiService.wishlist.getWishlist({
-                page: 1,
-                limit: 20
-            });
-            
-            if (response.data && response.data.data && response.data.data.wishlistItems) {
-                setWishlistItems(response.data.data.wishlistItems);
-            }
-            
-            setError(null);
-        } catch (err) {
-            console.error('Error loading wishlist:', err);
-            setError(err.message || 'Failed to load wishlist');
-            
-            if (!refreshing) {
-                Alert.alert('Error', 'Could not load wishlist. Please check your connection.');
-            }
-        } finally {
-            setLoading(false);
-            setRefreshing(false);
-        }
+    const handleClearAll = () => {
+        Alert.alert(
+            'Clear Wishlist',
+            'Remove all items from your wishlist?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { 
+                    text: 'Clear All', 
+                    style: 'destructive',
+                    onPress: () => {
+                        setWishlistItems([]);
+                    }
+                }
+            ]
+        );
     };
 
-    useEffect(() => {
-        loadWishlist();
-    }, []);
-
-    const onRefresh = () => {
-        setRefreshing(true);
-        loadWishlist();
+    const handleAddToCart = (item) => {
+        Alert.alert('Added to Cart', `${item.name} has been added to your cart.`);
     };
+
+    const renderWishlistItem = ({ item }) => (
+        <View style={styles.itemCard}>
+            <View style={styles.itemImageContainer}>
+                <View style={styles.itemImagePlaceholder}>
+                    <MaterialIcons name="image" size={32} color="#9CA3AF" />
+                </View>
+                {!item.inStock && (
+                    <View style={styles.outOfStockBadge}>
+                        <Text style={styles.outOfStockText}>Out of Stock</Text>
+                    </View>
+                )}
+            </View>
+            <View style={styles.itemDetails}>
+                <Text style={styles.itemName}>{item.name}</Text>
+                <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+                <View style={styles.itemActions}>
+                    <TouchableOpacity 
+                        style={[styles.addToCartButton, !item.inStock && styles.addToCartButtonDisabled]}
+                        onPress={() => handleAddToCart(item)}
+                        disabled={!item.inStock}
+                    >
+                        <MaterialIcons name="shopping-cart" size={20} color="#fff" />
+                        <Text style={styles.addToCartText}>Add to Cart</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={styles.removeButton}
+                        onPress={() => handleRemoveItem(item.id)}
+                    >
+                        <MaterialIcons name="delete-outline" size={20} color="#EF4444" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+    );
 
     return (
-        <View style={styles.container}>
-            {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#1152d4" />
-                    <Text style={styles.loadingText}>Loading your wishlist...</Text>
-                </View>
-            ) : error ? (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <MaterialIcons name="arrow-back" size={24} color="#1F2937" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>My Wishlist</Text>
+                {wishlistItems.length > 0 && (
+                    <TouchableOpacity onPress={handleClearAll} style={styles.clearButton}>
+                        <MaterialIcons name="delete-sweep" size={20} color="#EF4444" />
+                    </TouchableOpacity>
+                )}
+            </View>
+
+            {wishlistItems.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                    <MaterialIcons name="favorite-border" size={64} color="#D1D5DB" />
+                    <Text style={styles.emptyTitle}>Your wishlist is empty</Text>
+                    <Text style={styles.emptyText}>Start adding items you love!</Text>
+                    <TouchableOpacity 
+                        style={styles.browseButton}
+                        onPress={() => navigation.navigate('ProductCatalog')}
+                    >
+                        <Text style={styles.browseButtonText}>Browse Products</Text>
+                    </TouchableOpacity>
                 </View>
             ) : (
-                <ScrollView 
-                    style={styles.scrollView}
-                    contentContainerStyle={styles.contentContainer}
+                <FlatList
+                    data={wishlistItems}
+                    renderItem={renderWishlistItem}
+                    keyExtractor={(item) => item.id.toString()}
+                    contentContainerStyle={styles.listContent}
                     showsVerticalScrollIndicator={false}
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
                             onRefresh={onRefresh}
-                            colors={['#1152d4']}
-                            tintColor="#1152d4"
+                            colors={['#1e3b8a']}
+                            tintColor="#1e3b8a"
                         />
                     }
-                >
-                    <WishlistHeader 
-                        itemCount={wishlistItems.length}
-                        onClearAll={handleClearAll}
-                    />
-                    
-                    <View style={styles.itemsContainer}>
-                        {wishlistItems.map(item => (
-                            <View key={item.id.toString()} style={styles.itemWrapper}>
-                                <WishlistItem 
-                                    item={item.product || item}
-                                    wishlistItemId={item.id}
-                                    onRemove={handleRemoveItem}
-                                    onMoveToCart={handleMoveToCart}
-                                />
-                            </View>
-                        ))}
-                    </View>
-                    
-                    {wishlistItems.length === 0 && !loading && (
-                        <View style={styles.emptyState}>
-                            <Text style={styles.emptyText}>Your wishlist is empty</Text>
-                            <Text style={styles.emptySubtext}>Start adding items you love!</Text>
-                        </View>
-                    )}
-                </ScrollView>
+                />
             )}
-        </View>
+        </SafeAreaView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f6f6f8',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loadingText: {
-        marginTop: 16,
-        fontSize: 16,
-        color: '#64748b',
-    },
-    errorContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 24,
-    },
-    errorText: {
-        fontSize: 14,
-        color: '#ef4444',
-        textAlign: 'center',
-    },
-    scrollView: {
-        flex: 1,
-    },
-    contentContainer: {
-        paddingBottom: 112, // Space for bottom navbar
-    },
-    itemsContainer: {
-        paddingHorizontal: 16,
-        gap: 12,
-    },
-    itemWrapper: {
-        // Each wishlist item will have its own styling
-    },
-    emptyState: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingVertical: 80,
-    },
-    emptyText: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#64748b',
-        marginBottom: 8,
-    },
-    emptySubtext: {
-        fontSize: 14,
-        color: '#94a3b8',
-    },
-});
-
-export default WishlistScreen;

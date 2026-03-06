@@ -1,236 +1,165 @@
 import React, { useState } from 'react';
-import { View, ScrollView, Alert, StyleSheet, SafeAreaView } from 'react-native';
-import { navigate } from '../utils/RootNavigation';
-import { useCart } from '../context/CartContext';
-import apiService from '../services/api';
-import CheckoutHeader from '../components/CheckoutHeader';
-import ShippingAddressForm from '../components/ShippingAddressForm';
-import PaymentMethodForm from '../components/PaymentMethodForm';
-import OrderReview from '../components/OrderReview';
-import CustomerBottomNavbar from '../components/CustomerBottomNavbar';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
+// Removed: import apiService from '../services/api';
 
 const CheckoutScreen = ({ navigation }) => {
-    const [currentStep, setCurrentStep] = useState(1);
-    const [checkoutData, setCheckoutData] = useState({
-        // Shipping Address Data
-        fullName: '',
-        phone: '',
-        address: '',
-        city: '',
-        state: '',
-        zip: '',
-        saveAddress: false,
-        
-        // Payment Data
-        paymentMethod: 'card',
-        cardholderName: '',
-        cardNumber: '',
-        expiry: '',
-        cvv: '',
-        saveCard: false,
-    });
+    const [loading, setLoading] = useState(false);
     
-    // Cart context
-    const { items: cartItems, totalAmount: cartTotal, clearCart } = useCart();
+    // Mock checkout data
+    const [checkoutData] = useState({
+        items: [
+            { id: 1, name: 'Wireless Bluetooth Headphones', price: 79.99, quantity: 1 },
+            { id: 2, name: 'Smart Watch Series 7', price: 399.99, quantity: 1 }
+        ],
+        subtotal: 479.98,
+        deliveryFee: 5.99,
+        tax: 48.00,
+        total: 533.97
+    });
 
-    const handleStepChange = (step) => {
-        // Only allow navigation to completed or current steps
-        if (step <= currentStep) {
-            setCurrentStep(step);
-        }
-    };
+    const [paymentMethod, setPaymentMethod] = useState('card');
+    const [deliveryAddress, setDeliveryAddress] = useState('123 Main St, San Francisco, CA 94102');
 
-    const handleBack = () => {
-        if (currentStep > 1) {
-            setCurrentStep(currentStep - 1);
-        } else {
-            // Navigate back to cart screen
-            navigation.navigate('Cart');
-        }
-    };
-
-    const handleNext = () => {
-        if (currentStep < 3) {
-            setCurrentStep(currentStep + 1);
-        }
-    };
-
-    const handleFormDataChange = (newData) => {
-        setCheckoutData(prev => ({ ...prev, ...newData }));
-    };
-
-    const handlePlaceOrder = async () => {
-        // Validate all required data before placing order
-        if (!checkoutData.fullName || !checkoutData.cardholderName) {
-            Alert.alert('Missing Information', 'Please complete all required fields');
-            return;
-        }
-        
-        if (cartItems.length === 0) {
-            Alert.alert('Empty Cart', 'Cannot place an order with an empty cart');
-            return;
-        }
-        
-        try {
-            // Show loading indicator
+    const handlePlaceOrder = () => {
+        setLoading(true);
+        // Simulate order placement
+        setTimeout(() => {
+            setLoading(false);
             Alert.alert(
-                'Placing Order...',
-                'Please wait while we process your order',
-                []
+                'Order Placed!',
+                'Your order has been successfully placed.',
+                [{ text: 'OK', onPress: () => navigation.navigate('MyOrders') }]
             );
-            
-            // Prepare order data
-            const orderData = {
-                items: cartItems.map(item => ({
-                    product_id: item.productId,
-                    quantity: item.quantity,
-                    notes: `Size: ${item.size || 'N/A'}, Color: ${item.color || 'N/A'}`
-                })),
-                delivery_address: {
-                    full_name: checkoutData.fullName,
-                    phone: checkoutData.phone,
-                    address: checkoutData.address,
-                    city: checkoutData.city,
-                    state: checkoutData.state,
-                    zip: checkoutData.zip
-                },
-                delivery_notes: 'Please deliver as soon as possible',
-                payment_method: checkoutData.paymentMethod,
-                total_amount: cartTotal
-            };
-            
-            // Place order via API
-            const response = await apiService.orders.createOrder(orderData);
-            
-            if (response && response.data) {
-                // Clear the cart after successful order placement
-                clearCart();
-                
-                Alert.alert(
-                    'Order Placed Successfully!',
-                    `Thank you for your order. Your order ID is #${response.data.id}. You will receive a confirmation email shortly.`,
-                    [
-                        {
-                            text: 'OK',
-                            onPress: () => {
-                                // Reset form and navigate to home
-                                setCheckoutData({
-                                    fullName: '',
-                                    phone: '',
-                                    address: '',
-                                    city: '',
-                                    state: '',
-                                    zip: '',
-                                    saveAddress: false,
-                                    paymentMethod: 'card',
-                                    cardholderName: '',
-                                    cardNumber: '',
-                                    expiry: '',
-                                    cvv: '',
-                                    saveCard: false,
-                                });
-                                setCurrentStep(1);
-                                // Navigate to home screen after successful order
-                                navigation.navigate('CustomerTabs', { screen: 'Home' });
-                            }
-                        }
-                    ]
-                );
-            } else {
-                throw new Error('Invalid response from server');
-            }
-        } catch (error) {
-            console.error('Error placing order:', error);
-            Alert.alert(
-                'Order Failed',
-                `Failed to place order: ${error.message || 'Unknown error occurred'}`
-            );
-        }
-    };
-
-    const renderCurrentStep = () => {
-        switch (currentStep) {
-            case 1:
-                return (
-                    <ShippingAddressForm
-                        formData={checkoutData}
-                        onFormDataChange={handleFormDataChange}
-                        onNext={handleNext}
-                    />
-                );
-            case 2:
-                return (
-                    <PaymentMethodForm
-                        formData={checkoutData}
-                        onFormDataChange={handleFormDataChange}
-                        onBack={handleBack}
-                        onNext={handleNext}
-                    />
-                );
-            case 3:
-                return (
-                    <OrderReview
-                        formData={checkoutData}
-                        onBack={handleBack}
-                        onPlaceOrder={handlePlaceOrder}
-                        cartItems={cartItems}
-                        cartTotal={cartTotal}
-                    />
-                );
-            default:
-                return null;
-        }
+        }, 1500);
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            <CheckoutHeader
-                currentStep={currentStep}
-                onStepPress={handleStepChange}
-                onBack={handleBack}
-            />
-            
-            <ScrollView 
-                style={styles.scrollView}
-                contentContainerStyle={styles.contentContainer}
-                showsVerticalScrollIndicator={true}
-                keyboardShouldPersistTaps="handled"
-                scrollEnabled={true}
-                bounces={false}
-                nestedScrollEnabled={true}
-            >
-                {renderCurrentStep()}
+            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <MaterialIcons name="arrow-back" size={24} color="#1F2937" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Checkout</Text>
+                    <View style={styles.placeholder} />
+                </View>
+
+                {/* Delivery Address */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Delivery Address</Text>
+                    <View style={styles.addressCard}>
+                        <MaterialIcons name="location-on" size={24} color="#1e3b8a" />
+                        <View style={styles.addressDetails}>
+                            <Text style={styles.addressLabel}>Home</Text>
+                            <Text style={styles.addressText}>{deliveryAddress}</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => Alert.alert('Edit Address', 'Address editing would go here')}>
+                            <MaterialIcons name="edit" size={20} color="#1e3b8a" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* Order Summary */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Order Summary</Text>
+                    <View style={styles.summaryCard}>
+                        {checkoutData.items.map((item) => (
+                            <View key={item.id} style={styles.summaryItem}>
+                                <View style={styles.itemInfo}>
+                                    <Text style={styles.itemName}>{item.name}</Text>
+                                    <Text style={styles.itemQuantity}>Qty: {item.quantity}</Text>
+                                </View>
+                                <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+                            </View>
+                        ))}
+                        
+                        <View style={styles.divider} />
+                        
+                        <View style={styles.totalRow}>
+                            <Text style={styles.totalLabel}>Subtotal</Text>
+                            <Text style={styles.totalValue}>${checkoutData.subtotal.toFixed(2)}</Text>
+                        </View>
+                        <View style={styles.totalRow}>
+                            <Text style={styles.totalLabel}>Delivery Fee</Text>
+                            <Text style={styles.totalValue}>${checkoutData.deliveryFee.toFixed(2)}</Text>
+                        </View>
+                        <View style={styles.totalRow}>
+                            <Text style={styles.totalLabel}>Tax</Text>
+                            <Text style={styles.totalValue}>${checkoutData.tax.toFixed(2)}</Text>
+                        </View>
+                        
+                        <View style={[styles.totalRow, styles.grandTotal]}>
+                            <Text style={[styles.totalLabel, styles.grandTotalLabel]}>Total</Text>
+                            <Text style={[styles.totalValue, styles.grandTotalValue]}>${checkoutData.total.toFixed(2)}</Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Payment Method */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Payment Method</Text>
+                    <View style={styles.paymentMethods}>
+                        <TouchableOpacity 
+                            style={[styles.paymentMethod, paymentMethod === 'card' && styles.paymentMethodActive]}
+                            onPress={() => setPaymentMethod('card')}
+                        >
+                            <MaterialIcons 
+                                name="credit-card" 
+                                size={24} 
+                                color={paymentMethod === 'card' ? '#fff' : '#1e3b8a'} 
+                            />
+                            <Text style={[styles.paymentMethodText, paymentMethod === 'card' && styles.paymentMethodTextActive]}>
+                                Card
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                            style={[styles.paymentMethod, paymentMethod === 'cash' && styles.paymentMethodActive]}
+                            onPress={() => setPaymentMethod('cash')}
+                        >
+                            <MaterialIcons 
+                                name="money" 
+                                size={24} 
+                                color={paymentMethod === 'cash' ? '#fff' : '#1e3b8a'} 
+                            />
+                            <Text style={[styles.paymentMethodText, paymentMethod === 'cash' && styles.paymentMethodTextActive]}>
+                                Cash
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                            style={[styles.paymentMethod, paymentMethod === 'digital' && styles.paymentMethodActive]}
+                            onPress={() => setPaymentMethod('digital')}
+                        >
+                            <MaterialIcons 
+                                name="phone-android" 
+                                size={24} 
+                                color={paymentMethod === 'digital' ? '#fff' : '#1e3b8a'} 
+                            />
+                            <Text style={[styles.paymentMethodText, paymentMethod === 'digital' && styles.paymentMethodTextActive]}>
+                                Digital
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* Place Order Button */}
+                <TouchableOpacity 
+                    style={[styles.placeOrderButton, loading && styles.placeOrderButtonDisabled]} 
+                    onPress={handlePlaceOrder}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator color="#fff" />
+                    ) : (
+                        <>
+                            <Text style={styles.placeOrderButtonText}>Place Order</Text>
+                            <MaterialIcons name="shopping-cart-checkout" size={24} color="#fff" />
+                        </>
+                    )}
+                </TouchableOpacity>
             </ScrollView>
-            
-            <View style={styles.bottomNavbarContainer}>
-                <CustomerBottomNavbar
-                    activeTab="Cart" // Show cart as active since we're in checkout
-                    onTabPress={(tab) => {
-                        if (tab !== 'Checkout') { // Don't allow navigation away from checkout
-                            navigation.navigate(tab);
-                        }
-                    }}
-                />
-            </View>
         </SafeAreaView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f6f6f8',
-    },
-    scrollView: {
-        flex: 1,
-    },
-    contentContainer: {
-        paddingBottom: 24, // Space for content
-    },
-    bottomNavbarContainer: {
-        position: 'relative',
-        zIndex: 10,
-    },
-});
-
-export default CheckoutScreen;
