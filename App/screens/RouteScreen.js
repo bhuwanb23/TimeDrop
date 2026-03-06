@@ -59,7 +59,8 @@ const RouteScreen = ({ navigation }) => {
 
     const handleNavigate = (delivery) => {
         console.log('Navigating to:', delivery.address);
-        // In a real app, this would open maps navigation
+        // Navigate to the detailed navigation screen
+        navigation.navigate('DeliveryNavigation', { delivery });
     };
 
     const renderDeliveryCard = (delivery, index) => (

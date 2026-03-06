@@ -1,325 +1,176 @@
-import React, { useState, useEffect } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    Alert,
-    ActivityIndicator,
-    SafeAreaView,
-    ScrollView,
-} from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import RouteCalculator, { getDistanceText, getDurationText } from '../utils/RouteCalculator';
-import ExternalNavigation from '../utils/ExternalNavigation';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
-const DeliveryNavigationScreen = () => {
-    const navigation = useNavigation();
-    const route = useRoute();
+const DeliveryNavigationScreen = ({ route, navigation }) => {
     const { delivery } = route.params || {};
-
-    const [loading, setLoading] = useState(true);
-    const [routeData, setRouteData] = useState(null);
-    const [turnByTurnInstructions, setTurnByTurnInstructions] = useState([]);
-
-    useEffect(() => {
-        if (delivery) {
-            loadRouteData();
-        } else {
-            Alert.alert(
-                'Error',
-                'No delivery information provided',
-                [{ text: 'OK', onPress: () => navigation.goBack() }]
-            );
-        }
-    }, []);
-
-    const loadRouteData = async () => {
-        try {
-            setLoading(true);
-
-            // Extract coordinates from delivery data
-            const pickupCoords = extractCoordinates(delivery.pickup_location);
-            const dropoffCoords = extractCoordinates(delivery.dropoff_location);
-
-            if (!pickupCoords || !dropoffCoords) {
-                throw new Error('Invalid coordinates');
+    
+    // Mock data if no delivery passed
+    const deliveryData = delivery || {
+        id: 1,
+        orderNumber: 'ORD-98210',
+        customerName: 'John Doe',
+        address: '123 Main St, San Francisco, CA 94102',
+        phone: '(555) 123-4567',
+        email: 'john.doe@example.com',
+        items: [
+            { 
+                id: 1, 
+                name: 'Wireless Bluetooth Headphones', 
+                price: 79.99, 
+                quantity: 1,
+                image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400'
+            },
+            { 
+                id: 2, 
+                name: 'Smart Watch Series 7', 
+                price: 399.99, 
+                quantity: 1,
+                image_url: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400'
             }
+        ],
+        totalAmount: '$479.98',
+        estimatedTime: '2:15 PM',
+        distance: '2.3 km',
+        status: 'in_transit'
+    };
 
-            // Calculate route
-            const calculatedRoute = await RouteCalculator.calculateRoute(pickupCoords, dropoffCoords);
-            
-            // Generate turn-by-turn instructions (mock data for now)
-            const instructions = generateTurnByTurnInstructions(delivery, pickupCoords, dropoffCoords);
-            setTurnByTurnInstructions(instructions);
+    const [currentStep, setCurrentStep] = useState(0);
+    const [showQRCode, setShowQRCode] = useState(false);
 
-            setRouteData({
-                ...calculatedRoute,
-                pickup: pickupCoords,
-                dropoff: dropoffCoords
-            });
-
-            // Set map region to show both points
-            const midLat = (pickupCoords.latitude + dropoffCoords.latitude) / 2;
-            const midLng = (pickupCoords.longitude + dropoffCoords.longitude) / 2;
-            
-            setRegion({
-                latitude: midLat,
-                longitude: midLng,
-                latitudeDelta: 0.08,
-                longitudeDelta: 0.08
-            });
-
-            setLoading(false);
-        } catch (error) {
-            console.error('Error loading route data:', error);
-            Alert.alert(
-                'Error',
-                'Failed to load route information',
-                [{ text: 'OK', onPress: () => navigation.goBack() }]
-            );
+    // Turn-by-turn navigation instructions
+    const navigationSteps = [
+        {
+            id: 1,
+            instruction: 'Head north on Market St toward 4th St',
+            distance: '0.2 km',
+            duration: '2 min',
+            icon: 'arrow-upward',
+            type: 'start'
+        },
+        {
+            id: 2,
+            instruction: 'Turn right onto 4th St',
+            distance: '0.3 km',
+            duration: '3 min',
+            icon: 'turn-right',
+            type: 'turn'
+        },
+        {
+            id: 3,
+            instruction: 'Continue straight onto Mission St',
+            distance: '0.5 km',
+            duration: '5 min',
+            icon: 'arrow-forward',
+            type: 'straight'
+        },
+        {
+            id: 4,
+            instruction: 'Turn left onto Valencia St',
+            distance: '0.4 km',
+            duration: '4 min',
+            icon: 'turn-left',
+            type: 'turn'
+        },
+        {
+            id: 5,
+            instruction: 'Turn right onto 17th St',
+            distance: '0.3 km',
+            duration: '3 min',
+            icon: 'turn-right',
+            type: 'turn'
+        },
+        {
+            id: 6,
+            instruction: 'Arrive at destination on the right',
+            distance: '0.1 km',
+            duration: '1 min',
+            icon: 'location',
+            type: 'arrive'
         }
-    };
+    ];
 
-    const extractCoordinates = (location) => {
-        if (!location) return null;
-        
-        try {
-            // Handle both string and object formats
-            const loc = typeof location === 'string' ? JSON.parse(location) : location;
-            
-            if (loc.latitude && loc.longitude) {
-                return {
-                    latitude: loc.latitude,
-                    longitude: loc.longitude,
-                    address: loc.address
-                };
-            }
-            
-            // If no coordinates, generate mock coordinates based on address hash
-            return generateMockCoordinates(loc.address || 'Unknown');
-        } catch (e) {
-            return generateMockCoordinates(typeof location === 'string' ? location : 'Unknown');
-        }
-    };
-
-    const generateMockCoordinates = (addressStr) => {
-        // Base coordinates (San Francisco)
-        const baseLat = 37.7749;
-        const baseLng = -122.4194;
-        
-        // Create a simple hash from the address string
-        let hash = 0;
-        const str = String(addressStr);
-        for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        
-        // Convert hash to coordinate offsets
-        const latOffset = (hash % 1000) / 10000;
-        const lngOffset = ((hash >> 5) % 1000) / 10000;
-        
-        return {
-            latitude: baseLat + latOffset,
-            longitude: baseLng + lngOffset,
-            address: addressStr
-        };
-    };
-
-    // Generate turn-by-turn navigation instructions
-    const generateTurnByTurnInstructions = (delivery, pickup, dropoff) => {
-        // Detailed turn-by-turn instructions for delivery
-        return [
-            {
-                id: 1,
-                instruction: 'Head north on Market St toward 4th St',
-                distance: '0.2 km',
-                icon: 'arrow-upward',
-                type: 'start',
-                detail: 'Start from TechHub Warehouse'
-            },
-            {
-                id: 2,
-                instruction: 'Turn right onto 4th St',
-                distance: '0.3 km',
-                icon: 'turn-right',
-                type: 'turn',
-                detail: 'Continue for 2 blocks'
-            },
-            {
-                id: 3,
-                instruction: 'Turn left onto Mission St',
-                distance: '0.5 km',
-                icon: 'turn-left',
-                type: 'turn',
-                detail: 'Watch for traffic lights'
-            },
-            {
-                id: 4,
-                instruction: 'Continue straight through intersection',
-                distance: '0.4 km',
-                icon: 'straight',
-                type: 'straight',
-                detail: 'Stay in right lane'
-            },
-            {
-                id: 5,
-                instruction: 'Turn right onto Valencia St',
-                distance: '0.6 km',
-                icon: 'turn-right',
-                type: 'turn',
-                detail: 'Pass by the park on your left'
-            },
-            {
-                id: 6,
-                instruction: 'Turn left onto 16th St',
-                distance: '0.3 km',
-                icon: 'turn-left',
-                type: 'turn',
-                detail: 'Residential area - reduce speed'
-            },
-            {
-                id: 7,
-                instruction: 'Arrive at pickup location',
-                distance: '0 m',
-                icon: 'store',
-                type: 'pickup',
-                detail: `${pickup.address || 'Pickup Point'} - Collect order #${delivery.orderNumber}`
-            },
-            {
-                id: 8,
-                instruction: 'Head south on Guerrero St',
-                distance: '0.4 km',
-                icon: 'arrow-upward',
-                type: 'start',
-                detail: 'Proceed to customer location'
-            },
-            {
-                id: 9,
-                instruction: 'Turn right onto 18th St',
-                distance: '0.5 km',
-                icon: 'turn-right',
-                type: 'turn',
-                detail: 'Continue through Mission District'
-            },
-            {
-                id: 10,
-                instruction: 'Turn left onto South Van Ness Ave',
-                distance: '0.7 km',
-                icon: 'turn-left',
-                type: 'turn',
-                detail: 'Major road - use caution'
-            },
-            {
-                id: 11,
-                instruction: 'Continue onto Van Ness Ave',
-                distance: '0.8 km',
-                icon: 'straight',
-                type: 'straight',
-                detail: 'Stay straight for 4 blocks'
-            },
-            {
-                id: 12,
-                instruction: 'Turn right onto Oak St',
-                distance: '0.3 km',
-                icon: 'turn-right',
-                type: 'turn',
-                detail: 'Entering Hayes Valley'
-            },
-            {
-                id: 13,
-                instruction: 'Turn left onto Fillmore St',
-                distance: '0.2 km',
-                icon: 'turn-left',
-                type: 'turn',
-                detail: 'Shopping district ahead'
-            },
-            {
-                id: 14,
-                instruction: 'Destination will be on your right',
-                distance: '0.1 km',
-                icon: 'flag',
-                type: 'destination',
-                detail: `${dropoff.address || 'Dropoff Point'} - Customer: ${delivery.customerName}`
-            },
-            {
-                id: 15,
-                instruction: 'Arrived! Complete the delivery',
-                distance: '0 m',
-                icon: 'check-circle',
-                type: 'destination',
-                detail: 'Mark as delivered after handoff'
-            }
-        ];
-    };
-
-    const handleNavigate = () => {
-        if (!routeData) return;
-
+    const handleDeliverOrder = () => {
         Alert.alert(
-            'Open Navigation',
-            'Which app would you like to use?',
+            'Confirm Delivery',
+            'Have you handed the package to the customer?',
             [
-                {
-                    text: 'Google Maps',
-                    onPress: () => ExternalNavigation.openInGoogleMaps(routeData.pickup, routeData.dropoff)
-                },
-                {
-                    text: 'Apple Maps',
-                    onPress: () => ExternalNavigation.openInAppleMaps(routeData.pickup, routeData.dropoff)
-                },
-                {
-                    text: 'Waze',
-                    onPress: () => ExternalNavigation.openInWaze(routeData.pickup, routeData.dropoff)
-                },
-                {
-                    text: 'Cancel',
-                    style: 'cancel'
+                { text: 'Cancel', style: 'cancel' },
+                { 
+                    text: 'Yes, Deliver', 
+                    onPress: () => {
+                        setShowQRCode(true);
+                        Alert.alert(
+                            'Show QR Code',
+                            'Ask customer to scan the QR code to confirm delivery',
+                            [{ text: 'OK' }]
+                        );
+                    }
                 }
             ]
         );
     };
 
-    const handleCancel = () => {
-        navigation.goBack();
-    };
+    const renderNavigationStep = (step, index) => {
+        const isActive = index === currentStep;
+        const isCompleted = index < currentStep;
 
-    if (loading) {
         return (
-            <SafeAreaView style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#1152d4" />
-                <Text style={styles.loadingText}>Loading route...</Text>
-            </SafeAreaView>
+            <TouchableOpacity 
+                key={step.id} 
+                style={[
+                    styles.navStep,
+                    isActive && styles.navStepActive,
+                    isCompleted && styles.navStepCompleted
+                ]}
+                onPress={() => setCurrentStep(index)}
+            >
+                <View style={[
+                    styles.stepNumberContainer,
+                    isActive && styles.stepNumberContainerActive,
+                    isCompleted && styles.stepNumberContainerCompleted
+                ]}>
+                    {isCompleted ? (
+                        <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+                    ) : (
+                        <Text style={[
+                            styles.stepNumber,
+                            isActive && styles.stepNumberActive
+                        ]}>
+                            {index + 1}
+                        </Text>
+                    )}
+                </View>
+                
+                <View style={styles.stepLineContainer}>
+                    <View style={[
+                        styles.stepLine,
+                        isCompleted && styles.stepLineCompleted
+                    ]} />
+                </View>
+
+                <View style={styles.stepContent}>
+                    <View style={styles.stepHeader}>
+                        <Ionicons 
+                            name={step.icon} 
+                            size={20} 
+                            color={isActive ? '#1152d4' : '#94a3b8'} 
+                        />
+                        <Text style={[
+                            styles.stepInstruction,
+                            isActive && styles.stepInstructionActive
+                        ]}>
+                            {step.instruction}
+                        </Text>
+                    </View>
+                    <View style={styles.stepDetails}>
+                        <Text style={styles.stepDistance}>{step.distance}</Text>
+                        <Text style={styles.stepDuration}>• {step.duration}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
         );
-    }
-
-    if (!routeData) {
-        return null;
-    }
-
-    // Get icon for instruction type
-    const getInstructionIcon = (type) => {
-        const icons = {
-            start: 'navigation',
-            turn: 'turn-right',
-            straight: 'straight',
-            pickup: 'store',
-            destination: 'flag'
-        };
-        return icons[type] || 'circle';
-    };
-
-    // Get color for instruction type
-    const getInstructionColor = (type) => {
-        const colors = {
-            start: '#10B981',
-            turn: '#1152d4',
-            straight: '#64748B',
-            pickup: '#F59E0B',
-            destination: '#EF4444'
-        };
-        return colors[type] || '#64748B';
     };
 
     return (
@@ -330,112 +181,120 @@ const DeliveryNavigationScreen = () => {
                     style={styles.backButton}
                     onPress={() => navigation.goBack()}
                 >
-                    <MaterialIcons name="arrow-back-ios" size={20} color="#0f172a" />
+                    <Ionicons name="arrow-back" size={24} color="#111318" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Navigation Instructions</Text>
-                <View style={styles.headerPlaceholder} />
+                <View style={styles.headerCenter}>
+                    <Text style={styles.headerTitle}>Delivery Navigation</Text>
+                    <Text style={styles.headerSubtitle}>{deliveryData.orderNumber}</Text>
+                </View>
+                <View style={styles.headerRight} />
             </View>
 
-            {/* Route Summary Card */}
-            <View style={styles.routeSummary}>
-                <View style={styles.summaryItem}>
-                    <MaterialIcons name="route" size={24} color="#1152d4" />
-                    <Text style={styles.summaryLabel}>Distance</Text>
-                    <Text style={styles.summaryValue}>{getDistanceText(routeData.distance)}</Text>
-                </View>
-                <View style={styles.summaryDivider} />
-                <View style={styles.summaryItem}>
-                    <MaterialIcons name="access-time" size={24} color="#1152d4" />
-                    <Text style={styles.summaryLabel}>Duration</Text>
-                    <Text style={styles.summaryValue}>{getDurationText(routeData.duration)}</Text>
-                </View>
-                <View style={styles.summaryDivider} />
-                <View style={styles.summaryItem}>
-                    <MaterialIcons name="confirmation-number" size={24} color="#1152d4" />
-                    <Text style={styles.summaryLabel}>Order</Text>
-                    <Text style={styles.summaryValue}>#{delivery.orderNumber}</Text>
-                </View>
-            </View>
-
-            {/* Turn-by-Turn Instructions */}
-            <ScrollView style={styles.instructionsContainer} showsVerticalScrollIndicator={false}>
-                <Text style={styles.instructionsTitle}>Turn-by-Turn Directions</Text>
-                
-                {turnByTurnInstructions.map((instruction, index) => (
-                    <View key={instruction.id} style={styles.instructionCard}>
-                        <View style={[
-                            styles.instructionIconContainer,
-                            { backgroundColor: `${getInstructionColor(instruction.type)}20` }
-                        ]}>
-                            <MaterialIcons 
-                                name={getInstructionIcon(instruction.type)} 
-                                size={28} 
-                                color={getInstructionColor(instruction.type)} 
-                            />
-                        </View>
-                        <View style={styles.instructionContent}>
-                            <Text style={styles.instructionStep}>Step {index + 1}</Text>
-                            <Text style={styles.instructionText}>{instruction.instruction}</Text>
-                            <Text style={styles.instructionDetail}>{instruction.detail}</Text>
-                            <Text style={styles.instructionDistance}>{instruction.distance}</Text>
-                        </View>
-                        {instruction.type === 'pickup' && (
-                            <View style={styles.pickupBadge}>
-                                <MaterialIcons name="store" size={16} color="#F59E0B" />
-                                <Text style={styles.pickupBadgeText}>Pickup Point</Text>
+            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+                {/* Customer Details Card */}
+                <View style={styles.card}>
+                    <View style={styles.cardHeader}>
+                        <Ionicons name="person-circle" size={40} color="#1152d4" />
+                        <View style={styles.customerInfo}>
+                            <Text style={styles.customerName}>{deliveryData.customerName}</Text>
+                            <View style={styles.contactInfo}>
+                                <Ionicons name="call" size={14} color="#64748B" />
+                                <Text style={styles.contactText}>{deliveryData.phone}</Text>
                             </View>
-                        )}
-                        {instruction.type === 'destination' && (
-                            <View style={styles.destinationBadge}>
-                                <MaterialIcons name="flag" size={16} color="#EF4444" />
-                                <Text style={styles.destinationBadgeText}>Destination</Text>
-                            </View>
-                        )}
+                        </View>
+                        <TouchableOpacity style={styles.callButtonSmall}>
+                            <Ionicons name="call-outline" size={20} color="#1152d4" />
+                        </TouchableOpacity>
                     </View>
-                ))}
+                    
+                    <View style={styles.addressSection}>
+                        <Ionicons name="location" size={20} color="#f59e0b" />
+                        <Text style={styles.addressText}>{deliveryData.address}</Text>
+                    </View>
+
+                    <View style={styles.deliveryInfo}>
+                        <View style={styles.infoItem}>
+                            <Ionicons name="time-outline" size={18} color="#1152d4" />
+                            <Text style={styles.infoLabel}>ETA:</Text>
+                            <Text style={styles.infoValue}>{deliveryData.estimatedTime}</Text>
+                        </View>
+                        <View style={styles.infoItem}>
+                            <Ionicons name="walk-outline" size={18} color="#1152d4" />
+                            <Text style={styles.infoLabel}>Distance:</Text>
+                            <Text style={styles.infoValue}>{deliveryData.distance}</Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Products to Deliver */}
+                <View style={styles.card}>
+                    <View style={styles.cardTitleRow}>
+                        <Ionicons name="cube" size={20} color="#1152d4" />
+                        <Text style={styles.cardTitle}>Products to Deliver</Text>
+                        <Text style={styles.productCount}>{deliveryData.items.length} items</Text>
+                    </View>
+
+                    {deliveryData.items.map((item) => (
+                        <View key={item.id} style={styles.productItem}>
+                            <Image source={{ uri: item.image_url }} style={styles.productImage} />
+                            <View style={styles.productDetails}>
+                                <Text style={styles.productName}>{item.name}</Text>
+                                <Text style={styles.productQuantity}>Qty: {item.quantity}</Text>
+                                <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
+                            </View>
+                        </View>
+                    ))}
+
+                    <View style={styles.totalSection}>
+                        <Text style={styles.totalLabel}>Total Amount:</Text>
+                        <Text style={styles.totalAmount}>{deliveryData.totalAmount}</Text>
+                    </View>
+                </View>
+
+                {/* Turn-by-Turn Navigation */}
+                <View style={styles.card}>
+                    <View style={styles.cardTitleRow}>
+                        <Ionicons name="navigate-circle" size={20} color="#1152d4" />
+                        <Text style={styles.cardTitle}>Navigation Steps</Text>
+                        <Text style={styles.stepsCount}>{navigationSteps.length} steps</Text>
+                    </View>
+
+                    <View style={styles.navigationList}>
+                        {navigationSteps.map((step, index) => renderNavigationStep(step, index))}
+                    </View>
+                </View>
+
+                {/* QR Code Section (shown after delivery confirmation) */}
+                {showQRCode && (
+                    <View style={styles.card}>
+                        <View style={styles.cardTitleRow}>
+                            <Ionicons name="qr-code" size={20} color="#10b981" />
+                            <Text style={styles.cardTitle}>Delivery Confirmation</Text>
+                        </View>
+                        
+                        <View style={styles.qrCodeContainer}>
+                            <View style={styles.qrCodePlaceholder}>
+                                <Ionicons name="qr-code" size={120} color="#111318" />
+                            </View>
+                            <Text style={styles.qrInstruction}>Ask customer to scan this code</Text>
+                            <Text style={styles.qrSubtext}>This confirms successful delivery</Text>
+                        </View>
+                    </View>
+                )}
             </ScrollView>
 
-            {/* Bottom Info Card */}
-            <View style={styles.bottomCard}>
-                <View style={styles.orderInfo}>
-                    <Text style={styles.orderNumber}>Order #{delivery.orderNumber}</Text>
-                    <View style={styles.routeDetails}>
-                        <View style={styles.detailItem}>
-                            <MaterialIcons name="route" size={20} color="#64748B" />
-                            <Text style={styles.detailLabel}>Distance</Text>
-                            <Text style={styles.detailValue}>
-                                {getDistanceText(routeData.distance)}
-                            </Text>
-                        </View>
-                        <View style={styles.detailDivider} />
-                        <View style={styles.detailItem}>
-                            <MaterialIcons name="access-time" size={20} color="#64748B" />
-                            <Text style={styles.detailLabel}>Duration</Text>
-                            <Text style={styles.detailValue}>
-                                {getDurationText(routeData.duration)}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-
-                {/* Action Buttons */}
-                <View style={styles.buttonContainer}>
+            {/* Bottom Action Buttons */}
+            {!showQRCode && (
+                <View style={styles.bottomActions}>
                     <TouchableOpacity 
-                        style={styles.navigateButton}
-                        onPress={handleNavigate}
+                        style={styles.completeButton}
+                        onPress={handleDeliverOrder}
                     >
-                        <MaterialIcons name="navigation" size={20} color="#FFFFFF" />
-                        <Text style={styles.navigateButtonText}>Navigate</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={styles.cancelButton}
-                        onPress={handleCancel}
-                    >
-                        <MaterialIcons name="close" size={20} color="#64748B" />
-                        <Text style={styles.cancelButtonText}>Cancel</Text>
+                        <Ionicons name="checkmark-circle" size={24} color="#FFFFFF" />
+                        <Text style={styles.completeButtonText}>COMPLETE DELIVERY</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            )}
         </SafeAreaView>
     );
 };
@@ -443,260 +302,358 @@ const DeliveryNavigationScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
-    },
-    loadingText: {
-        marginTop: 12,
-        fontSize: 14,
-        color: '#64748B',
+        backgroundColor: '#f6f6f8',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 16,
-        paddingTop: 16,
-        backgroundColor: '#ffffff',
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#E2E8F0',
+        borderBottomColor: '#e2e8f0',
     },
     backButton: {
         width: 40,
         height: 40,
-        borderRadius: 20,
-        backgroundColor: '#F1F5F9',
+        borderRadius: 10,
+        backgroundColor: '#f1f5f9',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    headerCenter: {
+        alignItems: 'center',
+        flex: 1,
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#0F172A',
+        fontSize: 17,
+        fontWeight: '700',
+        color: '#111318',
     },
-    headerPlaceholder: {
+    headerSubtitle: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#64748B',
+        marginTop: 2,
+    },
+    headerRight: {
         width: 40,
     },
-    routeSummary: {
-        flexDirection: 'row',
+    content: {
+        flex: 1,
+        paddingHorizontal: 20,
+        paddingTop: 16,
+    },
+    card: {
         backgroundColor: '#FFFFFF',
-        margin: 16,
-        padding: 16,
         borderRadius: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    summaryItem: {
-        flex: 1,
-        alignItems: 'center',
-        gap: 8,
-    },
-    summaryLabel: {
-        fontSize: 12,
-        color: '#64748B',
-        fontWeight: '500',
-    },
-    summaryValue: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#0F172A',
-    },
-    summaryDivider: {
-        width: 1,
-        backgroundColor: '#E2E8F0',
-        marginHorizontal: 8,
-    },
-    instructionsContainer: {
-        flex: 1,
-        paddingHorizontal: 16,
-    },
-    instructionsTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#0F172A',
+        padding: 16,
         marginBottom: 16,
-        marginTop: 8,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 3,
     },
-    instructionCard: {
+    cardHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
-        position: 'relative',
+        gap: 12,
+        marginBottom: 16,
     },
-    instructionIconContainer: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+    customerInfo: {
+        flex: 1,
+        gap: 4,
+    },
+    customerName: {
+        fontSize: 17,
+        fontWeight: '700',
+        color: '#111318',
+    },
+    contactInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+    },
+    contactText: {
+        fontSize: 13,
+        fontWeight: '500',
+        color: '#64748B',
+    },
+    callButtonSmall: {
+        width: 40,
+        height: 40,
+        borderRadius: 10,
+        backgroundColor: '#eff6ff',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: 16,
-        flexShrink: 0,
     },
-    instructionContent: {
-        flex: 1,
+    addressSection: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: 10,
+        backgroundColor: '#f8fafc',
+        padding: 12,
+        borderRadius: 12,
+        marginBottom: 12,
     },
-    instructionStep: {
-        fontSize: 12,
-        color: '#94A3B8',
+    addressText: {
+        fontSize: 13,
         fontWeight: '500',
-        marginBottom: 4,
-    },
-    instructionText: {
-        fontSize: 15,
-        color: '#0F172A',
-        fontWeight: '600',
-        marginBottom: 4,
+        color: '#475569',
+        flex: 1,
         lineHeight: 20,
     },
-    instructionDetail: {
-        fontSize: 13,
-        color: '#64748B',
-        fontWeight: '500',
-        marginBottom: 4,
+    deliveryInfo: {
+        flexDirection: 'row',
+        gap: 20,
+        paddingTop: 12,
+        borderTopWidth: 1,
+        borderTopColor: '#f1f5f9',
     },
-    instructionDistance: {
-        fontSize: 13,
-        color: '#64748B',
-        fontWeight: '500',
-    },
-    pickupBadge: {
+    infoItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FEF3C7',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 16,
         gap: 6,
     },
-    pickupBadgeText: {
-        fontSize: 12,
+    infoLabel: {
+        fontSize: 13,
         fontWeight: '600',
-        color: '#92400E',
+        color: '#64748B',
     },
-    destinationBadge: {
+    infoValue: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#111318',
+    },
+    cardTitleRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FEE2E2',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 16,
-        gap: 6,
-    },
-    destinationBadgeText: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#991B1B',
-    },
-    bottomCard: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: '#FFFFFF',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        padding: 20,
-        paddingBottom: 40,
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 10,
-    },
-    orderInfo: {
-        marginBottom: 20,
-    },
-    orderNumber: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#000000',
+        gap: 8,
         marginBottom: 16,
     },
-    routeDetails: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#F1F5F9',
-        borderRadius: 12,
-        padding: 16,
-    },
-    detailItem: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-    detailLabel: {
-        fontSize: 12,
-        color: '#64748B',
-        fontWeight: '500',
-    },
-    detailValue: {
+    cardTitle: {
         fontSize: 16,
-        fontWeight: 'bold',
-        color: '#000000',
+        fontWeight: '700',
+        color: '#111318',
+        flex: 1,
     },
-    detailDivider: {
-        width: 1,
-        height: 30,
-        backgroundColor: '#CBD5E1',
-        marginHorizontal: 16,
+    productCount: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#64748B',
+        backgroundColor: '#f1f5f9',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 8,
     },
-    buttonContainer: {
+    stepsCount: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#64748B',
+        backgroundColor: '#f1f5f9',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 8,
+    },
+    productItem: {
         flexDirection: 'row',
         gap: 12,
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
     },
-    navigateButton: {
+    productImage: {
+        width: 60,
+        height: 60,
+        borderRadius: 10,
+        backgroundColor: '#f1f5f9',
+    },
+    productDetails: {
         flex: 1,
+        justifyContent: 'center',
+        gap: 4,
+    },
+    productName: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#111318',
+    },
+    productQuantity: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#64748B',
+    },
+    productPrice: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#1152d4',
+    },
+    totalSection: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 12,
+        paddingTop: 12,
+        borderTopWidth: 2,
+        borderTopColor: '#1152d4',
+    },
+    totalLabel: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#111318',
+    },
+    totalAmount: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1152d4',
+    },
+    navigationList: {
+        gap: 0,
+    },
+    navStep: {
+        flexDirection: 'row',
+        paddingVertical: 16,
+        position: 'relative',
+    },
+    navStepActive: {
+        backgroundColor: 'rgba(17, 82, 212, 0.05)',
+    },
+    navStepCompleted: {
+        opacity: 0.7,
+    },
+    stepNumberContainer: {
+        width: 32,
+        height: 32,
+        borderRadius: 10,
+        backgroundColor: '#f1f5f9',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 8,
+        marginRight: 12,
+        zIndex: 2,
+    },
+    stepNumberContainerActive: {
         backgroundColor: '#1152d4',
-        paddingVertical: 16,
-        borderRadius: 12,
         shadowColor: '#1152d4',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
-        elevation: 5,
+        elevation: 4,
     },
-    navigateButtonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
+    stepNumberContainerCompleted: {
+        backgroundColor: '#10b981',
+    },
+    stepNumber: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#94a3b8',
+    },
+    stepNumberActive: {
         color: '#FFFFFF',
     },
-    cancelButton: {
+    stepLineContainer: {
+        position: 'absolute',
+        left: 28,
+        top: 32,
+        bottom: 0,
+        width: 2,
+    },
+    stepLine: {
         flex: 1,
+        backgroundColor: '#e2e8f0',
+    },
+    stepLineCompleted: {
+        backgroundColor: '#10b981',
+    },
+    stepContent: {
+        flex: 1,
+        marginLeft: 8,
+    },
+    stepHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        marginBottom: 6,
+    },
+    stepInstruction: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#64748B',
+        flex: 1,
+    },
+    stepInstructionActive: {
+        color: '#1152d4',
+        fontWeight: '700',
+    },
+    stepDetails: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    stepDistance: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#94a3b8',
+    },
+    stepDuration: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#94a3b8',
+    },
+    qrCodeContainer: {
+        alignItems: 'center',
+        paddingVertical: 20,
+    },
+    qrCodePlaceholder: {
+        width: 160,
+        height: 160,
+        backgroundColor: '#f1f5f9',
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 16,
+        borderWidth: 2,
+        borderColor: '#10b981',
+    },
+    qrInstruction: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#111318',
+        marginBottom: 8,
+    },
+    qrSubtext: {
+        fontSize: 13,
+        fontWeight: '500',
+        color: '#64748B',
+        textAlign: 'center',
+    },
+    bottomActions: {
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        backgroundColor: '#FFFFFF',
+        borderTopWidth: 1,
+        borderTopColor: '#e2e8f0',
+    },
+    completeButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 8,
-        backgroundColor: '#FFFFFF',
-        paddingVertical: 16,
-        borderRadius: 12,
-        borderWidth: 2,
-        borderColor: '#E2E8F0',
+        gap: 10,
+        backgroundColor: '#10b981',
+        paddingVertical: 14,
+        borderRadius: 14,
+        shadowColor: '#10b981',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.35,
+        shadowRadius: 16,
+        elevation: 6,
     },
-    cancelButtonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#64748B',
+    completeButtonText: {
+        fontSize: 15,
+        fontWeight: '800',
+        color: '#FFFFFF',
+        letterSpacing: 0.5,
     },
 });
 

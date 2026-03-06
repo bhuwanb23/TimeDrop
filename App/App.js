@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { navigationRef } from './utils/RootNavigation';
 import { CartProvider, useCart } from './context/CartContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -35,15 +35,15 @@ const MainTabs = () => {
                     let iconName;
 
                     if (route.name === 'Home') {
-                        iconName = 'home';
+                        iconName = 'home-outline';
                     } else if (route.name === 'Delivery') {
-                        iconName = 'local-shipping';
+                        iconName = 'car-sport-outline';
                     } else if (route.name === 'Profile') {
-                        iconName = 'account-circle';
+                        iconName = 'person-outline';
                     }
 
                     return (
-                        <MaterialIcons
+                        <Ionicons
                             name={iconName}
                             size={size}
                             color={color}
@@ -112,19 +112,19 @@ const CustomerMainTabs = () => {
                     let iconName;
 
                     if (route.name === 'Home') {
-                        iconName = 'home';
+                        iconName = 'home-outline';
                     } else if (route.name === 'Categories') {
-                        iconName = 'grid-view';
+                        iconName = 'grid-outline';
                     } else if (route.name === 'Wishlist') {
-                        iconName = 'favorite';
+                        iconName = 'heart-outline';
                     } else if (route.name === 'Cart') {
-                        iconName = 'shopping-cart';
+                        iconName = 'cart-outline';
                     } else if (route.name === 'Profile') {
-                        iconName = 'person';
+                        iconName = 'person-outline';
                     }
 
                     return (
-                        <MaterialIcons
+                        <Ionicons
                             name={iconName}
                             size={size}
                             color={color}
