@@ -312,7 +312,7 @@ const DeliveryScreen = ({ navigation }) => {
                 >
                 {activeTab === 'Active' ? (
                     <>
-                        <RouteCard navigation={navigation} />
+                        {/* <RouteCard navigation={navigation} /> */}
                         
                         {/* Navigate All Button */}
                         <TouchableOpacity 

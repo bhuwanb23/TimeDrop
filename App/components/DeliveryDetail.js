@@ -127,6 +127,31 @@ const DeliveryDetail = ({
                             )}
                         </View>
 
+                        {/* Products/Items Section */}
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Products to Deliver</Text>
+                            {deliveryData.items && deliveryData.items.length > 0 ? (
+                                deliveryData.items.map((item, index) => (
+                                    <View key={item.id || index} style={styles.productItem}>
+                                        <View style={styles.productInfo}>
+                                            <Text style={styles.productName}>{item.name}</Text>
+                                            {item.quantity && (
+                                                <Text style={styles.productQuantity}>Qty: {item.quantity}</Text>
+                                            )}
+                                        </View>
+                                        {item.price && (
+                                            <Text style={styles.productPrice}>₹{item.price.toFixed(2)}</Text>
+                                        )}
+                                    </View>
+                                ))
+                            ) : (
+                                <View style={styles.emptyProducts}>
+                                    <MaterialIcons name="inventory-2" size={48} color="#94A3B8" />
+                                    <Text style={styles.emptyText}>No products in this order</Text>
+                                </View>
+                            )}
+                        </View>
+
                         {/* Financial Information */}
                         {isDelivered ? (
                             <View style={styles.section}>
@@ -302,6 +327,53 @@ const styles = StyleSheet.create({
     },
     activeText: {
         color: '#1E40AF',
+    },
+    productItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        backgroundColor: '#F8FAFC',
+        borderRadius: 10,
+        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+    },
+    productInfo: {
+        flex: 1,
+    },
+    productName: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#064E3B',
+        marginBottom: 4,
+    },
+    productQuantity: {
+        fontSize: 13,
+        color: '#64748B',
+        fontWeight: '500',
+    },
+    productPrice: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#10B981',
+    },
+    emptyProducts: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 30,
+        backgroundColor: '#F8FAFC',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+        borderStyle: 'dashed',
+    },
+    emptyText: {
+        fontSize: 14,
+        color: '#94A3B8',
+        marginTop: 8,
+        textAlign: 'center',
     },
     buttonContainer: {
         flexDirection: 'row',
