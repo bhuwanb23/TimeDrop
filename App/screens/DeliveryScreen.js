@@ -403,13 +403,13 @@ const DeliveryScreen = ({ navigation }) => {
             )}
             
             {/* Floating Button - QR Scanner for Active, Download for Delivered */}
-            <View style={styles.qrButtonContainer}>
+            {/* <View style={styles.qrButtonContainer}>
                 {activeTab === 'Active' ? (
                     <QRScannerButton />
                 ) : (
                     <DownloadButton onPress={() => console.log('Download pressed')} />
                 )}
-            </View>
+            </View> */}
 
             {/* Delivery Detail Modal */}
             <DeliveryDetail
