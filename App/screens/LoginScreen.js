@@ -58,6 +58,16 @@ const LoginScreen = () => {
         }
     };
 
+    // Green theme colors
+    const themeColors = {
+        primary: '#10B981',
+        primaryDark: '#059669',
+        primaryLight: '#D1FAE5',
+        accent: '#34D399',
+        text: '#064E3B',
+        textLight: '#6EE7B7',
+    };
+
     const handleGoogleLogin = () => {
         Alert.alert('Google Login', 'Google login would be implemented here');
     };
@@ -77,7 +87,7 @@ const LoginScreen = () => {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                {/* Header Section with Gradient Background */}
+                {/* Header Section with Green Gradient Background */}
                 <View style={styles.headerSection}>
                     <View style={styles.headerContent}>
                         <Text style={styles.welcomeText}>Welcome to</Text>
@@ -231,7 +241,7 @@ const styles = StyleSheet.create({
         paddingTop: 0,
     },
     headerSection: {
-        backgroundColor: '#1e3b8a',
+        backgroundColor: '#10B981',
         paddingTop: 40,
         paddingBottom: 60,
         paddingHorizontal: 24,
@@ -246,7 +256,7 @@ const styles = StyleSheet.create({
     },
     welcomeText: {
         fontSize: 18,
-        color: '#E0E7FF',
+        color: '#ECFDF5',
         fontWeight: '500',
         marginBottom: 8,
     },
@@ -259,7 +269,7 @@ const styles = StyleSheet.create({
     },
     tagline: {
         fontSize: 16,
-        color: '#C7D2FE',
+        color: '#A7F3D0',
         fontWeight: '400',
     },
     decorativeCircle1: {
@@ -315,8 +325,8 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     tabActive: {
-        backgroundColor: '#1e3b8a',
-        shadowColor: '#1e3b8a',
+        backgroundColor: '#10B981',
+        shadowColor: '#10B981',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
@@ -357,6 +367,7 @@ const styles = StyleSheet.create({
     },
     inputIcon: {
         marginRight: 12,
+        color: '#10B981',
     },
     input: {
         flex: 1,
@@ -373,18 +384,18 @@ const styles = StyleSheet.create({
     },
     forgotPasswordText: {
         fontSize: 14,
-        color: '#1e3b8a',
+        color: '#10B981',
         fontWeight: '600',
     },
     loginButton: {
-        backgroundColor: '#1e3b8a',
+        backgroundColor: '#10B981',
         height: 56,
         borderRadius: 16,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 8,
-        shadowColor: '#1e3b8a',
+        shadowColor: '#10B981',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
@@ -447,7 +458,7 @@ const styles = StyleSheet.create({
     },
     signUpLink: {
         fontSize: 15,
-        color: '#1e3b8a',
+        color: '#10B981',
         fontWeight: 'bold',
     },
     credentialsInfo: {

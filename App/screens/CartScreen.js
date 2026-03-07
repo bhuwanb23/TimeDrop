@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     itemPrice: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1152d4',
+        color: '#10B981',
     },
     quantityContainer: {
         flexDirection: 'row',
@@ -389,15 +389,15 @@ const styles = StyleSheet.create({
     totalValue: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1152d4',
+        color: '#10B981',
     },
     checkoutButton: {
-        backgroundColor: '#1152d4',
+        backgroundColor: '#10B981',
         paddingVertical: 16,
         borderRadius: 12,
         alignItems: 'center',
         marginTop: 24,
-        shadowColor: '#1152d4',
+        shadowColor: '#10B981',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
     viewAllText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#1152d4',
+        color: '#10B981',
     },
     savedGrid: {
         flexDirection: 'row',
@@ -453,13 +453,13 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     moveToCartButton: {
-        backgroundColor: 'rgba(17, 82, 212, 0.1)',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
         paddingVertical: 8,
         borderRadius: 8,
         alignItems: 'center',
     },
     moveToCartText: {
-        color: '#1152d4',
+        color: '#10B981',
         fontSize: 12,
         fontWeight: '700',
     },

@@ -19,6 +19,16 @@ const DashboardScreen = () => {
     const [statistics, setStatistics] = useState(null);
     const [error, setError] = useState(null);
 
+    // Green theme colors
+    const themeColors = {
+        primary: '#10B981',
+        primaryDark: '#059669',
+        primaryLight: '#D1FAE5',
+        accent: '#34D399',
+        text: '#064E3B',
+        background: '#ECFDF5',
+    };
+
     // Mock data - NO BACKEND CONNECTIONS
     const mockData = {
         todayEarnings: 184.50,
@@ -46,7 +56,7 @@ const DashboardScreen = () => {
         <SafeAreaView style={styles.container}>
             {loading ? (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#1E3A8A" />
+                    <ActivityIndicator size="large" color="#10B981" />
                     <Text style={styles.loadingText}>Loading dashboard...</Text>
                 </View>
             ) : error ? (
@@ -66,8 +76,8 @@ const DashboardScreen = () => {
                         <RefreshControl
                             refreshing={refreshing}
                             onRefresh={onRefresh}
-                            colors={['#1E3A8A']}
-                            tintColor="#1E3A8A"
+                            colors={['#10B981']}
+                            tintColor="#10B981"
                         />
                     }
                 >
@@ -117,14 +127,14 @@ const DashboardScreen = () => {
                             <Svg height="50" width="100%" viewBox="0 0 300 40">
                                 <Defs>
                                     <LinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <Stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3" />
-                                        <Stop offset="100%" stopColor="#3B82F6" stopOpacity="0" />
+                                        <Stop offset="0%" stopColor="#10B981" stopOpacity="0.3" />
+                                        <Stop offset="100%" stopColor="#10B981" stopOpacity="0" />
                                     </LinearGradient>
                                 </Defs>
                                 <Path
                                     d="M0,30 C25,25 50,10 75,15 C100,20 125,35 150,30 C175,25 200,5 225,10 C250,15 275,25 300,20"
                                     fill="none"
-                                    stroke="#3B82F6"
+                                    stroke="#10B981"
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                 />
@@ -144,7 +154,7 @@ const DashboardScreen = () => {
                             <Text style={styles.statLabel}>Completed Trips</Text>
                         </View>
                         <View style={styles.statCard}>
-                            <MaterialIcons name="schedule" size={20} color="#1E3A8A" />
+                            <MaterialIcons name="schedule" size={20} color="#10B981" />
                             <Text style={styles.statValue}>8h</Text>
                             <Text style={styles.statLabel}>Online Today</Text>
                         </View>
@@ -154,7 +164,7 @@ const DashboardScreen = () => {
                     <View style={styles.metricsRow}>
                         <View style={styles.metricItem}>
                             <View style={styles.metricIconContainer}>
-                                <MaterialIcons name="verified-user" size={16} color="#1E3A8A" />
+                                <MaterialIcons name="verified-user" size={16} color="#10B981" />
                             </View>
                             <View style={styles.metricTextContainer}>
                                 <Text style={styles.metricValue} numberOfLines={1}>{stats.acceptanceRate}%</Text>
@@ -163,7 +173,7 @@ const DashboardScreen = () => {
                         </View>
                         <View style={styles.metricItem}>
                             <View style={styles.metricIconContainer}>
-                                <MaterialIcons name="star" size={16} color="#1E3A8A" />
+                                <MaterialIcons name="star" size={16} color="#10B981" />
                             </View>
                             <View style={styles.metricTextContainer}>
                                 <Text style={styles.metricValue} numberOfLines={1}>{stats.rating}</Text>
@@ -172,7 +182,7 @@ const DashboardScreen = () => {
                         </View>
                         <View style={styles.metricItem}>
                             <View style={styles.metricIconContainer}>
-                                <MaterialIcons name="speed" size={16} color="#1E3A8A" />
+                                <MaterialIcons name="speed" size={16} color="#10B981" />
                             </View>
                             <View style={styles.metricTextContainer}>
                                 <Text style={styles.metricValue} numberOfLines={1}>2.4x</Text>
@@ -233,7 +243,7 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     header: {
-        backgroundColor: '#1E3A8A',
+        backgroundColor: '#10B981',
         paddingTop: 12,
         paddingBottom: 16,
         paddingHorizontal: 16,
@@ -379,7 +389,7 @@ const styles = StyleSheet.create({
     statValue: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#1E3A8A',
+        color: '#10B981',
     },
     statLabel: {
         fontSize: 11,
@@ -403,7 +413,7 @@ const styles = StyleSheet.create({
     metricIconContainer: {
         width: 32,
         height: 32,
-        backgroundColor: '#DBEAFE',
+        backgroundColor: '#D1FAE5',
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
@@ -460,7 +470,7 @@ const styles = StyleSheet.create({
     activityIcon: {
         width: 32,
         height: 32,
-        backgroundColor: '#DBEAFE',
+        backgroundColor: '#D1FAE5',
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',

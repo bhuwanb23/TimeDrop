@@ -144,6 +144,16 @@ const ProductCatalogScreen = () => {
     const navigation = useNavigation();
     const { addItem, items: cartItems } = useCart();
 
+    // Green theme colors
+    const themeColors = {
+        primary: '#10B981',
+        primaryDark: '#059669',
+        primaryLight: '#D1FAE5',
+        accent: '#34D399',
+        text: '#064E3B',
+        background: '#ECFDF5',
+    };
+
     // Simple refresh handler - no API calls
     const onRefresh = () => {
         setRefreshing(true);
@@ -256,7 +266,7 @@ const ProductCatalogScreen = () => {
                         <MaterialIcons
                             name={isFavorite ? "favorite" : "favorite-border"}
                             size={20}
-                            color={isFavorite ? "#1152d4" : "#94a3b8"}
+                            color={isFavorite ? "#10B981" : "#94a3b8"}
                         />
                     </TouchableOpacity>
                 </TouchableOpacity>
@@ -282,7 +292,7 @@ const ProductCatalogScreen = () => {
     if (loading && products.length === 0) {
         return (
             <SafeAreaView style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#1152d4" />
+                <ActivityIndicator size="large" color="#10B981" />
                 <Text style={styles.loadingText}>Loading products...</Text>
             </SafeAreaView>
         );
@@ -327,8 +337,8 @@ const ProductCatalogScreen = () => {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        colors={['#1152d4']}
-                        tintColor="#1152d4"
+                        colors={['#10B981']}
+                        tintColor="#10B981"
                     />
                 }
                 onScroll={({ nativeEvent }) => {
@@ -512,8 +522,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     price: {
-        backgroundColor: 'rgba(17, 82, 212, 0.1)',
-        color: '#1152d4',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        color: '#10B981',
         fontSize: 14,
         fontWeight: '700',
         paddingHorizontal: 8,
@@ -524,13 +534,13 @@ const styles = StyleSheet.create({
         marginTop: 8,
         width: '100%',
         height: 40,
-        backgroundColor: '#1152d4',
+        backgroundColor: '#10B981',
         borderRadius: 8,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        shadowColor: '#1152d4',
+        shadowColor: '#10B981',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 4,

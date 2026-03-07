@@ -50,7 +50,7 @@ const MainTabs = () => {
                         />
                     );
                 },
-                tabBarActiveTintColor: '#1E3A8A',
+                tabBarActiveTintColor: '#10B981',
                 tabBarInactiveTintColor: '#94A3B8',
                 tabBarStyle: {
                     backgroundColor: '#FFFFFF',
@@ -131,7 +131,7 @@ const CustomerMainTabs = () => {
                         />
                     );
                 },
-                tabBarActiveTintColor: '#1152d4',
+                tabBarActiveTintColor: '#10B981',
                 tabBarInactiveTintColor: '#94A3B8',
                 tabBarStyle: {
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
