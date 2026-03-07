@@ -234,19 +234,28 @@ const DeliveryNavigationScreen = ({ route, navigation }) => {
                     <View style={styles.cardTitleRow}>
                         <Ionicons name="cube" size={20} color="#1152d4" />
                         <Text style={styles.cardTitle}>Products to Deliver</Text>
-                        <Text style={styles.productCount}>{deliveryData.items.length} items</Text>
+                        {deliveryData.items && deliveryData.items.length > 0 && (
+                            <Text style={styles.productCount}>{deliveryData.items.length} items</Text>
+                        )}
                     </View>
 
-                    {deliveryData.items.map((item) => (
-                        <View key={item.id} style={styles.productItem}>
-                            <Image source={{ uri: item.image_url }} style={styles.productImage} />
-                            <View style={styles.productDetails}>
-                                <Text style={styles.productName}>{item.name}</Text>
-                                <Text style={styles.productQuantity}>Qty: {item.quantity}</Text>
-                                <Text style={styles.productPrice}>${item.price ? item.price.toFixed(2) : '0.00'}</Text>
+                    {deliveryData.items && deliveryData.items.length > 0 ? (
+                        deliveryData.items.map((item) => (
+                            <View key={item.id} style={styles.productItem}>
+                                <Image source={{ uri: item.image_url }} style={styles.productImage} />
+                                <View style={styles.productDetails}>
+                                    <Text style={styles.productName}>{item.name}</Text>
+                                    <Text style={styles.productQuantity}>Qty: {item.quantity}</Text>
+                                    <Text style={styles.productPrice}>${item.price ? item.price.toFixed(2) : '0.00'}</Text>
+                                </View>
                             </View>
+                        ))
+                    ) : (
+                        <View style={styles.emptyState}>
+                            <Ionicons name="cube-outline" size={48} color="#94A3B8" />
+                            <Text style={styles.emptyText}>No products in this delivery</Text>
                         </View>
-                    ))}
+                    )}
 
                     <View style={styles.totalSection}>
                         <Text style={styles.totalLabel}>Total Amount:</Text>
