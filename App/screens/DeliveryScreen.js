@@ -43,6 +43,7 @@ const DeliveryScreen = ({ navigation }) => {
             status: 'in_transit',
             isNext: true,
             isReady: true,
+            timeSlot: '10:00 AM - 12:00 PM',
             items: [
                 { id: 1, name: 'Wireless Bluetooth Headphones', quantity: 1, price: 79.99 },
                 { id: 2, name: 'Smart Watch Series 7', quantity: 1, price: 399.99 }
@@ -69,6 +70,7 @@ const DeliveryScreen = ({ navigation }) => {
             status: 'assigned',
             isNext: false,
             isReady: true,
+            timeSlot: '10:00 AM - 12:00 PM',
             items: [
                 { id: 3, name: 'Organic Cotton T-Shirt', quantity: 2, price: 24.99 },
                 { id: 4, name: 'Running Shoes Pro', quantity: 1, price: 89.99 }
@@ -95,6 +97,7 @@ const DeliveryScreen = ({ navigation }) => {
             status: 'pending',
             isNext: false,
             isReady: false,
+            timeSlot: '10:00 AM - 12:00 PM',
             items: [
                 { id: 5, name: 'Professional Camera Lens', quantity: 1, price: 549.99 },
                 { id: 6, name: 'Gaming Mouse RGB', quantity: 1, price: 49.99 }
@@ -121,6 +124,7 @@ const DeliveryScreen = ({ navigation }) => {
             status: 'assigned',
             isNext: false,
             isReady: true,
+            timeSlot: '10:00 AM - 12:00 PM',
             items: [
                 { id: 7, name: 'Yoga Mat Premium', quantity: 1, price: 34.99 },
                 { id: 8, name: 'Stainless Steel Water Bottle', quantity: 1, price: 19.99 }
@@ -149,6 +153,7 @@ const DeliveryScreen = ({ navigation }) => {
             address: '67 Cathedral Road, Gopalapuram, Chennai, Tamil Nadu 600086',
             earnings: '₹145.00',
             deliveryTime: '10:30 AM',
+            timeSlot: '10:00 AM - 12:00 PM',
             items: [{ id: 101, name: 'Minimalist Desk Lamp', quantity: 1, price: 45.00 }],
             _raw: { id: 10, order_number: 'ORD-98201', earnings: 145.00 }
         },
@@ -159,6 +164,7 @@ const DeliveryScreen = ({ navigation }) => {
             address: '34 OMR Road, Thoraipakkam, Chennai, Tamil Nadu 600097',
             earnings: '₹220.00',
             deliveryTime: '11:45 AM',
+            timeSlot: '10:00 AM - 12:00 PM',
             items: [
                 { id: 102, name: 'Leather Wallet', quantity: 1, price: 35.00 },
                 { id: 103, name: 'Portable Bluetooth Speaker', quantity: 1, price: 65.00 }
@@ -172,6 +178,7 @@ const DeliveryScreen = ({ navigation }) => {
             address: '89 Luz Church Road, Mylapore, Chennai, Tamil Nadu 600004',
             earnings: '₹178.00',
             deliveryTime: '01:15 PM',
+            timeSlot: '10:00 AM - 12:00 PM',
             items: [{ id: 104, name: 'Bestseller Novel Collection', quantity: 1, price: 28.00 }],
             _raw: { id: 12, order_number: 'ORD-98208', earnings: 178.00 }
         },
@@ -182,6 +189,7 @@ const DeliveryScreen = ({ navigation }) => {
             address: '12 Besant Nagar Beach Road, Besant Nagar, Chennai, Tamil Nadu 600090',
             earnings: '₹265.00',
             deliveryTime: '02:45 PM',
+            timeSlot: '10:00 AM - 12:00 PM',
             items: [{ id: 105, name: 'Smart Watch Series 7', quantity: 1, price: 399.99 }],
             _raw: { id: 13, order_number: 'ORD-98212', earnings: 265.00 }
         }

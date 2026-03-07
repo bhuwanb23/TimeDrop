@@ -118,12 +118,20 @@ const DeliveryDetail = ({
                                 </View>
                             </View>
                             {!isDelivered && (
-                                <View style={styles.infoRow}>
-                                    <Text style={styles.label}>Priority:</Text>
-                                    <Text style={styles.value}>
-                                        {deliveryData.isNext ? 'Next Delivery' : 'Standard'}
-                                    </Text>
-                                </View>
+                                <>
+                                    <View style={styles.infoRow}>
+                                        <Text style={styles.label}>Priority:</Text>
+                                        <Text style={styles.value}>
+                                            {deliveryData.isNext ? 'Next Delivery' : 'Standard'}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.infoRow}>
+                                        <Text style={styles.label}>Time Slot:</Text>
+                                        <Text style={styles.value}>
+                                            {deliveryData.timeSlot || 'Not assigned'}
+                                        </Text>
+                                    </View>
+                                </>
                             )}
                         </View>
 
