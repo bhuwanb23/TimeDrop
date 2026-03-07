@@ -70,7 +70,7 @@ const RouteCard = ({ navigation }) => {
                                 ]}
                             />
                             <View style={styles.iconBackground}>
-                                <MaterialIcons name="navigation" size={16} color="#135bec" />
+                                <MaterialIcons name="navigation" size={16} color="#059669" />
                             </View>
                         </View>
                         <View style={styles.textContainer}>
@@ -137,14 +137,14 @@ const styles = StyleSheet.create({
         left: -6,
         right: -6,
         bottom: -6,
-        backgroundColor: 'rgba(19, 91, 236, 0.2)',
+        backgroundColor: 'rgba(16, 185, 129, 0.2)',
         borderRadius: 16,
         opacity: 0.6,
     },
     iconBackground: {
         position: 'relative',
         padding: 10,
-        backgroundColor: 'rgba(19, 91, 236, 0.15)',
+        backgroundColor: 'rgba(16, 185, 129, 0.15)',
         borderRadius: 10,
         zIndex: 1,
     },
@@ -164,12 +164,12 @@ const styles = StyleSheet.create({
         color: '#000000',
     },
     startButton: {
-        backgroundColor: '#135bec',
+        backgroundColor: '#10B981',
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: 'rgba(19, 91, 236, 0.6)',
+        borderColor: 'rgba(16, 185, 129, 0.6)',
     },
     startButtonText: {
         fontSize: 12,

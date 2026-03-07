@@ -74,14 +74,14 @@ const DeliveryCard = ({
                                 onPress={() => handleButtonPress()}
                                 activeOpacity={0.7}
                             >
-                                <MaterialIcons name="call" size={12} color="#135bec" />
+                                <MaterialIcons name="call" size={12} color="#059669" />
                             </TouchableOpacity>
                             <TouchableOpacity 
                                 style={styles.actionButton}
                                 onPress={() => handleButtonPress()}
                                 activeOpacity={0.7}
                             >
-                                <MaterialIcons name="chat-bubble" size={12} color="#135bec" />
+                                <MaterialIcons name="chat-bubble" size={12} color="#059669" />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 2,
     },
     nextDeliveryBorder: {
-        borderColor: 'rgba(19, 91, 236, 0.4)',
+        borderColor: 'rgba(16, 185, 129, 0.4)',
     },
     header: {
         flexDirection: 'row',
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
         fontSize: 8,
         fontWeight: '700',
         color: '#FFFFFF',
-        backgroundColor: '#135bec',
+        backgroundColor: '#10B981',
         paddingHorizontal: 6,
         paddingVertical: 2,
         borderRadius: 4,
@@ -199,12 +199,12 @@ const styles = StyleSheet.create({
         borderColor: '#FDE68A',
     },
     readyBadge: {
-        backgroundColor: '#DBEAFE',
+        backgroundColor: '#D1FAE5',
         paddingHorizontal: 8,
         paddingVertical: 3,
         borderRadius: 999,
         borderWidth: 1,
-        borderColor: '#BFDBFE',
+        borderColor: '#A7F3D0',
     },
     defaultBadge: {
         backgroundColor: '#F1F5F9',
@@ -258,9 +258,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     updateButtonActive: {
-        backgroundColor: '#135bec',
+        backgroundColor: '#10B981',
         borderWidth: 1,
-        borderColor: 'rgba(19, 91, 236, 0.6)',
+        borderColor: 'rgba(16, 185, 129, 0.6)',
     },
     updateButtonText: {
         fontSize: 12,
