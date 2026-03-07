@@ -91,6 +91,9 @@ const DeliveryNavigationScreen = ({ route, navigation }) => {
         }
     ];
 
+    // Safety check - ensure navigationSteps is always an array
+    const safeNavigationSteps = Array.isArray(navigationSteps) ? navigationSteps : [];
+
     const handleDeliverOrder = () => {
         Alert.alert(
             'Confirm Delivery',
@@ -256,14 +259,14 @@ const DeliveryNavigationScreen = ({ route, navigation }) => {
                     <View style={styles.cardTitleRow}>
                         <Ionicons name="navigate-circle" size={20} color="#1152d4" />
                         <Text style={styles.cardTitle}>Navigation Steps</Text>
-                        {navigationSteps && navigationSteps.length > 0 && (
-                            <Text style={styles.stepsCount}>{navigationSteps.length} steps</Text>
+                        {safeNavigationSteps && safeNavigationSteps.length > 0 && (
+                            <Text style={styles.stepsCount}>{safeNavigationSteps.length} steps</Text>
                         )}
                     </View>
 
                     <View style={styles.navigationList}>
-                        {navigationSteps && navigationSteps.length > 0 ? (
-                            navigationSteps.map((step, index) => renderNavigationStep(step, index))
+                        {safeNavigationSteps && safeNavigationSteps.length > 0 ? (
+                            safeNavigationSteps.map((step, index) => renderNavigationStep(step, index))
                         ) : (
                             <View style={styles.emptyState}>
                                 <Ionicons name="location" size={48} color="#94A3B8" />
