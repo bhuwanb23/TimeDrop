@@ -12,12 +12,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import Svg, { Defs, LinearGradient, Stop, Path } from 'react-native-svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const DashboardScreen = () => {
+    const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [statistics, setStatistics] = useState(null);
     const [error, setError] = useState(null);
+    const [driverData, setDriverData] = useState(null);
 
     // Green theme colors
     const themeColors = {
@@ -45,9 +49,27 @@ const DashboardScreen = () => {
     // Use mock data only
     const stats = mockData;
 
+    // Load driver data on mount
+    useEffect(() => {
+        loadDriverData();
+    }, []);
+
+    const loadDriverData = async () => {
+        try {
+            const savedProfile = await AsyncStorage.getItem('driverProfile');
+            if (savedProfile) {
+                const profile = JSON.parse(savedProfile);
+                setDriverData(profile);
+            }
+        } catch (error) {
+            console.error('Error loading driver data:', error);
+        }
+    };
+
     // Simple refresh handler - no API calls
     const onRefresh = () => {
         setRefreshing(true);
+        loadDriverData();
         // Just simulate refresh, no actual data loading
         setTimeout(() => setRefreshing(false), 1000);
     };
@@ -83,36 +105,49 @@ const DashboardScreen = () => {
                 >
                     {/* Compact Header */}
                     <View style={styles.header}>
-                    <View style={styles.headerContent}>
-                        <View style={styles.profileSection}>
-                            <View style={styles.profileImageContainer}>
-                                <Image
-                                    source={{ uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80' }}
-                                    style={styles.profileImage}
-                                />
-                                <View style={styles.onlineIndicator}></View>
-                            </View>
-                            <View style={styles.profileInfo}>
-                                <Text style={styles.driverName} numberOfLines={1}>Alex Thompson</Text>
-                                <View style={styles.ratingContainer}>
-                                    <MaterialIcons name="star" size={12} color="#FFD700" />
-                                    <Text style={styles.ratingText}>4.95</Text>
+                        <View style={styles.headerContent}>
+                            <View style={styles.profileSection}>
+                                <View style={styles.profileImageContainer}>
+                                    <Image
+                                        source={{ uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80' }}
+                                        style={styles.profileImage}
+                                    />
+                                    <View style={styles.onlineIndicator}></View>
+                                </View>
+                                <View style={styles.profileInfo}>
+                                    <Text style={styles.driverName} numberOfLines={1}>
+                                        {driverData?.name || 'Driver'}
+                                    </Text>
+                                    <View style={styles.ratingContainer}>
+                                        <MaterialIcons name="star" size={12} color="#FFD700" />
+                                        <Text style={styles.ratingText}>
+                                            {driverData?.rating?.toFixed(2) || '5.00'}
+                                        </Text>
+                                        <Text style={styles.tripsText}>
+                                            • {driverData?.totalDeliveries || 0} trips
+                                        </Text>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                        <View style={styles.headerActions}>
-                            <TouchableOpacity style={styles.statusButton}>
-                                <Text style={styles.statusText}>Online</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.menuButton}>
-                                <MaterialIcons name="menu" size={20} color="#FFFFFF" />
+                            <TouchableOpacity 
+                                style={styles.profileButton}
+                                onPress={() => navigation.navigate('Profile')}
+                            >
+                                <MaterialIcons name="chevron-right" size={24} color="#10B981" />
                             </TouchableOpacity>
                         </View>
                     </View>
-                </View>
+                    <View style={styles.headerActions}>
+                        <TouchableOpacity style={styles.statusButton}>
+                            <Text style={styles.statusText}>Online</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.menuButton}>
+                            <MaterialIcons name="menu" size={20} color="#FFFFFF" />
+                        </TouchableOpacity>
+                    </View>
 
-                {/* Main Content */}
-                <View style={styles.mainContent}>
+                    {/* Main Content */}
+                    <View style={styles.mainContent}>
                     {/* Beautiful Income Chart Card */}
                     <View style={styles.incomeCard}>
                         <View style={styles.cardHeader}>
