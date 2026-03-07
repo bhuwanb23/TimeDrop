@@ -39,7 +39,7 @@ const ProfileHeader = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#1E3A8A',
+        backgroundColor: '#10B981',
     },
     topNav: {
         flexDirection: 'row',
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         borderBottomLeftRadius: 40,
         borderBottomRightRadius: 40,
-        backgroundColor: '#1E3A8A',
+        backgroundColor: '#10B981',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
@@ -95,11 +95,11 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 16,
         right: 0,
-        backgroundColor: '#1E618A',
+        backgroundColor: '#059669',
         padding: 6,
         borderRadius: 12,
         borderWidth: 2,
-        borderColor: '#1E3A8A',
+        borderColor: '#10B981',
     },
     driverName: {
         fontSize: 22,

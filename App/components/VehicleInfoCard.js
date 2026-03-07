@@ -6,7 +6,7 @@ const VehicleInfoCard = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <MaterialIcons name="local-shipping" size={24} color="#94A3B8" />
+                <MaterialIcons name="local-shipping" size={24} color="#10B981" />
                 <Text style={styles.title}>Vehicle Info</Text>
             </View>
             <View style={styles.infoGrid}>
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#1E293B',
+        color: '#064E3B',
     },
     infoGrid: {
         flexDirection: 'row',
@@ -53,14 +53,14 @@ const styles = StyleSheet.create({
     },
     infoItem: {
         flex: 1,
-        backgroundColor: '#F8FAFC',
+        backgroundColor: '#ECFDF5',
         borderRadius: 10,
         padding: 12,
     },
     label: {
         fontSize: 10,
         fontWeight: 'bold',
-        color: '#64748B',
+        color: '#059669',
         letterSpacing: 0.5,
         marginBottom: 4,
         textTransform: 'uppercase',
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     value: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1E293B',
+        color: '#064E3B',
     },
 });
 

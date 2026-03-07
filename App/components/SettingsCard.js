@@ -18,10 +18,10 @@ const SettingsCard = () => {
                 {settingsItems.map((item, index) => (
                     <TouchableOpacity key={item.label} style={styles.item}>
                         <View style={styles.itemLeft}>
-                            <MaterialIcons name={item.icon} size={24} color="#94A3B8" />
+                            <MaterialIcons name={item.icon} size={24} color="#10B981" />
                             <Text style={styles.itemLabel}>{item.label}</Text>
                         </View>
-                        <MaterialIcons name="chevron-right" size={24} color="#CBD5E1" />
+                        <MaterialIcons name="chevron-right" size={24} color="#A7F3D0" />
                     </TouchableOpacity>
                 ))}
             </View>
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#1E293B',
+        color: '#064E3B',
     },
     itemsContainer: {
         flexDirection: 'column',
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     itemLabel: {
         fontSize: 16,
         fontWeight: '500',
-        color: '#334155',
+        color: '#064E3B',
     },
 });
 

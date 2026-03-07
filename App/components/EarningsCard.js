@@ -23,7 +23,7 @@ const EarningsCard = ({ earnings = '$142.50', percentage = '+12%' }) => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#135bec',
+        backgroundColor: '#10B981',
         borderRadius: 12,
         padding: 16,
         marginHorizontal: 12,

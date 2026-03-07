@@ -68,7 +68,7 @@ const LogoutButton = () => {
 
     return (
         <TouchableOpacity style={styles.button} onPress={handleLogout}>
-            <MaterialIcons name="logout" size={24} color="#EF4444" />
+            <MaterialIcons name="logout" size={24} color="#059669" />
             <Text style={styles.text}>Log Out</Text>
         </TouchableOpacity>
     );
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#FEE2E2',
+        borderColor: '#A7F3D0',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#EF4444',
+        color: '#059669',
     },
 });
 

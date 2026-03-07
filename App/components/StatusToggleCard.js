@@ -18,7 +18,7 @@ const StatusToggleCard = () => {
 
     const switchBackgroundColor = switchAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: ['#E2E8F0', '#1E618A'],
+        outputRange: ['#E2E8F0', '#10B981'],
     });
 
     return (
@@ -29,7 +29,7 @@ const StatusToggleCard = () => {
                     <Text style={styles.subtitle}>Accepting delivery requests</Text>
                 </View>
                 <Switch
-                    trackColor={{ false: '#E2E8F0', true: '#1E618A' }}
+                    trackColor={{ false: '#E2E8F0', true: '#10B981' }}
                     thumbColor={'#FFFFFF'}
                     ios_backgroundColor="#E2E8F0"
                     onValueChange={toggleSwitch}
