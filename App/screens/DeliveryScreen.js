@@ -199,17 +199,22 @@ const DeliveryScreen = ({ navigation }) => {
                 return;
             }
 
-            // Get all destination addresses
-            const destinations = activeReadyDeliveries.map(d => d.address);
+            // Get all destination addresses from the deliveries
+            const destinations = activeReadyDeliveries.map(d => {
+                // Use the delivery address directly
+                return d.address;
+            });
+            
+            console.log('Active deliveries for navigation:', activeReadyDeliveries.length);
+            console.log('Destinations:', destinations);
             
             // Start with current location (origin)
             const origin = ''; // Empty means current location
             
             // Create Google Maps URL with multiple waypoints
             // Format: https://www.google.com/maps/dir/?api=1&origin=ORIGIN&destination=DESTINATION&waypoints=WAYPOINT1|WAYPOINT2|WAYPOINT3
-            const firstStop = encodeURIComponent(destinations[0]);
             const lastStop = encodeURIComponent(destinations[destinations.length - 1]);
-            const waypoints = destinations.slice(1, -1).map(addr => encodeURIComponent(addr)).join('|');
+            const waypoints = destinations.slice(0, -1).map(addr => encodeURIComponent(addr)).join('|');
             
             let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${lastStop}`;
             
@@ -222,25 +227,49 @@ const DeliveryScreen = ({ navigation }) => {
             
             console.log('Opening Google Maps with route:', url);
             console.log(`Total stops: ${destinations.length}`);
-            console.log('Destinations:', destinations);
             
-            // Check if we can open the URL
-            const supported = await Linking.canOpenURL(url);
+            // Show alert with route summary
+            const stopNames = activeReadyDeliveries.map((d, index) => {
+                return `${index + 1}. ${d.customerName} - ${d.address.split(',')[0]}`;
+            }).join('\n');
             
-            if (supported) {
-                await Linking.openURL(url);
-            } else {
-                Alert.alert(
-                    'Navigation Error',
-                    'Unable to open Google Maps. Please make sure Google Maps is installed on your device.',
-                    [{ text: 'OK' }]
-                );
-            }
+            Alert.alert(
+                'Navigation Route',
+                `Navigating to ${destinations.length} stops:\n\n${stopNames}`,
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { 
+                        text: 'Start Navigation', 
+                        onPress: async () => {
+                            try {
+                                const supported = await Linking.canOpenURL(url);
+                                
+                                if (supported) {
+                                    await Linking.openURL(url);
+                                } else {
+                                    Alert.alert(
+                                        'Navigation Error',
+                                        'Unable to open Google Maps. Please make sure Google Maps is installed on your device.',
+                                        [{ text: 'OK' }]
+                                    );
+                                }
+                            } catch (error) {
+                                console.error('Navigation error:', error);
+                                Alert.alert(
+                                    'Error',
+                                    'Failed to open navigation. Please try again.',
+                                    [{ text: 'OK' }]
+                                );
+                            }
+                        }
+                    }
+                ]
+            );
         } catch (error) {
             console.error('Navigate all error:', error);
             Alert.alert(
                 'Error',
-                'Failed to open navigation. Please try again.',
+                'Failed to load navigation route. Please try again.',
                 [{ text: 'OK' }]
             );
         }
