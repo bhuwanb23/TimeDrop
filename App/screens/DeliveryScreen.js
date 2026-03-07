@@ -190,9 +190,8 @@ const DeliveryScreen = ({ navigation }) => {
     const [totalEarnings, setTotalEarnings] = useState(46.35);
 
     const handleShowDetail = (delivery, isDelivered = false) => {
-        // Use raw delivery data if available, otherwise use formatted data
-        const deliveryData = delivery._raw || delivery;
-        setSelectedDelivery(deliveryData);
+        // Use the delivery data directly (not _raw) to preserve items array
+        setSelectedDelivery(delivery);
         setIsDeliveredDetail(isDelivered);
         setShowDetail(true);
     };
