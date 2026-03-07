@@ -8,6 +8,7 @@ import { navigationRef } from './utils/RootNavigation';
 import { CartProvider, useCart } from './context/CartContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoginScreen from './screens/LoginScreen';
+import SignUpScreen from './screens/SignUpScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import DeliveryScreen from './screens/DeliveryScreen';
 import RouteScreen from './screens/RouteScreen';
@@ -230,6 +231,13 @@ const RootNavigator = () => {
             }}
         >
             <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen 
+                name="SignUp" 
+                component={SignUpScreen} 
+                options={{
+                    headerShown: false,
+                }}
+            />
             <Stack.Screen
                 name="MainTabs"
                 component={MainTabs}

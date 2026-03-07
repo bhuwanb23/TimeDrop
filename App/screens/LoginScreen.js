@@ -81,7 +81,7 @@ const LoginScreen = () => {
     };
 
     const handleSignUp = () => {
-        Alert.alert('Sign Up', 'Sign up screen would be implemented here');
+        navigation.navigate('SignUp');
     };
 
     return (
