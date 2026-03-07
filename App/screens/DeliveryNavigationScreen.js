@@ -256,11 +256,20 @@ const DeliveryNavigationScreen = ({ route, navigation }) => {
                     <View style={styles.cardTitleRow}>
                         <Ionicons name="navigate-circle" size={20} color="#1152d4" />
                         <Text style={styles.cardTitle}>Navigation Steps</Text>
-                        <Text style={styles.stepsCount}>{navigationSteps.length} steps</Text>
+                        {navigationSteps && navigationSteps.length > 0 && (
+                            <Text style={styles.stepsCount}>{navigationSteps.length} steps</Text>
+                        )}
                     </View>
 
                     <View style={styles.navigationList}>
-                        {navigationSteps.map((step, index) => renderNavigationStep(step, index))}
+                        {navigationSteps && navigationSteps.length > 0 ? (
+                            navigationSteps.map((step, index) => renderNavigationStep(step, index))
+                        ) : (
+                            <View style={styles.emptyState}>
+                                <Ionicons name="location" size={48} color="#94A3B8" />
+                                <Text style={styles.emptyText}>No navigation steps available</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
 
@@ -654,6 +663,17 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         color: '#FFFFFF',
         letterSpacing: 0.5,
+    },
+    emptyState: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 40,
+    },
+    emptyText: {
+        fontSize: 16,
+        color: '#94A3B8',
+        marginTop: 12,
+        textAlign: 'center',
     },
 });
 
