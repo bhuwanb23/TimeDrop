@@ -302,7 +302,7 @@ const DeliveryNavigationScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f6f6f8',
+        backgroundColor: '#ECFDF5',
     },
     header: {
         flexDirection: 'row',
@@ -312,13 +312,13 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#e2e8f0',
+        borderBottomColor: '#D1FAE5',
     },
     backButton: {
         width: 40,
         height: 40,
         borderRadius: 10,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: '#D1FAE5',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -329,12 +329,12 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 17,
         fontWeight: '700',
-        color: '#111318',
+        color: '#064E3B',
     },
     headerSubtitle: {
         fontSize: 12,
         fontWeight: '500',
-        color: '#64748B',
+        color: '#059669',
         marginTop: 2,
     },
     headerRight: {
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     customerName: {
         fontSize: 17,
         fontWeight: '700',
-        color: '#111318',
+        color: '#064E3B',
     },
     contactInfo: {
         flexDirection: 'row',
@@ -379,13 +379,13 @@ const styles = StyleSheet.create({
     contactText: {
         fontSize: 13,
         fontWeight: '500',
-        color: '#64748B',
+        color: '#059669',
     },
     callButtonSmall: {
         width: 40,
         height: 40,
         borderRadius: 10,
-        backgroundColor: '#eff6ff',
+        backgroundColor: '#D1FAE5',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-start',
         gap: 10,
-        backgroundColor: '#f8fafc',
+        backgroundColor: '#ECFDF5',
         padding: 12,
         borderRadius: 12,
         marginBottom: 12,
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
     addressText: {
         fontSize: 13,
         fontWeight: '500',
-        color: '#475569',
+        color: '#059669',
         flex: 1,
         lineHeight: 20,
     },
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
         gap: 20,
         paddingTop: 12,
         borderTopWidth: 1,
-        borderTopColor: '#f1f5f9',
+        borderTopColor: '#A7F3D0',
     },
     infoItem: {
         flexDirection: 'row',
@@ -420,12 +420,12 @@ const styles = StyleSheet.create({
     infoLabel: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#64748B',
+        color: '#059669',
     },
     infoValue: {
         fontSize: 13,
         fontWeight: '700',
-        color: '#111318',
+        color: '#064E3B',
     },
     cardTitleRow: {
         flexDirection: 'row',
@@ -436,14 +436,14 @@ const styles = StyleSheet.create({
     cardTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#111318',
+        color: '#064E3B',
         flex: 1,
     },
     productCount: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#64748B',
-        backgroundColor: '#f1f5f9',
+        color: '#059669',
+        backgroundColor: '#D1FAE5',
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 8,
@@ -451,8 +451,8 @@ const styles = StyleSheet.create({
     stepsCount: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#64748B',
-        backgroundColor: '#f1f5f9',
+        color: '#059669',
+        backgroundColor: '#D1FAE5',
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 8,
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
     productPrice: {
         fontSize: 13,
         fontWeight: '700',
-        color: '#1152d4',
+        color: '#10B981',
     },
     totalSection: {
         flexDirection: 'row',
@@ -497,17 +497,17 @@ const styles = StyleSheet.create({
         marginTop: 12,
         paddingTop: 12,
         borderTopWidth: 2,
-        borderTopColor: '#1152d4',
+        borderTopColor: '#10B981',
     },
     totalLabel: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#111318',
+        color: '#064E3B',
     },
     totalAmount: {
         fontSize: 18,
         fontWeight: '800',
-        color: '#1152d4',
+        color: '#10B981',
     },
     navigationList: {
         gap: 0,
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     navStepActive: {
-        backgroundColor: 'rgba(17, 82, 212, 0.05)',
+        backgroundColor: 'rgba(16, 185, 129, 0.05)',
     },
     navStepCompleted: {
         opacity: 0.7,
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
     stepNumber: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#94a3b8',
+        color: '#059669',
     },
     stepNumberActive: {
         color: '#FFFFFF',
@@ -561,7 +561,7 @@ const styles = StyleSheet.create({
     },
     stepLine: {
         flex: 1,
-        backgroundColor: '#e2e8f0',
+        backgroundColor: '#A7F3D0',
     },
     stepLineCompleted: {
         backgroundColor: '#10b981',
@@ -579,11 +579,11 @@ const styles = StyleSheet.create({
     stepInstruction: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#64748B',
+        color: '#059669',
         flex: 1,
     },
     stepInstructionActive: {
-        color: '#1152d4',
+        color: '#10B981',
         fontWeight: '700',
     },
     stepDetails: {
@@ -594,12 +594,12 @@ const styles = StyleSheet.create({
     stepDistance: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#94a3b8',
+        color: '#059669',
     },
     stepDuration: {
         fontSize: 12,
         fontWeight: '500',
-        color: '#94a3b8',
+        color: '#059669',
     },
     qrCodeContainer: {
         alignItems: 'center',
@@ -608,24 +608,24 @@ const styles = StyleSheet.create({
     qrCodePlaceholder: {
         width: 160,
         height: 160,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: '#D1FAE5',
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 16,
         borderWidth: 2,
-        borderColor: '#10b981',
+        borderColor: '#10B981',
     },
     qrInstruction: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#111318',
+        color: '#064E3B',
         marginBottom: 8,
     },
     qrSubtext: {
         fontSize: 13,
         fontWeight: '500',
-        color: '#64748B',
+        color: '#059669',
         textAlign: 'center',
     },
     bottomActions: {
@@ -633,7 +633,7 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         backgroundColor: '#FFFFFF',
         borderTopWidth: 1,
-        borderTopColor: '#e2e8f0',
+        borderTopColor: '#A7F3D0',
     },
     completeButton: {
         flexDirection: 'row',

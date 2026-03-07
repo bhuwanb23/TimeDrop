@@ -281,7 +281,7 @@ const DeliveryScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f6f6f8',
+        backgroundColor: '#ECFDF5',
     },
     loadingContainer: {
         flex: 1,
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     loadingText: {
         marginTop: 12,
         fontSize: 14,
-        color: '#64748B',
+        color: '#064E3B',
     },
     scrollView: {
         flex: 1,
@@ -310,12 +310,12 @@ const styles = StyleSheet.create({
     queueTitle: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#000000',
+        color: '#064E3B',
     },
     queueCount: {
         fontSize: 12,
         fontWeight: '500',
-        color: '#64748B',
+        color: '#059669',
     },
     deliveryList: {
         paddingHorizontal: 12,

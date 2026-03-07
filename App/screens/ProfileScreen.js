@@ -31,7 +31,7 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8FAFC',
+        backgroundColor: '#ECFDF5',
     },
     scrollView: {
         flex: 1,
