@@ -1,8 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const EarningsCard = ({ earnings = '$142.50', percentage = '+12%' }) => {
+const EarningsCard = () => {
+    const [earnings, setEarnings] = useState('$0.00');
+    const [percentage, setPercentage] = useState('+0%');
+
+    useEffect(() => {
+        loadEarnings();
+    }, []);
+
+    const loadEarnings = async () => {
+        try {
+            // In a real app, fetch from backend
+            // const response = await apiService.drivers.getTodayEarnings();
+            
+            // For now, use mock data with some variation
+            const savedEarnings = await AsyncStorage.getItem('todayEarnings');
+            if (savedEarnings) {
+                setEarnings(savedEarnings);
+            } else {
+                // Generate random earnings between $100-$200
+                const randomEarnings = (Math.random() * 100 + 100).toFixed(2);
+                const earningsStr = `$${randomEarnings}`;
+                setEarnings(earningsStr);
+                await AsyncStorage.setItem('todayEarnings', earningsStr);
+                
+                // Random percentage change
+                const randomPercent = Math.floor(Math.random() * 20);
+                setPercentage(`+${randomPercent}%`);
+            }
+        } catch (error) {
+            console.error('Error loading earnings:', error);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.content}>

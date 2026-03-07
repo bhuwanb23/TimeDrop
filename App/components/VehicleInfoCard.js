@@ -1,22 +1,35 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const VehicleInfoCard = () => {
+const VehicleInfoCard = ({ vehicleData, onEditPress }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <MaterialIcons name="local-shipping" size={24} color="#10B981" />
                 <Text style={styles.title}>Vehicle Info</Text>
+                <TouchableOpacity onPress={onEditPress} style={styles.editButton}>
+                    <MaterialIcons name="edit" size={20} color="#10B981" />
+                </TouchableOpacity>
             </View>
             <View style={styles.infoGrid}>
                 <View style={styles.infoItem}>
                     <Text style={styles.label}>MODEL</Text>
-                    <Text style={styles.value}>Toyota Prius</Text>
+                    <Text style={styles.value}>{vehicleData?.model || 'N/A'}</Text>
                 </View>
                 <View style={styles.infoItem}>
                     <Text style={styles.label}>PLATE</Text>
-                    <Text style={styles.value}>ABC-1234</Text>
+                    <Text style={styles.value}>{vehicleData?.plate || 'N/A'}</Text>
+                </View>
+            </View>
+            <View style={[styles.infoGrid, { marginTop: 12 }]}>
+                <View style={styles.infoItem}>
+                    <Text style={styles.label}>YEAR</Text>
+                    <Text style={styles.value}>{vehicleData?.year || 'N/A'}</Text>
+                </View>
+                <View style={styles.infoItem}>
+                    <Text style={styles.label}>COLOR</Text>
+                    <Text style={styles.value}>{vehicleData?.color || 'N/A'}</Text>
                 </View>
             </View>
         </View>
@@ -41,6 +54,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 8,
         marginBottom: 16,
+    },
+    editButton: {
+        marginLeft: 'auto',
+        padding: 4,
     },
     title: {
         fontSize: 18,

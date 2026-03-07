@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const SettingsCard = () => {
+const SettingsCard = ({ onSettingsPress }) => {
     const settingsItems = [
         { icon: 'person', label: 'Personal Information' },
         { icon: 'payments', label: 'Payment Methods' },
@@ -16,7 +16,11 @@ const SettingsCard = () => {
             </View>
             <View style={styles.itemsContainer}>
                 {settingsItems.map((item, index) => (
-                    <TouchableOpacity key={item.label} style={styles.item}>
+                    <TouchableOpacity 
+                        key={item.label} 
+                        style={styles.item}
+                        onPress={() => onSettingsPress && onSettingsPress(item)}
+                    >
                         <View style={styles.itemLeft}>
                             <MaterialIcons name={item.icon} size={24} color="#10B981" />
                             <Text style={styles.itemLabel}>{item.label}</Text>
