@@ -15,28 +15,40 @@ const LogoutButton = () => {
             'Log Out',
             'Are you sure you want to log out?',
             [
-                { text: 'Cancel', style: 'cancel' },
+                { 
+                    text: 'Cancel', 
+                    style: 'cancel',
+                    onPress: () => console.log('Logout cancelled')
+                },
                 { 
                     text: 'Log Out', 
                     style: 'destructive', 
                     onPress: async () => {
                         try {
-                            console.log('Driver logout pressed - clearing auth and navigating to Login');
+                            console.log('Driver logout initiated...');
                             
-                            // Call backend logout endpoint (optional; local cleanup continues if unreachable)
+                            // Step 1: Call backend logout endpoint (optional)
                             try {
                                 await apiService.auth.logout();
+                                console.log('Backend logout successful');
                             } catch (apiError) {
                                 if (apiError.code !== 'ERR_NETWORK') {
-                                    console.error('Backend logout failed:', apiError);
+                                    console.error('Backend logout failed:', apiError.message);
                                 }
                                 // Continue with local cleanup even if backend call fails
                             }
                             
-                            // Clear any stored authentication tokens
-                            await AsyncStorage.removeItem('token');
+                            // Step 2: Clear all authentication data from AsyncStorage
+                            await AsyncStorage.multiRemove([
+                                'token',
+                                'driverProfile',
+                                'driverStatus',
+                                'todayEarnings'
+                            ]);
                             
-                            // Reset navigation stack to Login screen
+                            console.log('Local storage cleared successfully');
+                            
+                            // Step 3: Reset navigation stack to Login screen
                             if (navigationRef && navigationRef.current) {
                                 navigationRef.current.dispatch(
                                     CommonActions.reset({
@@ -44,20 +56,23 @@ const LogoutButton = () => {
                                         routes: [{ name: 'Login' }],
                                     })
                                 );
+                                console.log('Navigation reset to Login screen successful');
                             } else {
-                                // Fallback navigation
+                                // Fallback: Direct navigation
                                 navigation.navigate('Login');
+                                console.log('Fallback navigation to Login');
                             }
                             
-                            console.log('Driver navigation to Login successful');
                         } catch (error) {
-                            console.error('Driver logout failed:', error);
+                            console.error('Logout error:', error);
                             
-                            // Final fallback: try direct navigation
+                            // Final fallback: Try direct navigation
                             try {
                                 navigation.navigate('Login');
+                                console.log('Final fallback navigation successful');
                             } catch (navError) {
                                 console.error('Final navigation attempt failed:', navError);
+                                Alert.alert('Error', 'Unable to log out. Please restart the app.');
                             }
                         }
                     }
