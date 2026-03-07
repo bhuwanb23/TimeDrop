@@ -8,8 +8,11 @@ import {
     ActivityIndicator,
     RefreshControl,
     TouchableOpacity,
+    Alert,
+    Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
 import DeliveryHeader from '../components/DeliveryHeader';
 import RouteCard from '../components/RouteCard';
 import DeliveryCard from '../components/DeliveryCard';
@@ -179,6 +182,70 @@ const DeliveryScreen = ({ navigation }) => {
         setShowDetail(true);
     };
 
+    // Navigate to all deliveries with multiple stops
+    const handleNavigateAll = async () => {
+        try {
+            // Filter only active deliveries that are ready or in transit
+            const activeReadyDeliveries = activeDeliveries.filter(
+                d => d.isReady || d.status === 'in_transit'
+            );
+
+            if (activeReadyDeliveries.length === 0) {
+                Alert.alert(
+                    'No Active Deliveries',
+                    'There are no active deliveries to navigate to.',
+                    [{ text: 'OK' }]
+                );
+                return;
+            }
+
+            // Get all destination addresses
+            const destinations = activeReadyDeliveries.map(d => d.address);
+            
+            // Start with current location (origin)
+            const origin = ''; // Empty means current location
+            
+            // Create Google Maps URL with multiple waypoints
+            // Format: https://www.google.com/maps/dir/?api=1&origin=ORIGIN&destination=DESTINATION&waypoints=WAYPOINT1|WAYPOINT2|WAYPOINT3
+            const firstStop = encodeURIComponent(destinations[0]);
+            const lastStop = encodeURIComponent(destinations[destinations.length - 1]);
+            const waypoints = destinations.slice(1, -1).map(addr => encodeURIComponent(addr)).join('|');
+            
+            let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${lastStop}`;
+            
+            if (waypoints) {
+                url += `&waypoints=${waypoints}`;
+            }
+            
+            // Add travel mode
+            url += '&travelmode=driving';
+            
+            console.log('Opening Google Maps with route:', url);
+            console.log(`Total stops: ${destinations.length}`);
+            console.log('Destinations:', destinations);
+            
+            // Check if we can open the URL
+            const supported = await Linking.canOpenURL(url);
+            
+            if (supported) {
+                await Linking.openURL(url);
+            } else {
+                Alert.alert(
+                    'Navigation Error',
+                    'Unable to open Google Maps. Please make sure Google Maps is installed on your device.',
+                    [{ text: 'OK' }]
+                );
+            }
+        } catch (error) {
+            console.error('Navigate all error:', error);
+            Alert.alert(
+                'Error',
+                'Failed to open navigation. Please try again.',
+                [{ text: 'OK' }]
+            );
+        }
+    };
+
     const handleCloseDetail = () => {
         setShowDetail(false);
         setSelectedDelivery(null);
@@ -217,6 +284,16 @@ const DeliveryScreen = ({ navigation }) => {
                 {activeTab === 'Active' ? (
                     <>
                         <RouteCard navigation={navigation} />
+                        
+                        {/* Navigate All Button */}
+                        <TouchableOpacity 
+                            style={styles.navigateAllButton}
+                            onPress={handleNavigateAll}
+                            activeOpacity={0.8}
+                        >
+                            <MaterialIcons name="route" size={20} color="#FFFFFF" />
+                            <Text style={styles.navigateAllButtonText}>Navigate All</Text>
+                        </TouchableOpacity>
                         
                         {/* Compact Queue Header */}
                         <View style={styles.queueHeader}>
@@ -332,6 +409,28 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '500',
         color: '#059669',
+    },
+    navigateAllButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        backgroundColor: '#10B981',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 12,
+        marginHorizontal: 12,
+        marginTop: 12,
+        shadowColor: '#10B981',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    navigateAllButtonText: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#FFFFFF',
     },
     deliveryList: {
         paddingHorizontal: 12,
