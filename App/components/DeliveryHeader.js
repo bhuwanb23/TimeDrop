@@ -31,7 +31,7 @@ const DeliveryHeader = ({ activeTab, setActiveTab }) => {
             {/* Top Bar */}
             <View style={styles.topBar}>
                 <View style={styles.titleContainer}>
-                    <MaterialIcons name="local-shipping" size={24} color="#135bec" />
+                    <MaterialIcons name="local-shipping" size={24} color="#10B981" />
                     <Text style={styles.title}>Deliveries</Text>
                 </View>
                 <View style={styles.notificationContainer}>
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         color: '#94A3B8',
     },
     activeTabText: {
-        color: '#135bec',
+        color: '#10B981',
     },
 });
 

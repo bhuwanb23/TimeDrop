@@ -5,6 +5,8 @@ import {
     TouchableOpacity,
     StyleSheet,
     Animated,
+    Linking,
+    Alert,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -15,7 +17,9 @@ const DeliveryCard = ({
     status, 
     isNext = false,
     isReady = false,
-    onPressDetails
+    onPressDetails,
+    pickupLocation,
+    deliveryCoordinates
 }) => {
     const buttonScale = useRef(new Animated.Value(1)).current;
     const cardScale = useRef(new Animated.Value(1)).current;
@@ -48,6 +52,40 @@ const DeliveryCard = ({
         
         if (isDetails && onPressDetails) {
             onPressDetails();
+        }
+    };
+
+    // Handle navigation to Google Maps
+    const handleNavigate = async () => {
+        try {
+            // Destination address from the delivery
+            const destination = encodeURIComponent(address);
+            
+            // Create Google Maps URL with origin and destination
+            // Using current location as origin, destination as the delivery address
+            const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&destination_place_id=&travelmode=driving`;
+            
+            console.log('Opening Google Maps with URL:', url);
+            
+            // Check if we can open the URL
+            const supported = await Linking.canOpenURL(url);
+            
+            if (supported) {
+                await Linking.openURL(url);
+            } else {
+                Alert.alert(
+                    'Navigation Error',
+                    'Unable to open Google Maps. Please make sure Google Maps is installed on your device.',
+                    [{ text: 'OK' }]
+                );
+            }
+        } catch (error) {
+            console.error('Navigation error:', error);
+            Alert.alert(
+                'Error',
+                'Failed to open navigation. Please try again.',
+                [{ text: 'OK' }]
+            );
         }
     };
 
@@ -106,21 +144,33 @@ const DeliveryCard = ({
                 >
                     <Text style={styles.detailsButtonText}>Details</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                    style={[
-                        styles.updateButton,
-                        isNext && styles.updateButtonActive
-                    ]}
-                    onPress={() => handleButtonPress()}
-                    activeOpacity={0.8}
-                >
-                    <Text style={[
-                        styles.updateButtonText,
-                        isNext && styles.updateButtonTextActive
-                    ]}>
-                        Update
-                    </Text>
-                </TouchableOpacity>
+                {isNext && (
+                    <TouchableOpacity 
+                        style={styles.navigateButton}
+                        onPress={handleNavigate}
+                        activeOpacity={0.8}
+                    >
+                        <MaterialIcons name="navigation" size={16} color="#FFFFFF" />
+                        <Text style={styles.navigateButtonText}>Navigate</Text>
+                    </TouchableOpacity>
+                )}
+                {!isNext && (
+                    <TouchableOpacity 
+                        style={[
+                            styles.updateButton,
+                            isNext && styles.updateButtonActive
+                        ]}
+                        onPress={() => handleButtonPress()}
+                        activeOpacity={0.8}
+                    >
+                        <Text style={[
+                            styles.updateButtonText,
+                            isNext && styles.updateButtonTextActive
+                        ]}>
+                            Update
+                        </Text>
+                    </TouchableOpacity>
+                )}
             </View>
         </Animated.View>
     );
@@ -249,6 +299,26 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '600',
         color: '#000000',
+    },
+    navigateButton: {
+        flex: 1,
+        paddingVertical: 8,
+        borderRadius: 8,
+        backgroundColor: '#10B981',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        gap: 6,
+        shadowColor: '#10B981',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    navigateButtonText: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: '#FFFFFF',
     },
     updateButton: {
         flex: 1,
