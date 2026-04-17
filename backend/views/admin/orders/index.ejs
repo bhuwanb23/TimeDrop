@@ -1,0 +1,49 @@
+<div class="row mb-3">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">All Orders</h3>
+        <div class="card-tools">
+          <form method="GET" class="form-inline">
+            <select name="status" class="form-control form-control-sm mr-2">
+              <option value="">All Status</option>
+              <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
+              <option value="processing" <%= status === 'processing' ? 'selected' : '' %>>Processing</option>
+              <option value="confirmed" <%= status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+              <option value="in_transit" <%= status === 'in_transit' ? 'selected' : '' %>>In Transit</option>
+              <option value="delivered" <%= status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+              <option value="cancelled" <%= status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+          </form>
+        </div>
+      </div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders.forEach(function(o) { %>
+              <tr>
+                <td><%= o.order_number %></td>
+                <td><%= o.customer ? o.customer.name : 'N/A' %></td>
+                <td>$<%= o.total_amount %></td>
+                <td><span class="badge <%= o.status === 'delivered' ? 'bg-success' : o.status === 'cancelled' ? 'bg-danger' : 'bg-warning' %>"><%= o.status %></span></td>
+                <td><%= new Date(o.createdAt).toLocaleDateString() %></td>
+                <td><a href="/admin/orders/<%= o.id %>" class="btn btn-sm btn-info">View</a></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

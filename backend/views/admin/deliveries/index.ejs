@@ -1,0 +1,48 @@
+<div class="row mb-3">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">All Deliveries</h3>
+        <div class="card-tools">
+          <form method="GET" class="form-inline">
+            <select name="status" class="form-control form-control-sm mr-2">
+              <option value="">All Status</option>
+              <option value="assigned" <%= status === 'assigned' ? 'selected' : '' %>>Assigned</option>
+              <option value="in_transit" <%= status === 'in_transit' ? 'selected' : '' %>>In Transit</option>
+              <option value="picked_up" <%= status === 'picked_up' ? 'selected' : '' %>>Picked Up</option>
+              <option value="delivered" <%= status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+              <option value="failed" <%= status === 'failed' ? 'selected' : '' %>>Failed</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+          </form>
+        </div>
+      </div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Order</th>
+              <th>Driver</th>
+              <th>Status</th>
+              <th>ETA</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% deliveries.forEach(function(d) { %>
+              <tr>
+                <td><%= d.id %></td>
+                <td><%= d.order ? d.order.order_number : 'N/A' %></td>
+                <td><%= d.driver ? d.driver.name : 'Unassigned' %></td>
+                <td><span class="badge <%= d.status === 'delivered' ? 'bg-success' : d.status === 'failed' ? 'bg-danger' : 'bg-warning' %>"><%= d.status %></span></td>
+                <td><%= d.eta ? new Date(d.eta).toLocaleTimeString() : 'N/A' %></td>
+                <td><a href="/admin/deliveries/<%= d.id %>" class="btn btn-sm btn-info">View</a></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

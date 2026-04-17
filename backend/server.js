@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const session = require('express-session');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
+const expressEjsLayouts = require('express-ejs-layouts');
 const path = require('path');
 const { sequelize } = require('./src/config/database');
 
@@ -32,6 +33,10 @@ app.use(express.urlencoded({ extended: true }));
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.set('layout', 'admin/layouts/main');
+
+// Use express-ejs-layouts
+app.use(expressEjsLayouts);
 
 // Session configuration
 app.use(session({

@@ -1,0 +1,45 @@
+<div class="row mb-3">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">All Products</h3>
+        <div class="card-tools">
+          <a href="/admin/products/new" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Add Product</a>
+        </div>
+      </div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% products.forEach(function(p) { %>
+              <tr>
+                <td><%= p.id %></td>
+                <td><%= p.name %></td>
+                <td><%= p.category ? p.category.name : 'N/A' %></td>
+                <td>$<%= p.price %></td>
+                <td><%= p.stock_quantity %></td>
+                <td><span class="badge <%= p.status === 'active' ? 'bg-success' : 'bg-danger' %>"><%= p.status %></span></td>
+                <td>
+                  <a href="/admin/products/<%= p.id %>/edit" class="btn btn-sm btn-warning">Edit</a>
+                  <form method="POST" action="/admin/products/<%= p.id %>?_method=DELETE" style="display: inline;" onsubmit="return confirm('Delete this product?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

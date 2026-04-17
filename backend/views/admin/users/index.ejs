@@ -1,0 +1,53 @@
+<div class="row mb-3">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">All Users</h3>
+        <div class="card-tools">
+          <form method="GET" class="form-inline">
+            <select name="role" class="form-control form-control-sm mr-2">
+              <option value="">All Roles</option>
+              <option value="customer" <%= role === 'customer' ? 'selected' : '' %>>Customer</option>
+              <option value="driver" <%= role === 'driver' ? 'selected' : '' %>>Driver</option>
+              <option value="admin" <%= role === 'admin' ? 'selected' : '' %>>Admin</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+          </form>
+        </div>
+      </div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(function(u) { %>
+              <tr>
+                <td><%= u.id %></td>
+                <td><%= u.name %></td>
+                <td><%= u.email %></td>
+                <td><%= u.phone || 'N/A' %></td>
+                <td><span class="badge bg-info"><%= u.role %></span></td>
+                <td><span class="badge <%= u.status === 'active' ? 'bg-success' : 'bg-danger' %>"><%= u.status %></span></td>
+                <td>
+                  <a href="/admin/users/<%= u.id %>" class="btn btn-sm btn-info">View</a>
+                  <form method="POST" action="/admin/users/<%= u.id %>?_method=DELETE" style="display: inline;" onsubmit="return confirm('Are you sure?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

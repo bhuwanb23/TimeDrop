@@ -1,0 +1,92 @@
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Order Details - <%= order.order_number %></h3></div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Customer:</strong> <%= order.customer ? order.customer.name : 'N/A' %></p>
+            <p><strong>Email:</strong> <%= order.customer ? order.customer.email : 'N/A' %></p>
+            <p><strong>Phone:</strong> <%= order.customer ? order.customer.phone : 'N/A' %></p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Status:</strong> <span class="badge bg-primary"><%= order.status %></span></p>
+            <p><strong>Total:</strong> $<%= order.total_amount %></p>
+            <p><strong>Date:</strong> <%= new Date(order.createdAt).toLocaleString() %></p>
+          </div>
+        </div>
+        
+        <% if (order.shipping_address) { %>
+          <hr>
+          <h5>Shipping Address</h5>
+          <p><%= order.shipping_address %></p>
+        <% } %>
+        
+        <hr>
+        <h5>Order Items</h5>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% order.items.forEach(function(item) { %>
+              <tr>
+                <td><%= item.product ? item.product.name : 'N/A' %></td>
+                <td><%= item.quantity %></td>
+                <td>$<%= item.price %></td>
+                <td>$<%= (item.quantity * item.price).toFixed(2) %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Update Status</h3></div>
+      <div class="card-body">
+        <form method="POST" action="/admin/orders/<%= order.id %>/status?_method=PUT">
+          <div class="form-group">
+            <label>Status</label>
+            <select name="status" class="form-control">
+              <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Pending</option>
+              <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>Processing</option>
+              <option value="confirmed" <%= order.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+              <option value="in_transit" <%= order.status === 'in_transit' ? 'selected' : '' %>>In Transit</option>
+              <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+              <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Update Status</button>
+        </form>
+      </div>
+    </div>
+    
+    <% if (!order.delivery && order.status !== 'cancelled') { %>
+      <div class="card mt-3">
+        <div class="card-header"><h3 class="card-title">Assign Driver</h3></div>
+        <div class="card-body">
+          <form method="POST" action="/admin/orders/<%= order.id %>/assign?_method=PUT">
+            <div class="form-group">
+              <label>Select Driver</label>
+              <select name="driver_id" class="form-control" required>
+                <option value="">Choose Driver</option>
+                <% drivers.forEach(function(d) { %>
+                  <option value="<%= d.id %>"><%= d.name %> (<%= d.email %>)</option>
+                <% }); %>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-success">Assign Driver</button>
+          </form>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>

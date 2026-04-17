@@ -1,0 +1,52 @@
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Delivery #<%= delivery.id %></h3></div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Order:</strong> <%= delivery.order ? delivery.order.order_number : 'N/A' %></p>
+            <p><strong>Driver:</strong> <%= delivery.driver ? delivery.driver.name : 'Unassigned' %></p>
+            <p><strong>Status:</strong> <span class="badge bg-primary"><%= delivery.status %></span></p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>ETA:</strong> <%= delivery.eta ? new Date(delivery.eta).toLocaleString() : 'N/A' %></p>
+            <p><strong>Actual Delivery:</strong> <%= delivery.actual_delivery_time ? new Date(delivery.actual_delivery_time).toLocaleString() : 'N/A' %></p>
+            <p><strong>Created:</strong> <%= new Date(delivery.createdAt).toLocaleString() %></p>
+          </div>
+        </div>
+        
+        <% if (delivery.notes) { %>
+          <hr>
+          <h5>Notes</h5>
+          <p><%= delivery.notes %></p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Update Delivery Status</h3></div>
+      <div class="card-body">
+        <form method="POST" action="/admin/deliveries/<%= delivery.id %>/status?_method=PUT">
+          <div class="form-group">
+            <label>Status</label>
+            <select name="status" class="form-control">
+              <option value="assigned" <%= delivery.status === 'assigned' ? 'selected' : '' %>>Assigned</option>
+              <option value="in_transit" <%= delivery.status === 'in_transit' ? 'selected' : '' %>>In Transit</option>
+              <option value="picked_up" <%= delivery.status === 'picked_up' ? 'selected' : '' %>>Picked Up</option>
+              <option value="delivered" <%= delivery.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+              <option value="failed" <%= delivery.status === 'failed' ? 'selected' : '' %>>Failed</option>
+            </select>
+          </div>
+          <div class="form-group mt-3">
+            <label>Notes</label>
+            <textarea name="notes" class="form-control" rows="3"><%= delivery.notes || '' %></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary mt-2">Update Status</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
