@@ -2,6 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const session = require('express-session');
+const flash = require('connect-flash');
+const methodOverride = require('method-override');
+const path = require('path');
 const { sequelize } = require('./src/config/database');
 
 const authRoutes = require('./src/routes/auth');
@@ -13,6 +17,7 @@ const routeRoutes = require('./src/routes/routes');
 const whatsappRoutes = require('./src/routes/whatsapp');
 const categoryRoutes = require('./src/routes/categories');
 const wishlistRoutes = require('./src/routes/wishlist');
+const adminRoutes = require('./src/routes/admin');
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -24,6 +29,30 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// View engine setup
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Session configuration
+app.use(session({
+  secret: process.env.JWT_SECRET || 'admin-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+}));
+
+app.use(flash());
+app.use(methodOverride('_method'));
+
+// Make flash messages available to all views
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  res.locals.user = req.session.adminUser || null;
+  next();
+});
+
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -31,6 +60,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use('/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
@@ -40,6 +70,11 @@ app.use('/api/routes', routeRoutes);
 app.use('/api/webhooks', whatsappRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+
+// Redirect admin root to dashboard
+app.get('/admin', (req, res) => {
+  res.redirect('/admin/dashboard');
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {

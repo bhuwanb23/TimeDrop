@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeDrop Admin - <%= title %></title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- AdminLTE CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  
+  <style>
+    .main-header { background: #10B981; }
+    .main-sidebar { background: #064E3B; }
+    .btn-primary { background: #10B981; border-color: #10B981; }
+    .btn-primary:hover { background: #059669; border-color: #059669; }
+    .bg-info { background: #3B82F6 !important; }
+    .bg-success { background: #10B981 !important; }
+    .bg-warning { background: #F59E0B !important; }
+    .bg-danger { background: #EF4444 !important; }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+  <div class="wrapper">
+    <!-- Navbar -->
+    <%- include('partials/header') %>
+    
+    <!-- Main Sidebar -->
+    <%- include('partials/sidebar') %>
+    
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+      <!-- Content Header -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1 class="m-0"><%= title %></h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main Content -->
+      <section class="content">
+        <div class="container-fluid">
+          <!-- Flash Messages -->
+          <% if (locals.success_msg && success_msg.length > 0) { %>
+            <div class="alert alert-success alert-dismissible fade show">
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              <%- success_msg %>
+            </div>
+          <% } %>
+          
+          <% if (locals.error_msg && error_msg.length > 0) { %>
+            <div class="alert alert-danger alert-dismissible fade show">
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              <%- error_msg %>
+            </div>
+          <% } %>
+          
+          <% if (locals.error && error.length > 0) { %>
+            <div class="alert alert-danger alert-dismissible fade show">
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              <%- error %>
+            </div>
+          <% } %>
+          
+          <!-- Page Content -->
+          <%- body %>
+        </div>
+      </section>
+    </div>
+    
+    <!-- Footer -->
+    <%- include('partials/footer') %>
+  </div>
+  
+  <!-- Scripts -->
+  <%- include('partials/scripts') %>
+</body>
+</html>

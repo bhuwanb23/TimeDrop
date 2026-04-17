@@ -1,0 +1,60 @@
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <a href="/admin/dashboard" class="brand-link" style="background: #064E3B;">
+    <span class="brand-text font-weight-light" style="color: #10B981; font-weight: bold !important;">TimeDrop Admin</span>
+  </a>
+
+  <div class="sidebar" style="background: #064E3B;">
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="info">
+        <a href="#" class="d-block" style="color: #fff;"><%= user.name %></a>
+        <small style="color: #10B981;">Administrator</small>
+      </div>
+    </div>
+
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+        <li class="nav-item">
+          <a href="/admin/dashboard" class="nav-link <%= title === 'Dashboard' ? 'active' : '' %>">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>Dashboard</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="/admin/orders" class="nav-link <%= title.includes('Order') ? 'active' : '' %>">
+            <i class="nav-icon fas fa-shopping-cart"></i>
+            <p>Orders</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="/admin/deliveries" class="nav-link <%= title.includes('Delivery') ? 'active' : '' %>">
+            <i class="nav-icon fas fa-truck"></i>
+            <p>Deliveries</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="/admin/users" class="nav-link <%= title.includes('User') ? 'active' : '' %>">
+            <i class="nav-icon fas fa-users"></i>
+            <p>Users</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="/admin/products" class="nav-link <%= title.includes('Product') ? 'active' : '' %>">
+            <i class="nav-icon fas fa-box"></i>
+            <p>Products</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="/admin/categories" class="nav-link <%= title.includes('Categor') ? 'active' : '' %>">
+            <i class="nav-icon fas fa-tags"></i>
+            <p>Categories</p>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>
